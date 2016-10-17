@@ -7,6 +7,8 @@ import android.content.Context;
  * Created by chris on 13/10/16.
  * http://stackoverflow.com/questions/987072/using-application-context-everywhere
  * http://stackoverflow.com/questions/9445661/how-to-get-the-context-from-anywhere
+
+ * https://www.londonappdeveloper.com/how-to-use-git-hub-with-android-studio/
  */
 /*
 Useful for having app-context everywhere
