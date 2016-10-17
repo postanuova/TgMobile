@@ -9,8 +9,8 @@ public class DbMedia {
     private int phoneId;
 
 
-    public DbMedia(int i, int phoneId) {
-        this.setId(getId());
+    public DbMedia(int id, int phoneId) {
+        this.setId(id);
         this.setPhoneId(phoneId);
     }
 

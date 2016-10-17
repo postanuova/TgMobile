@@ -98,6 +98,7 @@ public class MediaStoreObserver extends ContentObserver {
             if(!deviceMediaHM.containsKey(key)) {
                 MyLog.i(this,"removed key (phoneId)= " + key);
                 removedDbMediaAL.add(dbMediaHM.get(key));
+                MyLog.i(this,"removed media: dbId=" + dbMediaHM.get(key).getId() + " phoneId" + dbMediaHM.get(key).getPhoneId());
                 counter ++;
             }
         }

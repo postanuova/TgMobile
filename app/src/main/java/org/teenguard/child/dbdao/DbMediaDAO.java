@@ -61,6 +61,10 @@ public class DbMediaDAO {
         return mCursor; // iterate to get each value.
     }
 
+   /* public dumpDbMediaHM() {
+
+    }*/
+
     public  ConcurrentHashMap<Integer, DbMedia> getDbMediaHM() {
         Cursor cursor = getDbMediaCursor();
         String columnAR[] = cursor.getColumnNames();
