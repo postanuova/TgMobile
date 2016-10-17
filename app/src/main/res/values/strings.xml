@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">TeenGuard</string>
+    <string name="home">Home</string>
+    <string name="localization">Localization</string>
+    <string name="contact_list">Contacts</string>
+    <string name="title_activity_contacts_loader">ContactsLoaderActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
