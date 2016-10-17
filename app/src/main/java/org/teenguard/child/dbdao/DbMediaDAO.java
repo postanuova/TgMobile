@@ -28,10 +28,6 @@ public class DbMediaDAO {
         db = childDbHelper.getWritableDatabase();
     }
 
-    public static ConcurrentHashMap<Integer, DbMedia> getDbMediaHM() {
-        throw new UnsupportedOperationException("getDbMediaHM not implemented");
-    }
-
     public long upsertDbMedia(long id, long phoneId) {
         ContentValues values = new ContentValues();
 
@@ -59,14 +55,14 @@ public class DbMediaDAO {
     }
 
 
-    public Cursor getDbContactCursor() {
+    public Cursor getDbMediaCursor() {
         String[] cols = new String[]{MEDIA_ID, MEDIA_PHONE_ID};
         Cursor mCursor = db.query(true, MEDIA_TABLE, cols, null, null, null, null, null, null);
         return mCursor; // iterate to get each value.
     }
 
-    public ConcurrentHashMap getDBMediaHM() {
-        Cursor cursor = getDbContactCursor();
+    public  ConcurrentHashMap<Integer, DbMedia> getDbMediaHM() {
+        Cursor cursor = getDbMediaCursor();
         String columnAR[] = cursor.getColumnNames();
         /*for (String column: columnAR) {
             System.out.println("column = " + column);

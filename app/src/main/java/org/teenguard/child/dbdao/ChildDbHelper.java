@@ -14,20 +14,24 @@ public class ChildDbHelper extends SQLiteOpenHelper {
 
 
     public static final String CHILD_DB_NAME = "contactDB";
-    public static final int CHILD_DB_VERSION = 9;
+    public static final int CHILD_DB_VERSION = 11;
 
 
-    private static final String  CREATE_DATABASE=
-            "CREATE TABLE contact (" +
-            "_id integer primary key autoincrement," + // In SQLite a column declared INTEGER PRIMARY KEY will autoincrement by itself (int is not ok)
-            "phone_id int unique not null," +
-            "name varchar(255)," +
-            "last_modified int," +
-            "serialized_data" +
-            ");" +
+    private static final String  CREATE_TABLE_MEDIA=
             "CREATE TABLE media (" +
-            "_id integer primary key autoincrement," + // In SQLite a column declared INTEGER PRIMARY KEY will autoincrement by itself (int is not ok)
-            "phone_id int unique not null);";
+                "_id integer primary key autoincrement," + // In SQLite a column declared INTEGER PRIMARY KEY will autoincrement by itself (int is not ok)
+                "phone_id int unique not null" +
+            ");";
+
+    private static final String  CREATE_TABLE_CONTACT=
+            "CREATE TABLE contact (" +
+                "_id integer primary key autoincrement," + // In SQLite a column declared INTEGER PRIMARY KEY will autoincrement by itself (int is not ok)
+                "phone_id int unique not null," +
+                "name varchar(255)," +
+                "last_modified int," +
+                "serialized_data" +
+            ");";
+
     /*
 +---------------+--------------+------+-----+---------+----------------+
 | Field         | Type         | Null | Key | Default | Extra          |
@@ -39,8 +43,8 @@ public class ChildDbHelper extends SQLiteOpenHelper {
 +---------------+--------------+------+-----+---------+----------------+
             */
 
-    private static final String DROP_TABLES = "DROP TABLE IF EXISTS contact" +
-            "DROP TABLE IF EXISTS media";
+    private static final String DROP_TABLE_CONTACT = "DROP TABLE IF EXISTS contact;";
+    private static final String DROP_TABLE_MEDIA =   "DROP TABLE IF EXISTS media;";
 
 
 
@@ -50,8 +54,9 @@ public class ChildDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        MyLog.i(this,"creating DB: " + CREATE_DATABASE);
-        db.execSQL(CREATE_DATABASE);
+        MyLog.i(this,"creating DB:");
+        db.execSQL(CREATE_TABLE_CONTACT);
+        db.execSQL(CREATE_TABLE_MEDIA);
         MyLog.i(this, "created db:"  + CHILD_DB_NAME + " version " + CHILD_DB_VERSION);
     }
 
@@ -59,20 +64,23 @@ public class ChildDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         MyLog.i(this, "Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data");
         //throw new UnsupportedOperationException("onUpgrade DB not yet implemented");
-        db.execSQL(DROP_TABLES);
+        db.execSQL(DROP_TABLE_CONTACT);
+        db.execSQL(DROP_TABLE_MEDIA);
         onCreate(db);
     }
 
     public void resetDatabase(SQLiteDatabase db) {
         MyLog.i(this, "destroyDatabase");
         //throw new UnsupportedOperationException("onUpgrade DB not yet implemented");
-        db.execSQL(DROP_TABLES);
+        db.execSQL(DROP_TABLE_CONTACT);
+        db.execSQL(DROP_TABLE_MEDIA);
         onCreate(db);
     }
 
 
     public static void main(String args[]) {
-        System.out.println(CREATE_DATABASE);
+        System.out.println(CREATE_TABLE_CONTACT);
+        System.out.println(CREATE_TABLE_MEDIA);
     }
 
 

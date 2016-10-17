@@ -43,10 +43,10 @@ public class MediaStoreObserver extends ContentObserver {
 
 //load user_media_list
             deviceMediaHM = DeviceMediaDAO.getDeviceMediaHM();
-            dbMediaHM = DbMediaDAO.getDbMediaHM();
+            dbMediaHM = dbMediaDAO.getDbMediaHM();
             MyLog.i(this,"deviceMediaHM.size = " + deviceMediaHM.size() + " dbMediaHM.size = " + dbMediaHM.size());
             if(dbMediaHM.size() == 0) {
-                MyLog.i(this,"dbHM =0 --> empty DB: populate DB with user media list");
+                MyLog.i(this,"dbHM =0 -->  empty DB: populate DB with user media list");
                 manageEmptyDB();
             }
 
@@ -84,7 +84,7 @@ public class MediaStoreObserver extends ContentObserver {
             long idInserted = dbMediaDAO.upsertDbMedia(dbMedia);//is insert
             MyLog.i(this,"inserted into db _id: " + idInserted);
             deviceMedia.dump();
-            MyLog.i(this,"SEND NEW USER CONTACT TO SERVER");
+            MyLog.i(this,"SEND NEW USER MEDIA TO SERVER");
         }
     }
 
@@ -106,17 +106,12 @@ public class MediaStoreObserver extends ContentObserver {
             dbMedia.dump();
             dbMediaDAO.removeMedia(dbMedia);
             MyLog.i(this,"removed from db");
-            MyLog.i(this,"SEND REMOVED CONTACT TO SERVER");
+            MyLog.i(this,"SEND REMOVED MEDIA TO SERVER");
         }
     }
 
-
-
-
     private boolean insertDeviceMediaHMIntoDB() {
         MyLog.i(this,"deviceMediaHM" + deviceMediaHM.size());
-
-        //emptyMediaTable();
         long nInserted = 0;
         for (DeviceMedia deviceMedia : deviceMediaHM.values()) {
             MyLog.i(this,"inserting deviceMedia = " + " phoneId = " + deviceMedia.getPhoneId());
@@ -126,8 +121,7 @@ public class MediaStoreObserver extends ContentObserver {
             nInserted ++;
         }
         MyLog.i(this," Inserted " +  nInserted + " records into media");
-        throw new UnsupportedOperationException ("DbMediaDAO not implemented");
-        //return true;
+        return true;
     }
 
 
