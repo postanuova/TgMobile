@@ -1,17 +1,23 @@
 package org.teenguard.child.datatype;
 
 
+import android.net.Uri;
+import android.provider.MediaStore;
+
 /**
  * Created by chris on 16/10/16.
  */
 
 public class DeviceMedia {
+    public static final Uri PHOTO_INTERNAL_CONTENT_URI = MediaStore.Images.Media.INTERNAL_CONTENT_URI;
+    public static final Uri PHOTO_EXTERNAL_CONTENT_URI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+    
     private int phoneId;
-    private String lookupKey;
+    private String dateTaken;
 
-    public DeviceMedia(int phoneId, String lookupKey) {
+    public DeviceMedia(int phoneId, String dateTaken) {
         this.phoneId = phoneId;
-        this.lookupKey = lookupKey;
+        this.dateTaken = dateTaken;
 
     }
 
@@ -19,7 +25,7 @@ public class DeviceMedia {
         System.out.println("-------------DEVICE CONTACT DUMP-------------");
         //  System.out.println("id = " + id);
         System.out.println("phoneId = " + phoneId);
-        System.out.println("lookupKey = " + lookupKey);
+        System.out.println("dateTaken = " + dateTaken);
     }
 
     public int getPhoneId() {
@@ -31,10 +37,10 @@ public class DeviceMedia {
     }
 
     public String getLookupKey() {
-        return lookupKey;
+        return dateTaken;
     }
 
-    public void setLookupKey(String lookupKey) {
-        this.lookupKey = lookupKey;
+    public void setLookupKey(String dateTaken) {
+        this.dateTaken = dateTaken;
     }
 }

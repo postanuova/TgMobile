@@ -1,5 +1,8 @@
 package org.teenguard.child.datatype;
 
+import android.net.Uri;
+import android.provider.ContactsContract;
+
 import org.teenguard.child.dao.DeviceContactDAO;
 
 import java.util.ArrayList;
@@ -9,6 +12,8 @@ import java.util.ArrayList;
  */
 
 public class DeviceContact {
+    public static final Uri CONTACTS_URI = ContactsContract.Contacts.CONTENT_URI;
+    public static final Uri CONTACTS_CONTENT_URI = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
    // private int id;
     private int phoneId;
     private String name;

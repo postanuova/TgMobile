@@ -12,9 +12,9 @@ import android.provider.ContactsContract.Contacts;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import org.teenguard.child.observer.ContactListObserver;
-import org.teenguard.child.utils.Constant;
 import org.teenguard.child.R;
+import org.teenguard.child.datatype.DeviceContact;
+import org.teenguard.child.observer.ContactListObserver;
 
 import java.util.ArrayList;
 
@@ -40,7 +40,7 @@ public class ContactsLoaderActivity extends AppCompatActivity implements LoaderM
     private void startMonitoringContactsChanges() {
         ContactListObserver contactListObserver = new ContactListObserver(null);
 
-        getContentResolver().registerContentObserver(Constant.CONTACTS_URI,true, contactListObserver);
+        getContentResolver().registerContentObserver(DeviceContact.CONTACTS_URI,true, contactListObserver);
     }
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -117,7 +117,7 @@ public class ContactsLoaderActivity extends AppCompatActivity implements LoaderM
         String[] selectionArgs = { lookupKey };
         String sortOrder = ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY;
         ContentResolver contentResolver = getContentResolver();
-        Cursor cursor = contentResolver.query(Constant.CONTACTS_CONTENT_URI,projection , selection, selectionArgs, sortOrder);
+        Cursor cursor = contentResolver.query(DeviceContact.CONTACTS_CONTENT_URI,projection , selection, selectionArgs, sortOrder);
         //Log.i("test","Phone cursor rows count " + cursor.getCount());
         ArrayList numberAL = new ArrayList();
         while(cursor.moveToNext()) {

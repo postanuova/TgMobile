@@ -7,7 +7,6 @@ import android.provider.ContactsContract;
 import android.util.Log;
 
 import org.teenguard.child.datatype.DeviceContact;
-import org.teenguard.child.utils.Constant;
 import org.teenguard.child.utils.MyApp;
 
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ public class DeviceContactDAO {
         String[] selectionArgs = {lookupKey};
         String sortOrder = ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY;
         ContentResolver contentResolver = MyApp.getContext().getContentResolver();
-        Cursor cursor = contentResolver.query(Constant.CONTACTS_CONTENT_URI, projection, selection, selectionArgs, sortOrder);
+        Cursor cursor = contentResolver.query(DeviceContact.CONTACTS_CONTENT_URI, projection, selection, selectionArgs, sortOrder);
         //Log.i("test","Phone cursor rows count " + cursor.getCount());
         ArrayList numberAL = new ArrayList();
         while (cursor.moveToNext()) {

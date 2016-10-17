@@ -5,10 +5,11 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
+import org.teenguard.child.datatype.DeviceContact;
+import org.teenguard.child.datatype.DeviceMedia;
 import org.teenguard.child.observer.ContactListObserver;
 import org.teenguard.child.observer.GpsObserver;
 import org.teenguard.child.observer.MediaStoreObserver;
-import org.teenguard.child.utils.Constant;
 
 public class DeviceMonitoringService extends Service {
     ContactListObserver contactListObserver = new ContactListObserver(null);
@@ -40,7 +41,7 @@ public class DeviceMonitoringService extends Service {
 
     private void startMonitoringMediaStoreChanges() {
         Log.i(this.getClass().getName(), "startMonitoringMediaStoreChanges");
-        getContentResolver().registerContentObserver(Constant.PHOTO_EXTERNAL_CONTENT_URI,
+        getContentResolver().registerContentObserver(DeviceMedia.PHOTO_EXTERNAL_CONTENT_URI,
                 false,/*no propagation to descendant*/
                 mediaStoreObserver);
     }
@@ -51,7 +52,7 @@ public class DeviceMonitoringService extends Service {
 
     private void startMonitoringContactsChanges() {
         Log.i(this.getClass().getName(), "startMonitoringContactsChanges");
-        getContentResolver().registerContentObserver(Constant.CONTACTS_URI,false, contactListObserver);
+        getContentResolver().registerContentObserver(DeviceContact.CONTACTS_URI,false, contactListObserver);
     }
 
     public void onDestroy() {
