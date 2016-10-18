@@ -3,7 +3,6 @@ package org.teenguard.child.dbdao;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
 import org.teenguard.child.dbdatatype.DbContact;
 import org.teenguard.child.utils.MyLog;
@@ -16,8 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 
 public class DbContactDAO extends GenericDbDAO{
-    private SQLiteDatabase db;
-    private ChildDbHelper childDbHelper;
 
     //contact table
     public final static String CONTACT_TABLE = "contact";

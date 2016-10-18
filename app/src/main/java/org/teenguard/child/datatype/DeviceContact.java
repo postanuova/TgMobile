@@ -28,7 +28,7 @@ public class DeviceContact {
         this.name = name;
         this.lookupKey = lookupKey;
         this.lastModified = lastModified;
-        numberAL = DeviceContactDAO.getDeviceContactNumberALFromLookupKey(lookupKey);
+        setNumberAL(DeviceContactDAO.getDeviceContactNumberALFromLookupKey(lookupKey));
     }
 
 
@@ -43,17 +43,19 @@ public class DeviceContact {
     }
 
     public void dumpDeviceContactNumberAL() {
-        for (String number : numberAL) {
+        for (String number : getNumberAL()) {
             System.out.println("number = " + number);
         }
     }
 
     public  String buildSerializedDataString() {
         StringBuilder serializedData = new StringBuilder();
-        for (String number : numberAL) {
-            serializedData.append(number + ";");
+        for (String number : getNumberAL()) {
+            serializedData.append("\"" +number +"\"" + ",");
         }
-        return serializedData.toString();
+        String serializedDataSTR = serializedData.toString();
+        if(serializedDataSTR.endsWith(",")) serializedDataSTR = serializedDataSTR.substring(0,serializedDataSTR.length()-1);
+        return serializedDataSTR;
     }
 
     public String getJson() {
@@ -102,5 +104,12 @@ public class DeviceContact {
     }
 
 
+    public ArrayList<String> getNumberAL() {
+        return numberAL;
+    }
+
+    public void setNumberAL(ArrayList<String> numberAL) {
+        this.numberAL = numberAL;
+    }
 }
 

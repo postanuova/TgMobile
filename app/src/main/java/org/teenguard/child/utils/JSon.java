@@ -46,7 +46,10 @@ public class JSon {
         jSonString += composePair(param, Boolean.toString(value)) + ",";
     }
 
-    /** aggiunge un array(nome_array,lista di elementi tra parentesi quadre separati da una virgola) all'oggetto JSON :  */
+   /**
+    *
+     * aggiunge un array(nome_array,lista di elementi tra parentesi quadre separati da una virgola) all'oggetto JSON :
+     * */
     public void addArray(String arrayName, String arrayValues) {
         jSonString += "\"" + arrayName + "\":" + arrayValues + ",";
     //jSonString +=  "\"" + arrayName + "\":[" + arrayValues + "]" + ",";

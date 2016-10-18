@@ -14,6 +14,13 @@ public class DbContactEvent {
     private int eventType; //add, modofy, delete
     private String serializedData; //json data
 
+    public DbContactEvent(int id, int csId,int eventType, String serializedData) {
+        this.id = id;
+        this.csId = csId;
+        this.eventType = eventType;
+        this.serializedData = serializedData;
+    }
+
     public int getId() {
         return id;
     }
@@ -29,7 +36,6 @@ public class DbContactEvent {
     public void setCsId(int csId) {
         this.csId = csId;
     }
-
 
 
     public String getSerializedData() {

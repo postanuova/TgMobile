@@ -39,6 +39,7 @@ public class DeviceContactDAO {
         ArrayList numberAL = new ArrayList();
         while (cursor.moveToNext()) {
             String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+            number = number.replaceAll("-","");
             numberAL.add(number);
         }
         cursor.close();

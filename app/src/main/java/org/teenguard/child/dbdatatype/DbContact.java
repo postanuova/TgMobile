@@ -2,6 +2,8 @@ package org.teenguard.child.dbdatatype;
 
 import android.database.Cursor;
 
+import org.teenguard.child.utils.JSon;
+
 import static org.teenguard.child.dbdao.DbContactDAO.CONTACT_ID;
 import static org.teenguard.child.dbdao.DbContactDAO.CONTACT_LAST_MODIFIED;
 import static org.teenguard.child.dbdao.DbContactDAO.CONTACT_NAME;
@@ -17,7 +19,7 @@ public class DbContact {
     private int phoneId;
     private String name;
     private long lastModified;
-    private String serializedData;
+    private String serializedData; //contains serialized numbers separated by a comma
 
     public DbContact(int id, int phoneId, String name, long lastModified,String serializedData) {
         this.id = id;
@@ -35,6 +37,8 @@ public class DbContact {
         String serializedData = cursor.getString(cursor.getColumnIndex(CONTACT_SERIALIZED_DATA));
         DbContact dbContact = new DbContact(id, phoneId, name, lastModified, serializedData);
     }
+
+
 
     public void dump() {
         System.out.println("-------------DB CONTACT DUMP-------------");
