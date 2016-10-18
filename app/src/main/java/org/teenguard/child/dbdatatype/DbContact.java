@@ -1,5 +1,13 @@
 package org.teenguard.child.dbdatatype;
 
+import android.database.Cursor;
+
+import static org.teenguard.child.dbdao.DbContactDAO.CONTACT_ID;
+import static org.teenguard.child.dbdao.DbContactDAO.CONTACT_LAST_MODIFIED;
+import static org.teenguard.child.dbdao.DbContactDAO.CONTACT_NAME;
+import static org.teenguard.child.dbdao.DbContactDAO.CONTACT_PHONE_ID;
+import static org.teenguard.child.dbdao.DbContactDAO.CONTACT_SERIALIZED_DATA;
+
 /**
  * Created by chris on 15/10/16.
  */
@@ -19,7 +27,14 @@ public class DbContact {
         this.setSerializedData(serializedData);
     }
 
-
+    public DbContact (Cursor cursor) {
+        int id = cursor.getInt(cursor.getColumnIndex(CONTACT_ID));
+        int phoneId = cursor.getInt(cursor.getColumnIndex(CONTACT_PHONE_ID));
+        String name = cursor.getString(cursor.getColumnIndex(CONTACT_NAME));
+        long lastModified = cursor.getLong(cursor.getColumnIndex(CONTACT_LAST_MODIFIED));
+        String serializedData = cursor.getString(cursor.getColumnIndex(CONTACT_SERIALIZED_DATA));
+        DbContact dbContact = new DbContact(id, phoneId, name, lastModified, serializedData);
+    }
 
     public void dump() {
         System.out.println("-------------DB CONTACT DUMP-------------");

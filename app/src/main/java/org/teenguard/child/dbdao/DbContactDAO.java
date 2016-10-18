@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by chris on 12/10/16.
  */
 
-public class DbContactDAO {
+public class DbContactDAO extends GenericDbDAO{
     private SQLiteDatabase db;
     private ChildDbHelper childDbHelper;
 
@@ -27,9 +27,9 @@ public class DbContactDAO {
     public final static String CONTACT_LAST_MODIFIED = "last_modified";
     public final static String CONTACT_SERIALIZED_DATA = "serialized_data";
     //(Context context, String name, SQLiteDatabase.CursorFactory factory, int version)
+
     public DbContactDAO(Context context) {
-        childDbHelper = new ChildDbHelper(context,ChildDbHelper.CHILD_DB_NAME,null,ChildDbHelper.CHILD_DB_VERSION);
-        db = childDbHelper.getWritableDatabase();
+        super(context);
     }
 
 
@@ -41,7 +41,7 @@ public class DbContactDAO {
      * @param lastModified
      * @return the upserted id
      */
-    public long upsertDbContact(long id,long phoneId, String name, long lastModified,String serializedData){
+    private long upsert(long id, long phoneId, String name, long lastModified, String serializedData){
         ContentValues values = new ContentValues();
 
         if(id == 0) {
@@ -60,13 +60,13 @@ public class DbContactDAO {
         }
     }
 
-    public long upsertDbContact(DbContact dbContact) {
+    public long upsert(DbContact dbContact) {
         long id = dbContact.getId();
         long phoneId = dbContact.getPhoneId();
         String name = dbContact.getName();
         long lastModified = dbContact.getLastModified();
         String serializedData = dbContact.getSerializedData();
-        return upsertDbContact(id,phoneId,name,lastModified,serializedData);
+        return upsert(id,phoneId,name,lastModified,serializedData);
     }
 
     public boolean emptyContactTable() {
@@ -86,7 +86,7 @@ public class DbContactDAO {
 
     public ConcurrentHashMap getDbContactHM() {
         Cursor cursor = getDbContactCursor();
-        String columnAR [] = cursor.getColumnNames();
+        //String columnAR [] = cursor.getColumnNames();
         /*for (String column: columnAR) {
             System.out.println("column = " + column);
         }*/
@@ -94,13 +94,8 @@ public class DbContactDAO {
         DbContact dbContact;
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                int id = cursor.getInt(cursor.getColumnIndex(CONTACT_ID));
-                int phoneId = cursor.getInt(cursor.getColumnIndex(CONTACT_PHONE_ID));
-                String name = cursor.getString(cursor.getColumnIndex(CONTACT_NAME));
-                long lastModified = cursor.getLong(cursor.getColumnIndex(CONTACT_LAST_MODIFIED));
-                String serializedData = cursor.getString(cursor.getColumnIndex(CONTACT_SERIALIZED_DATA));
-                dbContact = new DbContact(id,phoneId,name,lastModified,serializedData);
-                dbContactHM.put(phoneId,dbContact);
+                dbContact = new DbContact(cursor);
+                dbContactHM.put(dbContact.getPhoneId(),dbContact);
             }
             if(!cursor.isClosed()) {
                 cursor.close();
@@ -118,7 +113,25 @@ public class DbContactDAO {
         db.execSQL(deleteQuery);
     }
 
+    public DbContact getDbContactFromPhoneId (int phoneId) {
+        String query = "SELECT _id,phone_id,name,last_modified FROM " + CONTACT_TABLE + " WHERE " +CONTACT_PHONE_ID + "=" + phoneId;
+        DbContact dbContact = null;
+        Cursor cursor = db.rawQuery(query,null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                 dbContact = new DbContact(cursor);
+            }if(!cursor.isClosed()) {
+                cursor.close();
+            }
+        } else {
+            MyLog.i(this,"WARNING: CURSOR IS NULL");
+        }
+        return dbContact;
+    }
 
+    public static void main (String args[]) {
+
+    }
 
 
 }

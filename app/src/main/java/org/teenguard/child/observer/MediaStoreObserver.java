@@ -81,7 +81,7 @@ public class MediaStoreObserver extends ContentObserver {
         MyLog.i(this,"added media counter= " + counter);
         for (DeviceMedia deviceMedia:addedDeviceMediaAL) {//build dbMedias from deviceMedia
             DbMedia dbMedia = new DbMedia(0,deviceMedia.getPhoneId());
-            long idInserted = dbMediaDAO.upsertDbMedia(dbMedia);//is insert
+            long idInserted = dbMediaDAO.upsert(dbMedia);//is insert
             MyLog.i(this,"inserted into db _id: " + idInserted);
             deviceMedia.dump();
             MyLog.i(this,"SEND NEW USER MEDIA TO SERVER");
@@ -117,7 +117,7 @@ public class MediaStoreObserver extends ContentObserver {
         for (DeviceMedia deviceMedia : deviceMediaHM.values()) {
             MyLog.i(this,"inserting deviceMedia = " + " phoneId = " + deviceMedia.getPhoneId());
             DbMedia dbMedia = new DbMedia(0,deviceMedia.getPhoneId());
-            long idInserted = dbMediaDAO.upsertDbMedia(dbMedia);
+            long idInserted = dbMediaDAO.upsert(dbMedia);
             System.out.println("_idInserted = " + idInserted);
             nInserted ++;
         }

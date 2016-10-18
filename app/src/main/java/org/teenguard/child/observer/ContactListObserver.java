@@ -85,7 +85,7 @@ public class ContactListObserver extends ContentObserver {
         MyLog.i(this,"added contact counter= " + counter);
         for (DeviceContact deviceContact:addedDeviceContactAL) {//build dbContacts from deviceContact
             DbContact dbContact = new DbContact(0,deviceContact.getPhoneId(),deviceContact.getName(),deviceContact.getLastModified(),deviceContact.buildSerializedDataString());
-            long idInserted = DbContactDAO.upsertDbContact(dbContact);//is insert
+            long idInserted = DbContactDAO.upsert(dbContact);//is insert
             MyLog.i(this,"inserted into db _id: " + idInserted);
             deviceContact.dump();
             MyLog.i(this,"SEND NEW USER CONTACT TO SERVER");
@@ -137,7 +137,7 @@ public class ContactListObserver extends ContentObserver {
         MyLog.i(this, "modified contact counter= " + counter);
         for (DbContact dbContact : modifiedDbContactAL) {
             dbContact.dump();
-            DbContactDAO.upsertDbContact(dbContact);
+            DbContactDAO.upsert(dbContact);
             MyLog.i(this, "modified contact into db");
             MyLog.i(this, "SEND MODIFIED CONTACT TO SERVER");
         }
@@ -153,7 +153,7 @@ public class ContactListObserver extends ContentObserver {
             for (DeviceContact deviceContact : deviceContactHM.values()) {
                 MyLog.i(this,"inserting deviceContact = " + deviceContact.getName() + " phoneId = " + deviceContact.getPhoneId());
                 DbContact dbContact = new DbContact(0,deviceContact.getPhoneId(),deviceContact.getName(),deviceContact.getLastModified(),deviceContact.buildSerializedDataString());
-                long idInserted = DbContactDAO.upsertDbContact(dbContact);
+                long idInserted = DbContactDAO.upsert(dbContact);
                 System.out.println("_idInserted = " + idInserted);
                 nInserted ++;
             }

@@ -3,7 +3,6 @@ package org.teenguard.child.dbdao;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
 import org.teenguard.child.dbdatatype.DbMedia;
 import org.teenguard.child.utils.MyLog;
@@ -14,9 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by chris on 16/10/16.
  */
 
-public class DbMediaDAO {
-    private SQLiteDatabase db;
-    private ChildDbHelper childDbHelper;
+public class DbMediaDAO extends GenericDbDAO{
+
 
     //contact table
     public final static String MEDIA_TABLE = "media";
@@ -24,11 +22,10 @@ public class DbMediaDAO {
     public final static String MEDIA_PHONE_ID = "phone_id"; // internal device id for contacts
 
     public DbMediaDAO(Context context) {
-        childDbHelper = new ChildDbHelper(context, ChildDbHelper.CHILD_DB_NAME, null, ChildDbHelper.CHILD_DB_VERSION);
-        db = childDbHelper.getWritableDatabase();
+        super(context);
     }
 
-    public long upsertDbMedia(long id, long phoneId) {
+    public long upsert(long id, long phoneId) {
         ContentValues values = new ContentValues();
 
         if (id == 0) {
@@ -41,11 +38,11 @@ public class DbMediaDAO {
         }
     }
 
-    public long upsertDbMedia(DbMedia dbMedia) {
+    public long upsert(DbMedia dbMedia) {
         long id = dbMedia.getId();
         long phoneId = dbMedia.getPhoneId();
 
-        return upsertDbMedia(id, phoneId);
+        return upsert(id, phoneId);
     }
 
     public boolean emptyMediaTable() {
