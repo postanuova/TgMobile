@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 
 import org.teenguard.child.dao.DeviceContactDAO;
+import org.teenguard.child.utils.JSon;
 
 import java.util.ArrayList;
 
@@ -53,6 +54,11 @@ public class DeviceContact {
             serializedData.append(number + ";");
         }
         return serializedData.toString();
+    }
+
+    public String getJson() {
+        JSon json = new JSon();
+        return json.toString();
     }
 
   /*  public int getId() {

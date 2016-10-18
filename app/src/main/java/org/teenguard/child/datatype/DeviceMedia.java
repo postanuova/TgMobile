@@ -22,7 +22,7 @@ public class DeviceMedia {
     }
 
     public void dump() {
-        System.out.println("-------------DEVICE CONTACT DUMP-------------");
+        System.out.println("-------------DEVICE MEDIA DUMP-------------");
         //  System.out.println("id = " + id);
         System.out.println("phoneId = " + phoneId);
         System.out.println("dateTaken = " + dateTaken);

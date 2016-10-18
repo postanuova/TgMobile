@@ -14,39 +14,42 @@ public class ChildDbHelper extends SQLiteOpenHelper {
 
 
     public static final String CHILD_DB_NAME = "contactDB";
-    public static final int CHILD_DB_VERSION = 11;
-
-
-    private static final String  CREATE_TABLE_MEDIA=
-            "CREATE TABLE media (" +
-                "_id integer primary key autoincrement," + // In SQLite a column declared INTEGER PRIMARY KEY will autoincrement by itself (int is not ok)
-                "phone_id int unique not null" +
-            ");";
+    public static final int CHILD_DB_VERSION = 12;
 
     private static final String  CREATE_TABLE_CONTACT=
             "CREATE TABLE contact (" +
-                "_id integer primary key autoincrement," + // In SQLite a column declared INTEGER PRIMARY KEY will autoincrement by itself (int is not ok)
-                "phone_id int unique not null," +
-                "name varchar(255)," +
-                "last_modified int," +
-                "serialized_data" +
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT," + // In SQLite a column declared INTEGER PRIMARY KEY will autoincrement by itself (int is not ok)
+                    "phone_id INTEGER UNIQUE NOT NULL," +
+                    "name TEXT," +
+                    "last_modified INTEGER," +
+                    "serialized_data TEXT" +
+            ");";
+    private static final String CREATE_TABLE_CONTACT_EVENT =
+            "CREATE TABLE contact_event (" +
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "cs_id INTEGER," +
+                    "event_type INTEGER," +
+                    "serialized_data TEXT"+
             ");";
 
-    /*
-+---------------+--------------+------+-----+---------+----------------+
-| Field         | Type         | Null | Key | Default | Extra          |
-+---------------+--------------+------+-----+---------+----------------+
-| _id            | int(11)      | NO   | PRI | NULL    | auto_increment |
-| phone_id         | int(11)      | NO   | UNI | NULL    |                |
-| name          | varchar(255) | YES  |     | NULL    |                |
-| last_modified | int(11)      | YES  |     | NULL    |                |
-+---------------+--------------+------+-----+---------+----------------+
-            */
+    private static final String  CREATE_TABLE_MEDIA=
+            "CREATE TABLE media (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," + // In SQLite a column declared INTEGER PRIMARY KEY will autoincrement by itself (int is not ok)
+                "phone_id INTEGER UNIQUE NOT NULL" +
+            ");";
+
+    private static final String CREATE_TABLE_MEDIA_EVENT =
+            "CREATE TABLE media_event (" +
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "cs_id INTEGER," +
+                    "event_type INTEGER," +
+                    "serialized_data TEXT"+
+            ");";
 
     private static final String DROP_TABLE_CONTACT = "DROP TABLE IF EXISTS contact;";
-    private static final String DROP_TABLE_MEDIA =   "DROP TABLE IF EXISTS media;";
-
-
+    private static final String DROP_TABLE_CONTACT_EVENT = "DROP TABLE IF EXISTS contact_event;";
+    private static final String DROP_TABLE_MEDIA = "DROP TABLE IF EXISTS media;";
+    private static final String DROP_TABLE_MEDIA_EVENT = "DROP TABLE IF EXISTS media_event;";
 
     public ChildDbHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -56,7 +59,9 @@ public class ChildDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         MyLog.i(this,"creating DB:");
         db.execSQL(CREATE_TABLE_CONTACT);
+        db.execSQL(CREATE_TABLE_CONTACT_EVENT);
         db.execSQL(CREATE_TABLE_MEDIA);
+        db.execSQL(CREATE_TABLE_MEDIA_EVENT);
         MyLog.i(this, "created db:"  + CHILD_DB_NAME + " version " + CHILD_DB_VERSION);
     }
 
@@ -65,24 +70,24 @@ public class ChildDbHelper extends SQLiteOpenHelper {
         MyLog.i(this, "Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data");
         //throw new UnsupportedOperationException("onUpgrade DB not yet implemented");
         db.execSQL(DROP_TABLE_CONTACT);
+        db.execSQL(DROP_TABLE_CONTACT_EVENT);
         db.execSQL(DROP_TABLE_MEDIA);
+        db.execSQL(DROP_TABLE_MEDIA_EVENT);
         onCreate(db);
     }
 
     public void resetDatabase(SQLiteDatabase db) {
         MyLog.i(this, "destroyDatabase");
-        //throw new UnsupportedOperationException("onUpgrade DB not yet implemented");
         db.execSQL(DROP_TABLE_CONTACT);
+        db.execSQL(DROP_TABLE_CONTACT_EVENT);
         db.execSQL(DROP_TABLE_MEDIA);
+        db.execSQL(DROP_TABLE_MEDIA_EVENT);
         onCreate(db);
     }
-
 
     public static void main(String args[]) {
         System.out.println(CREATE_TABLE_CONTACT);
         System.out.println(CREATE_TABLE_MEDIA);
     }
-
-
 
 }
