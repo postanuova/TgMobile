@@ -14,6 +14,7 @@ import org.teenguard.child.dbdatatype.DbContactEvent;
 import org.teenguard.child.utils.JSon;
 import org.teenguard.child.utils.MyApp;
 import org.teenguard.child.utils.MyLog;
+import org.teenguard.child.utils.ServerUtils;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -82,7 +83,7 @@ public class ContactListObserver extends ContentObserver {
     }
 
     private void manageContactEventTable() {
-        Log.i("ContactListObserver.", "manageContactEventTable : CHECK ON contact_event: if contact_event.count > 0 SEND CONTACT_EVENT TO SERVER: NOT YET IMPLEMENTED ");
+        Log.i("ContactListObserver.", "manageContactEventTable : CHECK ON contact_event: if contact_event.count > 0 SEND PREVIOUS CONTACT_EVENT TABLE CONTENT TO SERVER: NOT YET IMPLEMENTED ");
     }
 
     private void manageContactAdded() {
@@ -118,9 +119,11 @@ public class ContactListObserver extends ContentObserver {
                 dbContactEvent.setId(contactEventId);
                 MyLog.i(this, "inserted into contact_event._id  " + dbContactEvent.getId());
                 dbContactDAO.setTransactionSuccessful();    //>>>>>>>>>>>>>>>>COMMIT TRANSACTION>>>>>>>>>>>>>>>>>>
-                MyLog.i(this,"SENDING NEW USER CONTACT TO SERVER");
-                ///////////////////////////////////////////////
 
+                ///////////////////////////////////////////////
+                MyLog.i(this,"SENDING NEW USER CONTACT TO SERVER");
+                ServerUtils.sendNewContactEventToServer(dbContactEvent);
+                MyLog.i(this,"SENT NEW USER CONTACT TO SERVER");
                 //////////////////////////////////////////////
             } catch (Exception e) {
                 e.printStackTrace();

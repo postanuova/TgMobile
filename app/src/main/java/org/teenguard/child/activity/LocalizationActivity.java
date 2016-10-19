@@ -1,6 +1,5 @@
 package org.teenguard.child.activity;
 
-
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -23,6 +22,9 @@ import org.teenguard.child.R;
 
 import java.util.Date;
 
+////////////////////////////////////////////////////////
+//https://developer.android.com/training/building-location.html
+//https://developer.android.com/training/location/geofencing.html <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //
 public class LocalizationActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, ConnectionCallbacks, LocationListener {
 
