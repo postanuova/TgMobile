@@ -6,8 +6,4 @@ package org.teenguard.child.utils;
 
 public final class Constant {
 
-
-
-
-
 }

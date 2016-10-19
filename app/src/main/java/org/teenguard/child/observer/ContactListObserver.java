@@ -35,10 +35,12 @@ public class ContactListObserver extends ContentObserver {
         super(handler);
         dbContactHM = dbContactDAO.getDbContactHM();
         deviceContactHM = DeviceContactDAO.getDeviceContactHM();
+        manageContactEventTable();
         if(dbContactHM.size() == 0) {
             MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user contact list");
             insertDeviceContactHMIntoDB();
         }
+
     }
 
     @Override
@@ -79,12 +81,15 @@ public class ContactListObserver extends ContentObserver {
         }
     }
 
-
+    private void manageContactEventTable() {
+        Log.i("ContactListObserver.", "manageContactEventTable : CHECK ON contact_event: if contact_event.count > 0 SEND CONTACT_EVENT TO SERVER: NOT YET IMPLEMENTED ");
+    }
 
     private void manageContactAdded() {
         //per ogni deviceContactHM.phoneId (key) che non esiste in dbContactHM aggiungilo al db alla coda addedContactAL dei contatti da aggiungere
         int counter = 0;
         ArrayList <DeviceContact> addedDeviceContactAL = new ArrayList();
+        ArrayList <DbContactEvent> dbAddContactEventAL = new ArrayList();
         for (int key : deviceContactHM.keySet()) {
             if(!dbContactHM.containsKey(key)) {
                 MyLog.i(this,"manageContactAdded: added key (phoneId)= " + key);
@@ -110,9 +115,13 @@ public class ContactListObserver extends ContentObserver {
                 DbContactEvent dbContactEvent = new DbContactEvent(0, deviceContact.getPhoneId(), DbContactEvent.CONTACT_EVENT_ADD, jSon.getJSonString());
                 MyLog.i(this, "inserting into contact_event json " + jSon.getJSonString());
                 long contactEventId = dbContactEventDAO.upsert(dbContactEvent);
-                MyLog.i(this, "inserted into contact_event._id  " + contactEventId);
+                dbContactEvent.setId(contactEventId);
+                MyLog.i(this, "inserted into contact_event._id  " + dbContactEvent.getId());
                 dbContactDAO.setTransactionSuccessful();    //>>>>>>>>>>>>>>>>COMMIT TRANSACTION>>>>>>>>>>>>>>>>>>
-                MyLog.i(this,"SEND NEW USER CONTACT TO SERVER");
+                MyLog.i(this,"SENDING NEW USER CONTACT TO SERVER");
+                ///////////////////////////////////////////////
+
+                //////////////////////////////////////////////
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -123,6 +132,8 @@ public class ContactListObserver extends ContentObserver {
 
         }
     }
+
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

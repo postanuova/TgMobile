@@ -5,7 +5,7 @@ package org.teenguard.child.dbdatatype;
  */
 
 public class DbMedia {
-    private int id;
+    private long id;
     private int phoneId;
 
 
@@ -20,11 +20,11 @@ public class DbMedia {
         System.out.println("phoneId = " + getPhoneId());
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

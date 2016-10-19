@@ -5,7 +5,7 @@ package org.teenguard.child.dbdatatype;
  */
 
 public class DbContact {
-    private int id;
+    private long id;
     private int phoneId;
     private String name;
     private long lastModified;
@@ -37,11 +37,11 @@ public class DbContact {
         System.out.println("serializedData = " + getSerializedData());
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

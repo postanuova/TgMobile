@@ -9,7 +9,7 @@ public class DbContactEvent {
     public final static int CONTACT_EVENT_MODIFY = 1;
     public final static int CONTACT_EVENT_DELETE = 2;
 
-    private int id; //autoincrement
+    private long id; //autoincrement
     private int csId; //is the phone_id
     private int eventType; //add, modofy, delete
     private String serializedData; //json data
@@ -21,11 +21,11 @@ public class DbContactEvent {
         this.serializedData = serializedData;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
