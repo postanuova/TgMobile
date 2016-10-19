@@ -100,18 +100,17 @@ public class ContactListObserver extends ContentObserver {
             try {
                 long contactId = dbContactDAO.upsert(dbContact);//insert into db.contact
                 deviceContact.dump();
-                MyLog.i(this, "inserted into db _id: " + contactId);
+                MyLog.i(this, "inserted into contact _id: " + contactId);
                 JSon jSon = new JSon();
                 jSon.add("id", contactId);
                 jSon.add("date", dbContact.getLastModified());
                 jSon.add("first_name", dbContact.getName());
                 jSon.add("last_name", "");
                 jSon.addArray("phone_numbers", "[" + dbContact.getSerializedData() + "]");
-                MyLog.i(this, jSon.getJSonString());
                 DbContactEvent dbContactEvent = new DbContactEvent(0, deviceContact.getPhoneId(), DbContactEvent.CONTACT_EVENT_ADD, jSon.getJSonString());
-                dbContactEventDAO.upsert(dbContactEvent);
-
+                MyLog.i(this, "inserting into contact_event json " + jSon.getJSonString());
                 long contactEventId = dbContactEventDAO.upsert(dbContactEvent);
+                MyLog.i(this, "inserted into contact_event._id  " + contactEventId);
                 dbContactDAO.setTransactionSuccessful();    //>>>>>>>>>>>>>>>>COMMIT TRANSACTION>>>>>>>>>>>>>>>>>>
                 MyLog.i(this,"SEND NEW USER CONTACT TO SERVER");
             } catch (Exception e) {

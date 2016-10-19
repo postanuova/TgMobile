@@ -8,8 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
  */
 
 public  class GenericDbDAO {
-    public  SQLiteDatabase db;
-    public ChildDbHelper childDbHelper;
+    public static SQLiteDatabase db; //only one instance if not android.database.sqlite.SQLiteDatabaseLockedException: database is locked (code 5)
 
     public GenericDbDAO(Context context) {
         ChildDbHelper childDbHelper = new ChildDbHelper(context, ChildDbHelper.CHILD_DB_NAME, null, ChildDbHelper.CHILD_DB_VERSION);
