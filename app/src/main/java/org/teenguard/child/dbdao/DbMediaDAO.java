@@ -93,4 +93,9 @@ public class DbMediaDAO extends GenericDbDAO{
         db.execSQL(deleteQuery);
     }
 
+    public boolean emptyTable() {
+        db.execSQL("DELETE FROM " +MEDIA_TABLE + ";");
+        return true;
+    }
+
 }

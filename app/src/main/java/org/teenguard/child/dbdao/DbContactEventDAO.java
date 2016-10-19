@@ -54,4 +54,10 @@ public class DbContactEventDAO extends GenericDbDAO {
         db.execSQL(deleteQuery);
     }
 
+
+    public boolean emptyTable() {
+        db.execSQL("DELETE FROM " + CONTACT_EVENT_TABLE + ";");
+        return true;
+    }
+    
 }

@@ -10,7 +10,9 @@ import android.widget.AdapterView;
 
 import org.teenguard.child.R;
 import org.teenguard.child.dbdao.DbContactDAO;
+import org.teenguard.child.dbdao.DbContactEventDAO;
 import org.teenguard.child.dbdao.DbMediaDAO;
+import org.teenguard.child.dbdao.DbMediaEventDAO;
 import org.teenguard.child.utils.MyApp;
 import org.teenguard.child.utils.MyLog;
 
@@ -38,7 +40,9 @@ public class ChildMainActivity extends AppCompatActivity {
             case R.id.item_contacts_cleaner: {
                 Log.i(this.getClass().getName(),"cleaning contact table");
                 DbContactDAO dbContactDAO = new DbContactDAO(MyApp.getContext());
-                dbContactDAO.emptyContactTable();
+                dbContactDAO.emptyTable();
+                DbContactEventDAO dbContactEventDAO = new DbContactEventDAO(MyApp.getContext());
+                dbContactEventDAO.emptyTable();
                 return true;
             }
 
@@ -46,6 +50,8 @@ public class ChildMainActivity extends AppCompatActivity {
                 Log.i(this.getClass().getName(),"cleaning media table");
                 DbMediaDAO dbMediaDAO = new DbMediaDAO(MyApp.getContext());
                 dbMediaDAO.emptyMediaTable();
+                DbMediaEventDAO dbMediaEventDAO = new DbMediaEventDAO(MyApp.getContext());
+                dbMediaEventDAO.emptyTable();
                 return true;
             }
 

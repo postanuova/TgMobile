@@ -33,6 +33,12 @@ public class ContactListObserver extends ContentObserver {
 
     public ContactListObserver(Handler handler) {
         super(handler);
+        dbContactHM = dbContactDAO.getDbContactHM();
+        deviceContactHM = DeviceContactDAO.getDeviceContactHM();
+        if(dbContactHM.size() == 0) {
+            MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user contact list");
+            insertDeviceContactHMIntoDB();
+        }
     }
 
     @Override
@@ -46,13 +52,16 @@ public class ContactListObserver extends ContentObserver {
         MyLog.i(this,"<<<< USER CONTACT LIST CHANGED >>>>");
 
 //load user_contact_list
-        deviceContactHM = DeviceContactDAO.getDeviceContactHM();
         dbContactHM = dbContactDAO.getDbContactHM();
-        MyLog.i(this,"deviceContactHM.size = " + deviceContactHM.size() + " dbContactHM.size = " + dbContactHM.size());
+        deviceContactHM = DeviceContactDAO.getDeviceContactHM();
+
+        MyLog.i(this," deviceContactHM.size = " + deviceContactHM.size() + " dbContactHM.size = " + dbContactHM.size());
+
         if(dbContactHM.size() == 0) {
-            MyLog.i(this,"dbHM =0 --> empty DB: populate DB with user contact list");
-            manageEmptyDB();
+            MyLog.i(this,"dbHM =0 --> onChange empty DB: populate DB with user contact list");
+            insertDeviceContactHMIntoDB();
         }
+
         if((dbContactHM.size() >0) && (deviceContactHM.size() == dbContactHM.size())) {
             MyLog.i(this,"HM sizes are the same: contact modified");
             manageContactModified();
@@ -70,13 +79,7 @@ public class ContactListObserver extends ContentObserver {
         }
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private void manageEmptyDB() {
-        insertDeviceContactHMIntoDB();
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private void manageContactAdded() {
         //per ogni deviceContactHM.phoneId (key) che non esiste in dbContactHM aggiungilo al db alla coda addedContactAL dei contatti da aggiungere
@@ -93,23 +96,31 @@ public class ContactListObserver extends ContentObserver {
         DbContactDAO dbContactDAO = new DbContactDAO(MyApp.getContext());
         for (DeviceContact deviceContact:addedDeviceContactAL) {//build dbContacts from deviceContact
             DbContact dbContact = new DbContact(0,deviceContact.getPhoneId(),deviceContact.getName(),deviceContact.getLastModified(),deviceContact.buildSerializedDataString());
-           dbContactDAO.db.beginTransaction(); //>>>>>>>>>>>>>>>>START TRANSACTION>>>>>>>>>>>>>>>>>>
-            deviceContact.dump();
-            long contactId = dbContactDAO.upsert(dbContact);//insert into db.contact
-            MyLog.i(this,"inserted into db _id: " + contactId);
-            JSon jSon = new JSon();
-            jSon.add("id", dbContact.getId());
-            jSon.add("date",dbContact.getLastModified());
-            jSon.add("first_name",dbContact.getName());
-            jSon.add("last_name","");
-            jSon.addArray("phone_numbers","[" + dbContact.getSerializedData() + "]");
-            MyLog.i(this,jSon.getJSonString());
-            DbContactEvent dbContactEvent = new DbContactEvent(0,deviceContact.getPhoneId(),DbContactEvent.CONTACT_EVENT_ADD,jSon.getJSonString());
-            dbContactEventDAO.upsert(dbContactEvent);
+            dbContactDAO.beginTransaction(); //>>>>>>>>>>>>>>>>START TRANSACTION>>>>>>>>>>>>>>>>>>
+            try {
+                long contactId = dbContactDAO.upsert(dbContact);//insert into db.contact
+                deviceContact.dump();
+                MyLog.i(this, "inserted into db _id: " + contactId);
+                JSon jSon = new JSon();
+                jSon.add("id", contactId);
+                jSon.add("date", dbContact.getLastModified());
+                jSon.add("first_name", dbContact.getName());
+                jSon.add("last_name", "");
+                jSon.addArray("phone_numbers", "[" + dbContact.getSerializedData() + "]");
+                MyLog.i(this, jSon.getJSonString());
+                DbContactEvent dbContactEvent = new DbContactEvent(0, deviceContact.getPhoneId(), DbContactEvent.CONTACT_EVENT_ADD, jSon.getJSonString());
+                dbContactEventDAO.upsert(dbContactEvent);
 
-            long contactEventId = dbContactEventDAO.upsert(dbContactEvent);
-            MyLog.i(this,"SEND NEW USER CONTACT TO SERVER");
-            dbContactDAO.db.endTransaction(); //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
+                long contactEventId = dbContactEventDAO.upsert(dbContactEvent);
+                dbContactDAO.setTransactionSuccessful();    //>>>>>>>>>>>>>>>>COMMIT TRANSACTION>>>>>>>>>>>>>>>>>>
+                MyLog.i(this,"SEND NEW USER CONTACT TO SERVER");
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                dbContactDAO.endTransaction(); //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
+            }
+
+
 
         }
     }

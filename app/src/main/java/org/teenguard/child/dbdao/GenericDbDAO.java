@@ -15,4 +15,16 @@ public  class GenericDbDAO {
         ChildDbHelper childDbHelper = new ChildDbHelper(context, ChildDbHelper.CHILD_DB_NAME, null, ChildDbHelper.CHILD_DB_VERSION);
         db = childDbHelper.getWritableDatabase();
     }
+
+    public void beginTransaction() {
+        db.beginTransaction();
+    }
+
+    public void endTransaction(){
+        db.endTransaction();
+    }
+
+    public void setTransactionSuccessful () {
+        db.setTransactionSuccessful();
+    }
 }
