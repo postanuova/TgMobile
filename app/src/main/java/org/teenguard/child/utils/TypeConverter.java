@@ -1,5 +1,9 @@
 package org.teenguard.child.utils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -60,6 +64,35 @@ public class TypeConverter {
     public static void main(String args[]) throws Exception{
         System.out.println(byteARToHex("ciao".getBytes()));
         System.out.println(computeHash("ciao"));
+    }
+
+    public static String inputStreamToString(InputStream inputStream) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            if(inputStream != null) {
+                BufferedReader br = null;
+                String line;
+                try {
+                    br = new BufferedReader(new InputStreamReader(inputStream));
+                    while ((line = br.readLine()) != null) {
+                        sb.append(line);
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (br != null) {
+                        br.close();
+                    }
+                }
+                return sb.toString();
+            } else {
+                return "empty InputStream";
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "empty InputStream";
     }
 
 }
