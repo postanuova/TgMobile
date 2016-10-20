@@ -123,8 +123,10 @@ public class ContactListObserver extends ContentObserver {
                 ///////////////////////////////////////////////
                 MyLog.i(this,"SENDING NEW USER CONTACT TO SERVER");
                 //VolleyServerUtils.sendNewContactEventToServer(dbContactEvent);
-                MyConnectionUtils.doApachePost(dbContactEvent.getSerializedData());
-                MyLog.i(this,"SENT NEW USER CONTACT TO SERVER");
+                //MyConnectionUtils.doApachePost(dbContactEvent.getSerializedData());
+                MyConnectionUtils.doAndroidPost(dbContactEvent.getSerializedData());
+
+                //MyLog.i(this,"SENT NEW USER CONTACT TO SERVER");
                 //////////////////////////////////////////////
             } catch (Exception e) {
                 e.printStackTrace();

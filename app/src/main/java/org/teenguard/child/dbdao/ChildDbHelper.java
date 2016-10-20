@@ -10,6 +10,8 @@ import org.teenguard.child.utils.MyLog;
  * Created by chris on 11/10/16.
  */
 
+// W/SQLiteConnectionPool: A SQLiteConnection object for database '/data/data/org.teenguard.localizationappnew/databases/contactDB' was leaked!  Please fix your application to end transactions in progress properly and to close the database when it is no longer needed.
+
 public class ChildDbHelper extends SQLiteOpenHelper {
 
 
