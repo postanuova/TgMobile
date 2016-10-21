@@ -14,8 +14,8 @@ import org.teenguard.child.dbdatatype.DbContact;
 import org.teenguard.child.dbdatatype.DbContactEvent;
 import org.teenguard.child.utils.JSon;
 import org.teenguard.child.utils.MyApp;
-import org.teenguard.child.utils.MyConnectionUtils;
 import org.teenguard.child.utils.MyLog;
+import org.teenguard.child.utils.ServerApiUtils;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -125,7 +125,7 @@ public class ContactListObserver extends ContentObserver {
                 MyLog.i(this,"SENDING NEW USER CONTACT TO SERVER");
                 /*VolleyConnectionUtils volleyConnectionUtils = new VolleyConnectionUtils();
                 volleyConnectionUtils.addContactToServer(dbContactEvent);*/
-                MyServerResponse myServerResponse = MyConnectionUtils.doAndroidPost(dbContact.getSerializedData(),"POST");
+                MyServerResponse myServerResponse = ServerApiUtils.addContactToServer(dbContactEvent);
                 myServerResponse.dump();
                 MyLog.i(this,"SENT NEW USER CONTACT TO SERVER");
                 //////////////////////////////////////////////

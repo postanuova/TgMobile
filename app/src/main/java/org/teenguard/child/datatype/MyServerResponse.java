@@ -27,12 +27,12 @@ public class MyServerResponse {
 
     public void dump() {
         System.out.println("------ MyServerResponse ------");
-        System.out.println("responseNumber = " + responseNumber);
-        System.out.println("responseCode = " + responseCode);
         System.out.println("requestMethod = " + requestMethod);
         System.out.println("requestUrl = " + getRequestUrl());
         System.out.println("requestBody = " + getRequestBody());
         System.out.println("requestMethod = " + requestMethod);
+        System.out.println("responseNumber = " + responseNumber);
+        System.out.println("responseCode = " + responseCode);
         System.out.println("responseBody = " + responseBody);
         System.out.println("responseError = " + responseErrorBody);
     }
