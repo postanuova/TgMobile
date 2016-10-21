@@ -210,7 +210,9 @@ public class ContactListObserver extends ContentObserver {
                 dbContactDAO.setTransactionSuccessful();    //>>>>>>>>>>>>>>>>COMMIT TRANSACTION>>>>>>>>>>>>>>>>>>
                 dbContactDAO.endTransaction();
                 MyLog.i(this,"SEND REMOVED CONTACT TO SERVER");
-                MyServerResponse myServerResponse = ServerApiUtils.deleteContactFromServer(dbContactEvent);
+                MyServerResponse myServerResponse = new MyServerResponse();
+                myServerResponse = ServerApiUtils.deleteContactFromServer(String.valueOf(dbContactEvent.getCsId()));
+                //VolleyConnectionUtils.doRequest(Request.Method.POST,"http://92.222.83.28/api.php","[" + dbContactEvent.getSerializedData() + "]");
                 myServerResponse.dump();
                 if(myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
                     MyLog.i(this,"REMOVED CONTACT FROM SERVER");

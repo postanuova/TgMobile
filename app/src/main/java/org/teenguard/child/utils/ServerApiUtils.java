@@ -38,12 +38,12 @@ public class ServerApiUtils {
         return addContactToServer(dbContactEvent);
     }
 
-    public static MyServerResponse deleteContactFromServer(DbContactEvent dbContactEvent) {
+    public static MyServerResponse deleteContactFromServer(String csIdList) {
         MyServerResponse myServerResponse = new MyServerResponse();
-        Log.i("ServerUtils", " sending to server contactId: " + dbContactEvent.getId() + " data:" + dbContactEvent.getSerializedData());
+        Log.i("ServerUtils"," data:" + csIdList);
         try{
-            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_REMOVE_CONTACTS_URL);
-            myServerResponse = MyConnectionUtils.doAndroidRequest("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,"[" + dbContactEvent.getCsId() + "]");
+            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_REMOVE_CONTACTS_URL + "/" +csIdList);
+            myServerResponse = MyConnectionUtils.doAndroidRequest("DELETE",url ,APPLICATION_SERVER_MIMETYPE_JSON,"");
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         }

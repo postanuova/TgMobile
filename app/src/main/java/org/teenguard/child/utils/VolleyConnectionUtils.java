@@ -32,11 +32,11 @@ public class VolleyConnectionUtils {
 
     public static int counter = 0;
 
-    public void addContactToServer(DbContactEvent dbContactEvent) {
+    public static void addContactToServer(DbContactEvent dbContactEvent) {
         Log.i("ServerUtils", " sending to server contactId: " + dbContactEvent.getId() + " data:" + dbContactEvent.getSerializedData());
         String url = APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_ADD_CONTACTS_URL;//+ "[" + dbContactEvent.getSerializedData() + "]";
         Log.i("ServerUtils", "request " + dbContactEvent.getId() + " data:" + dbContactEvent.getSerializedData());
-        doRequest(Request.Method.POST,url,"[" + dbContactEvent.getSerializedData() + "]");
+        doRequest(Request.Method.DELETE,url,"[" + dbContactEvent.getSerializedData() + "]");
     }
 
    /* public static MyServerResponse updateContactIntoServer(DbContactEvent dbContactEvent) {
@@ -55,7 +55,7 @@ public class VolleyConnectionUtils {
 
 
 
-    public  void doRequest(int method, String url, final String httpPostBody) {
+    public static void doRequest(int method, String url, final String httpPostBody) {
         final MyServerResponse myServerResponse = new MyServerResponse();
         RequestQueue queue = Volley.newRequestQueue(MyApp.getContext());
         StringRequest stringRequest = new StringRequest(method, url, new Response.Listener<String>() {

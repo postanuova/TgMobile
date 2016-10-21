@@ -35,21 +35,23 @@ public class MyConnectionUtils {
             connection.setRequestProperty("Content-Type", contentType);
             connection.setUseCaches(false);
             connection.setDoInput(true);
-            connection.setDoOutput(true);
+
             ////////////
             if(requestMethod.equalsIgnoreCase("DELETE")) {
                 System.out.println("overriding RequestProperty for DELETE");
                 connection.setRequestProperty("X-HTTP-Method-Override", "DELETE");
-
             }
                 ///////
             //connection.setRequestProperty("Content-Length", "" + data);
             //connection.setRequestProperty("Content-Language", "en-US");
             //Send request
-            DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-            wr.writeBytes(data);
-            wr.flush();
-            wr.close();
+            if(requestMethod.equalsIgnoreCase("POST")) {
+                connection.setDoOutput(true);
+                DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+                wr.writeBytes(data);
+                wr.flush();
+                wr.close();
+            }
             //Get Response
             System.out.println("connection.getResponseCode() = " + connection.getResponseCode());
             myServerResponse.setResponseCode(connection.getResponseCode());
