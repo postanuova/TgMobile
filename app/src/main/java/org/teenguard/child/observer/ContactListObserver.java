@@ -31,6 +31,9 @@ public class ContactListObserver extends ContentObserver {
     ConcurrentHashMap<Integer,DbContact> dbContactHM = new ConcurrentHashMap();
 
 
+
+
+
     public ContactListObserver(Handler handler) {
         super(handler);
         dbContactHM = dbContactDAO.getDbContactHM();
@@ -40,7 +43,45 @@ public class ContactListObserver extends ContentObserver {
             MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user contact list");
             insertDeviceContactHMIntoDB();
         }
+        MyLog.i(this,"invoking on change ContactObserver startup");
+        onChange(false);
+        MyLog.i(this,"flushing contact event table");
+        flushContactEventTable();
+    }
 
+
+    public void flushContactEventTable() {
+        DbContactEventDAO dbContactEventDAO = new DbContactEventDAO();
+        ArrayList<DbContactEvent> dbContactEventAL = dbContactEventDAO.getList();
+        StringBuilder addEventSB = new StringBuilder();
+        StringBuilder updateEventSB = new StringBuilder();
+        StringBuilder deleteEventSB = new StringBuilder();
+        for (DbContactEvent dbContactEvent : dbContactEventAL) {
+            dbContactEvent.dump();
+            switch(dbContactEvent.getEventType()) {
+                case DbContactEvent.CONTACT_EVENT_ADD: {
+                    addEventSB.append(dbContactEvent.getSerializedData() + ",");
+                    break;
+                }
+                case DbContactEvent.CONTACT_EVENT_MODIFY: {
+                    updateEventSB.append(dbContactEvent.getSerializedData() + ",");
+                    break;
+                }
+                case DbContactEvent.CONTACT_EVENT_DELETE: {
+                    deleteEventSB.append("\"" + dbContactEvent.getCsId() + "\"" + ",");
+                    break;
+                }
+            }
+        }//fine for
+        String addDataBulkSTR = addEventSB.toString();
+        if(addDataBulkSTR.endsWith(",")) addDataBulkSTR = addDataBulkSTR.substring(0,addDataBulkSTR.length()-1);
+        addDataBulkSTR = "[" + addDataBulkSTR + "]";
+        String updateEventSTR = updateEventSB.toString();
+        if(updateEventSTR.endsWith(",")) updateEventSTR = updateEventSTR.substring(0,updateEventSTR.length()-1);
+        updateEventSTR = "[" + addDataBulkSTR + "]";
+        String deleteDataBulkSTR = deleteEventSB.toString();
+        if(deleteDataBulkSTR.endsWith(",")) deleteDataBulkSTR = deleteDataBulkSTR.substring(0,deleteDataBulkSTR.length()-1);
+        deleteDataBulkSTR = "[" + deleteDataBulkSTR + "]";
     }
 
     @Override
@@ -51,6 +92,7 @@ public class ContactListObserver extends ContentObserver {
 
     @Override
     public void onChange(boolean selfChange, Uri uri) {
+        System.out.println("selfChange = " + selfChange);
         MyLog.i(this,"<<<< USER CONTACT LIST CHANGED >>>>");
 
 //load user_contact_list

@@ -104,7 +104,7 @@ public class DbContactDAO extends GenericDbDAO{
                 dbContact = new DbContact(id, phoneId, name, lastModified, serializedData);
                 dbContactHM.put(dbContact.getPhoneId(),dbContact);
             }
-            MyLog.i(this,"< putCounter " + putCounter);
+            MyLog.i(this,"putCounter " + putCounter);
             if(!cursor.isClosed()) {
                 cursor.close();
             }

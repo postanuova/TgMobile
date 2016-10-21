@@ -17,13 +17,6 @@ useLibrary 'org.apache.http.legacy'
 
 public class MyConnectionUtils {
 
-
-
-
-
-
-
-
     public static MyServerResponse doAndroidRequest(String requestMethod,URL url, String contentType,  String data) {
         MyServerResponse myServerResponse = new MyServerResponse();
         HttpURLConnection connection = null;
@@ -37,7 +30,7 @@ public class MyConnectionUtils {
             connection.setDoInput(true);
 
             ////////////
-            if(requestMethod.equalsIgnoreCase("DELETE")) {
+            if(requestMethod.equalsIgnoreCase("DELETE")) {//java.net.ProtocolException: DELETE does not support writing
                 System.out.println("overriding RequestProperty for DELETE");
                 connection.setRequestProperty("X-HTTP-Method-Override", "DELETE");
             }

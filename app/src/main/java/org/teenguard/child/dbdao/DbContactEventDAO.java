@@ -1,9 +1,12 @@
 package org.teenguard.child.dbdao;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 
 import org.teenguard.child.dbdatatype.DbContactEvent;
 import org.teenguard.child.utils.MyLog;
+
+import java.util.ArrayList;
 
 
 /**
@@ -58,5 +61,46 @@ public class DbContactEventDAO extends GenericDbDAO {
         db.execSQL("DELETE FROM " + CONTACT_EVENT_TABLE + ";");
         return true;
     }
+
+
+    public Cursor getDbContactEventCursor() {
+        //String[] cols = new String[] {CONTACT_EVENT_ID, CONTACT_EVENT_CS_ID, CONTACT_EVENT_TYPE,CONTACT_EVENT_SERIALIZED_DATA};
+        Cursor mCursor = db.rawQuery("SELECT _id,cs_id,event_type,serialized_data FROM contact_event",null);
+        //Cursor mCursor = db.query(true, CONTACT_TABLE,cols,null, null, null, null, null, null);
+        return mCursor; // iterate to get each value.
+    }
+
+    public ArrayList<DbContactEvent> getList() {
+        Cursor cursor = getDbContactEventCursor();
+        //String columnAR [] = cursor.getColumnNames();
+        /*for (String column: columnAR) {
+            System.out.println("column = " + column);
+        }*/
+        ArrayList <DbContactEvent> dbContactEventAL = new <DbContactEvent> ArrayList();
+        DbContactEvent dbContactEvent;
+        if (cursor != null) {
+            MyLog.i(this,"<<<<<<<<<<<<<<<< dbContactEvent cursor.count" + cursor.getCount());
+            int addCounter = 0;
+            while (cursor.moveToNext()) {
+                addCounter++;
+                //dbContact = new DbContact(cursor);
+                int id = cursor.getInt(cursor.getColumnIndex(CONTACT_EVENT_ID));
+                int csId = cursor.getInt(cursor.getColumnIndex(CONTACT_EVENT_CS_ID));
+                int eventType = cursor.getInt(cursor.getColumnIndex(CONTACT_EVENT_TYPE));
+                String serializedData = cursor.getString(cursor.getColumnIndex(CONTACT_EVENT_SERIALIZED_DATA));
+                dbContactEvent = new DbContactEvent(id, csId, eventType,serializedData);
+                dbContactEventAL.add(dbContactEvent);
+            }
+            MyLog.i(this,"putCounter " + addCounter);
+            if(!cursor.isClosed()) {
+                cursor.close();
+            }
+        } else {
+            MyLog.i(this,"WARNING: CURSOR IS NULL");
+        }
+
+        return dbContactEventAL;
+    }
+
     
 }

@@ -60,4 +60,12 @@ public class DbContactEvent {
         DbContactEventDAO dbContactEventDAO = new DbContactEventDAO();
         dbContactEventDAO.delete(this);
     }
+
+    public void dump() {
+        System.out.println("-------------DB CONTACT EVENT DUMP-------------");
+        System.out.println("id = " + id);
+        System.out.println("csId = " + csId);
+        System.out.println("eventType = " + eventType);
+        System.out.println("serializedData = " + serializedData);
+    }
 }
