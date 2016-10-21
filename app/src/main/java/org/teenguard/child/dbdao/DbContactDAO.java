@@ -1,7 +1,6 @@
 package org.teenguard.child.dbdao;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 
 import org.teenguard.child.dbdatatype.DbContact;
@@ -25,9 +24,11 @@ public class DbContactDAO extends GenericDbDAO{
     public final static String CONTACT_SERIALIZED_DATA = "serialized_data";
     //(Context context, String name, SQLiteDatabase.CursorFactory factory, int version)
 
-    public DbContactDAO(Context context) {
-        super(context);
-    }
+    //
+   public DbContactDAO() {
+       super();
+   }
+
 
 
     /**

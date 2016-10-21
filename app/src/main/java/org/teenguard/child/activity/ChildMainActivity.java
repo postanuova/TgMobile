@@ -39,18 +39,18 @@ public class ChildMainActivity extends AppCompatActivity {
 
             case R.id.item_contacts_cleaner: {
                 Log.i(this.getClass().getName(),"cleaning contact table");
-                DbContactDAO dbContactDAO = new DbContactDAO(MyApp.getContext());
+                DbContactDAO dbContactDAO = new DbContactDAO();
                 dbContactDAO.emptyTable();
-                DbContactEventDAO dbContactEventDAO = new DbContactEventDAO(MyApp.getContext());
+                DbContactEventDAO dbContactEventDAO = new DbContactEventDAO();
                 dbContactEventDAO.emptyTable();
                 return true;
             }
 
             case R.id.item_media_cleaner: {
                 Log.i(this.getClass().getName(),"cleaning media table");
-                DbMediaDAO dbMediaDAO = new DbMediaDAO(MyApp.getContext());
+                DbMediaDAO dbMediaDAO = new DbMediaDAO();
                 dbMediaDAO.emptyMediaTable();
-                DbMediaEventDAO dbMediaEventDAO = new DbMediaEventDAO(MyApp.getContext());
+                DbMediaEventDAO dbMediaEventDAO = new DbMediaEventDAO();
                 dbMediaEventDAO.emptyTable();
                 return true;
             }

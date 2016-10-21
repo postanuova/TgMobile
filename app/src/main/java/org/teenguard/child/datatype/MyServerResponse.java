@@ -26,7 +26,7 @@ public class MyServerResponse {
     }
 
     public void dump() {
-        System.out.println("------ MyServerResponse ------");
+        System.out.println("----------- MyServerResponse (" + responseNumber + ") ------------");
         System.out.println("requestMethod = " + requestMethod);
         System.out.println("requestUrl = " + getRequestUrl());
         System.out.println("requestBody = " + getRequestBody());
@@ -35,6 +35,7 @@ public class MyServerResponse {
         System.out.println("responseCode = " + responseCode);
         System.out.println("responseBody = " + responseBody);
         System.out.println("responseError = " + responseErrorBody);
+        System.out.println("---------------------------------------------");
     }
 
     public int getResponseCode() {

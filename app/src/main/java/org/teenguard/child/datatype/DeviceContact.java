@@ -48,13 +48,15 @@ public class DeviceContact {
         }
     }
 
-    public  String buildSerializedDataString() {
+    public  String getNumbersJSonAR() {
         StringBuilder serializedData = new StringBuilder();
         for (String number : getNumberAL()) {
-            serializedData.append("\"" +number +"\"" + ",");
+            number = number.trim();
+            serializedData.append("\"" + number +"\"" + ",");
         }
         String serializedDataSTR = serializedData.toString();
         if(serializedDataSTR.endsWith(",")) serializedDataSTR = serializedDataSTR.substring(0,serializedDataSTR.length()-1);
+        serializedDataSTR = "[" + serializedDataSTR + "]";
         return serializedDataSTR;
     }
 

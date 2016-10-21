@@ -36,6 +36,13 @@ public class MyConnectionUtils {
             connection.setUseCaches(false);
             connection.setDoInput(true);
             connection.setDoOutput(true);
+            ////////////
+            if(requestMethod.equalsIgnoreCase("DELETE")) {
+                System.out.println("overriding RequestProperty for DELETE");
+                connection.setRequestProperty("X-HTTP-Method-Override", "DELETE");
+
+            }
+                ///////
             //connection.setRequestProperty("Content-Length", "" + data);
             //connection.setRequestProperty("Content-Language", "en-US");
             //Send request
@@ -52,7 +59,7 @@ public class MyConnectionUtils {
             if(connection.getInputStream() != null) myServerResponse.setResponseBody(TypeConverter.inputStreamToString(connection.getInputStream()));
             if(connection.getErrorStream() != null) myServerResponse.setResponseError(TypeConverter.inputStreamToString(connection.getErrorStream()));
         } catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
             System.out.println("connection failed ");
             return myServerResponse;
         } finally {

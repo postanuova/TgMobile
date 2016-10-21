@@ -1,7 +1,6 @@
 package org.teenguard.child.dbdao;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 
 import org.teenguard.child.dbdatatype.DbMedia;
@@ -21,8 +20,8 @@ public class DbMediaDAO extends GenericDbDAO{
     public final static String MEDIA_ID = "_id"; //table primary key: IS THE CLIENT-SIDE ID
     public final static String MEDIA_PHONE_ID = "phone_id"; // internal device id for contacts
 
-    public DbMediaDAO(Context context) {
-        super(context);
+    public DbMediaDAO() {
+        super();
     }
 
     public long upsert(long id, long phoneId) {

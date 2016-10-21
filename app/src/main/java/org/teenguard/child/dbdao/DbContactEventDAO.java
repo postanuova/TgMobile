@@ -1,7 +1,6 @@
 package org.teenguard.child.dbdao;
 
 import android.content.ContentValues;
-import android.content.Context;
 
 import org.teenguard.child.dbdatatype.DbContactEvent;
 import org.teenguard.child.utils.MyLog;
@@ -19,8 +18,8 @@ public class DbContactEventDAO extends GenericDbDAO {
     public final static String CONTACT_EVENT_TYPE="event_type";
     public final static String CONTACT_EVENT_SERIALIZED_DATA = "serialized_data";
 
-    public DbContactEventDAO(Context context) {
-        super(context);
+    public DbContactEventDAO() {
+        super();
     }
 
     private long upsert(long id, long csId, int eventType, String serializedData){
@@ -48,7 +47,7 @@ public class DbContactEventDAO extends GenericDbDAO {
         return upsert(id,csId,eventType,serializedData);
     }
 
-    public void remove(DbContactEvent dbContactEvent) {
+    public void delete(DbContactEvent dbContactEvent) {
         String deleteQuery = "DELETE FROM " + CONTACT_EVENT_TABLE + " WHERE " + CONTACT_EVENT_ID + "=" + dbContactEvent.getId() + ";";
         MyLog.i(this,"deleting contactEvent = " + dbContactEvent.getId() + " serialized data " + dbContactEvent.getSerializedData());
         db.execSQL(deleteQuery);

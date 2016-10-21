@@ -1,5 +1,7 @@
 package org.teenguard.child.dbdatatype;
 
+import org.teenguard.child.dbdao.DbContactEventDAO;
+
 /**
  * Created by chris on 18/10/16.
  */
@@ -15,8 +17,8 @@ public class DbContactEvent {
     private String serializedData; //json data
 
     public DbContactEvent(int id, int csId,int eventType, String serializedData) {
-        this.id = id;
-        this.csId = csId;
+        this.id = id;//autoincrement
+        this.csId = csId;//contact.contact_id
         this.eventType = eventType;
         this.serializedData = serializedData;
     }
@@ -52,5 +54,10 @@ public class DbContactEvent {
 
     public void setEventType(int eventType) {
         this.eventType = eventType;
+    }
+
+    public void deleteMe() {
+        DbContactEventDAO dbContactEventDAO = new DbContactEventDAO();
+        dbContactEventDAO.delete(this);
     }
 }

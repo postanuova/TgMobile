@@ -1,7 +1,6 @@
 package org.teenguard.child.dbdao;
 
 import android.content.ContentValues;
-import android.content.Context;
 
 import org.teenguard.child.dbdatatype.DbMediaEvent;
 import org.teenguard.child.utils.MyLog;
@@ -20,8 +19,8 @@ public class DbMediaEventDAO extends GenericDbDAO {
     public final static String MEDIA_EVENT_TYPE = "event_type";
     public final static String MEDIA_EVENT_SERIALIZED_DATA = "serialized_data";
 
-    public DbMediaEventDAO(Context context) {
-        super(context);
+    public DbMediaEventDAO() {
+        super();
     }
 
     private long upsert(long id, long csId, int eventType, String serializedData) {

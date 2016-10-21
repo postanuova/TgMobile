@@ -9,7 +9,6 @@ import org.teenguard.child.dao.DeviceMediaDAO;
 import org.teenguard.child.datatype.DeviceMedia;
 import org.teenguard.child.dbdao.DbMediaDAO;
 import org.teenguard.child.dbdatatype.DbMedia;
-import org.teenguard.child.utils.MyApp;
 import org.teenguard.child.utils.MyLog;
 
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 //http://stackoverflow.com/questions/22012274/contentobserver-onchange-method-gets-called-many-times
 public class MediaStoreObserver extends ContentObserver {
-    DbMediaDAO dbMediaDAO = new DbMediaDAO(MyApp.getContext());
+    DbMediaDAO dbMediaDAO = new DbMediaDAO();
     ConcurrentHashMap<Integer,DeviceMedia> deviceMediaHM = new ConcurrentHashMap();
     ConcurrentHashMap<Integer,DbMedia> dbMediaHM = new ConcurrentHashMap();
 
@@ -39,8 +38,6 @@ public class MediaStoreObserver extends ContentObserver {
     public void onChange(boolean selfChange, Uri uri) {
         MyLog.i(this,"<<<< USER MEDIA LIST CHANGED >>>>");
         super.onChange(selfChange);
-
-
 //load user_media_list
             deviceMediaHM = DeviceMediaDAO.getDeviceMediaHM();
             dbMediaHM = dbMediaDAO.getDbMediaHM();

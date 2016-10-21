@@ -16,7 +16,7 @@ public class ChildDbHelper extends SQLiteOpenHelper {
 
 
     public static final String CHILD_DB_NAME = "contactDB";
-    public static final int CHILD_DB_VERSION = 13;
+    public static final int CHILD_DB_VERSION = 14;
 
     private static final String  CREATE_TABLE_CONTACT=
             "CREATE TABLE contact (" +

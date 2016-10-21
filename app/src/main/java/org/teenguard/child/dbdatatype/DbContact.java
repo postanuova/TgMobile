@@ -1,5 +1,7 @@
 package org.teenguard.child.dbdatatype;
 
+import org.teenguard.child.utils.JSon;
+
 /**
  * Created by chris on 15/10/16.
  */
@@ -26,6 +28,18 @@ public class DbContact {
         long lastModified = cursor.getLong(cursor.getColumnIndex(CONTACT_LAST_MODIFIED));
         String serializedData = cursor.getString(cursor.getColumnIndex(CONTACT_SERIALIZED_DATA));
     }*/
+
+
+
+    public JSon getJson() {
+            JSon jSon = new JSon();
+            jSon.add("id", this.getId());
+            jSon.add("date", this.getLastModified());
+            jSon.add("first_name", this.getName());
+            jSon.add("last_name", "");
+            jSon.addArray("phone_numbers", "[" + this.getSerializedData() + "]");
+        return  jSon;
+        }
 
 
     public void dump() {
