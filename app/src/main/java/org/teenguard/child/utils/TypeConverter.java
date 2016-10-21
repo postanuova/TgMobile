@@ -66,7 +66,7 @@ public class TypeConverter {
         System.out.println(computeHash("ciao"));
     }
 
-    public static String inputStreamToString(InputStream inputStream) {
+    /*public static String inputStreamToString(InputStream inputStream) {
         StringBuilder sb = new StringBuilder();
         try {
             if(inputStream != null) {
@@ -93,6 +93,23 @@ public class TypeConverter {
             e.printStackTrace();
         }
         return "empty InputStream";
-    }
+    }*/
+
+    public static String inputStreamToString(InputStream inputStream) {
+        BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream));
+        String line;
+        StringBuffer response = new StringBuffer();
+        try {
+            while((line = rd.readLine()) != null) {
+                response.append(line);
+                response.append('\r');
+            }
+        rd.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //System.out.println("response.toString() = " + response.toString());
+        return response.toString();
+}
 
 }

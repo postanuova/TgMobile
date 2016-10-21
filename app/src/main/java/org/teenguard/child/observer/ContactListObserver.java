@@ -7,6 +7,7 @@ import android.util.Log;
 
 import org.teenguard.child.dao.DeviceContactDAO;
 import org.teenguard.child.datatype.DeviceContact;
+import org.teenguard.child.datatype.MyServerResponse;
 import org.teenguard.child.dbdao.DbContactDAO;
 import org.teenguard.child.dbdao.DbContactEventDAO;
 import org.teenguard.child.dbdatatype.DbContact;
@@ -122,20 +123,17 @@ public class ContactListObserver extends ContentObserver {
 
                 ///////////////////////////////////////////////
                 MyLog.i(this,"SENDING NEW USER CONTACT TO SERVER");
-                //VolleyServerUtils.sendNewContactEventToServer(dbContactEvent);
-                //MyConnectionUtils.doApachePost(dbContactEvent.getSerializedData());
-                MyConnectionUtils.doAndroidPost(dbContactEvent.getSerializedData());
-
-                //MyLog.i(this,"SENT NEW USER CONTACT TO SERVER");
+                /*VolleyConnectionUtils volleyConnectionUtils = new VolleyConnectionUtils();
+                volleyConnectionUtils.addContactToServer(dbContactEvent);*/
+                MyServerResponse myServerResponse = MyConnectionUtils.doAndroidPost(dbContact.getSerializedData(),"POST");
+                myServerResponse.dump();
+                MyLog.i(this,"SENT NEW USER CONTACT TO SERVER");
                 //////////////////////////////////////////////
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 dbContactDAO.endTransaction(); //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
             }
-
-
-
         }
     }
 
