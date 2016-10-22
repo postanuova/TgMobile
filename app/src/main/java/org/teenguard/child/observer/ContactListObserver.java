@@ -30,27 +30,23 @@ public class ContactListObserver extends ContentObserver {
     ConcurrentHashMap<Integer,DeviceContact> deviceContactHM = new ConcurrentHashMap();
     ConcurrentHashMap<Integer,DbContact> dbContactHM = new ConcurrentHashMap();
 
-
-
-
-
     public ContactListObserver(Handler handler) {
         super(handler);
         dbContactHM = dbContactDAO.getDbContactHM();
         deviceContactHM = DeviceContactDAO.getDeviceContactHM();
-        sendContactEventTableContent();
         if(dbContactHM.size() == 0) {
             MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user contact list");
             insertDeviceContactHMIntoDB();
         }
         MyLog.i(this,"invoking on change ContactObserver startup");
         onChange(false);
-        MyLog.i(this,"flushing contact event table");
-        flushContactEventTable();
+
+
     }
 
 
     public void flushContactEventTable() {
+        MyLog.i(this,"FLUSHING contact event table");
         DbContactEventDAO dbContactEventDAO = new DbContactEventDAO();
         ArrayList<DbContactEvent> dbContactEventAL = dbContactEventDAO.getList();
         StringBuilder addEventSB = new StringBuilder();
@@ -74,19 +70,40 @@ public class ContactListObserver extends ContentObserver {
             }
         }//fine for
         String addDataBulkSTR = addEventSB.toString();
-        if(addDataBulkSTR.endsWith(",")) addDataBulkSTR = addDataBulkSTR.substring(0,addDataBulkSTR.length()-1);
-        addDataBulkSTR = "[" + addDataBulkSTR + "]";
+        if(addDataBulkSTR.length() > 0) {
+            if(addDataBulkSTR.endsWith(",")) {
+                addDataBulkSTR = addDataBulkSTR.substring(0,addDataBulkSTR.length()-1);
+            }
+            System.out.println("addDataBulkSTR = " + addDataBulkSTR);
+            addDataBulkSTR = "[" + addDataBulkSTR + "]";
+            ServerApiUtils.addContactToServer(addDataBulkSTR);
+        }
+
+
         String updateEventSTR = updateEventSB.toString();
-        if(updateEventSTR.endsWith(",")) updateEventSTR = updateEventSTR.substring(0,updateEventSTR.length()-1);
-        updateEventSTR = "[" + addDataBulkSTR + "]";
+        if(updateEventSTR.length() > 0) {
+            if (updateEventSTR.endsWith(",")) {
+                updateEventSTR = updateEventSTR.substring(0, updateEventSTR.length() - 1);
+            }
+            System.out.println("updateEventSTR = " + updateEventSTR);
+            updateEventSTR = "[" + updateEventSTR + "]";
+            ServerApiUtils.updateContactIntoServer(updateEventSTR);
+        }
+
         String deleteDataBulkSTR = deleteEventSB.toString();
-        if(deleteDataBulkSTR.endsWith(",")) deleteDataBulkSTR = deleteDataBulkSTR.substring(0,deleteDataBulkSTR.length()-1);
-        deleteDataBulkSTR = "[" + deleteDataBulkSTR + "]";
+        if(deleteDataBulkSTR.length() >0) {
+            if (deleteDataBulkSTR.endsWith(",")) {
+                deleteDataBulkSTR = deleteDataBulkSTR.substring(0, deleteDataBulkSTR.length() - 1);
+            }
+            System.out.println("deleteDataBulkSTR = " + deleteDataBulkSTR);
+            deleteDataBulkSTR = "[" + deleteDataBulkSTR + "]";
+            ServerApiUtils.deleteContactFromServer(deleteDataBulkSTR);
+        }
     }
 
     @Override
     public void onChange(boolean selfChange) {
-        Log.i("ContactListObserver", "onChange Old: API < 16");
+        Log.i("ContactListObserver", " onChange Old: API < 16");
         this.onChange(selfChange, null);
     }
 
@@ -118,14 +135,14 @@ public class ContactListObserver extends ContentObserver {
         
 
         if((dbContactHM.size() >0) && (deviceContactHM.size() < dbContactHM.size())) {
-            MyLog.i(this,"userHM < dbHM : contact deleted");
+            MyLog.i(this," userHM < dbHM : contact deleted");
             manageContactDeleted();
         }
+        dbContactEventDAO.close();
+        dbContactDAO.close();
     }
 
-    private void sendContactEventTableContent() {
-        Log.i("ContactListObserver.", "sendContactEventTableContent : CHECK ON contact_event: if contact_event.count > 0 SEND PREVIOUS CONTACT_EVENT TABLE CONTENT TO SERVER: NOT YET IMPLEMENTED");
-    }
+
 
     private void manageContactAdded() {
         //per ogni deviceContactHM.phoneId (key) che non esiste in dbContactHM aggiungilo al db alla coda addedContactAL dei contatti da aggiungere
@@ -157,7 +174,7 @@ public class ContactListObserver extends ContentObserver {
                 dbContactDAO.setTransactionSuccessful();    //>>>>>>>>>>>>>>>>COMMIT TRANSACTION>>>>>>>>>>>>>>>>>>
                 dbContactDAO.endTransaction();              //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
                 MyLog.i(this,"SENDING NEW USER CONTACT TO SERVER");
-                MyServerResponse myServerResponse = ServerApiUtils.addContactToServer(dbContactEvent);
+                MyServerResponse myServerResponse = ServerApiUtils.addContactToServer("[" + dbContactEvent.getSerializedData() + "]");
                 myServerResponse.dump();
                 if(myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
                     MyLog.i(this,"SENT NEW USER CONTACT TO SERVER");
@@ -167,6 +184,8 @@ public class ContactListObserver extends ContentObserver {
                 e.printStackTrace();
             } finally {
                 dbContactDAO.endTransaction();              //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
+                dbContactDAO.close();
+                dbContactEventDAO.close();
             }
         }
     }
@@ -209,7 +228,7 @@ public class ContactListObserver extends ContentObserver {
                 dbContactDAO.setTransactionSuccessful();    //>>>>>>>>>>>>>>>>COMMIT TRANSACTION>>>>>>>>>>>>>>>>>>
                 dbContactDAO.endTransaction();              //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
                 MyLog.i(this,"SENDING UPDATED CONTACT TO SERVER");
-                MyServerResponse myServerResponse = ServerApiUtils.updateContactIntoServer(dbContactEvent);
+                MyServerResponse myServerResponse = ServerApiUtils.updateContactIntoServer("[" + dbContactEvent.getSerializedData() + "]");
                 myServerResponse.dump();
                 if(myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
                     MyLog.i(this,"SENT UPDATED CONTACT TO SERVER");
@@ -219,6 +238,8 @@ public class ContactListObserver extends ContentObserver {
                 e.printStackTrace();
             } finally {
                 dbContactDAO.endTransaction();              //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
+                dbContactDAO.close();
+                dbContactEventDAO.close();
             }
         }
     }
@@ -251,7 +272,7 @@ public class ContactListObserver extends ContentObserver {
                 MyLog.i(this, "inserted into contact_event._id  " + dbContactEvent.getId());
                 dbContactDAO.setTransactionSuccessful();    //>>>>>>>>>>>>>>>>COMMIT TRANSACTION>>>>>>>>>>>>>>>>>>
                 dbContactDAO.endTransaction();
-                MyLog.i(this,"SEND REMOVED CONTACT TO SERVER");
+                MyLog.i(this," SEND REMOVED CONTACT TO SERVER");
                 MyServerResponse myServerResponse = new MyServerResponse();
                 myServerResponse = ServerApiUtils.deleteContactFromServer(String.valueOf(dbContactEvent.getCsId()));
                 //VolleyConnectionUtils.doRequest(Request.Method.POST,"http://92.222.83.28/api.php","[" + dbContactEvent.getSerializedData() + "]");
@@ -264,7 +285,15 @@ public class ContactListObserver extends ContentObserver {
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
-                dbContactDAO.endTransaction(); //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
+                System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<finally in esecuzioneeeeeeeeeeee");
+                //dbContactDAO.endTransaction(); //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
+                System.out.println("closed transaction");
+                flushContactEventTable();
+                System.out.println("flushed");
+                dbContactDAO.close();
+                System.out.println("dbContactDAO");
+                dbContactEventDAO.close();
+                System.out.println("dbContactEventDAO");
             }
         }
     }

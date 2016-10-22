@@ -1,9 +1,6 @@
 package org.teenguard.child.utils;
 
-import android.util.Log;
-
 import org.teenguard.child.datatype.MyServerResponse;
-import org.teenguard.child.dbdatatype.DbContactEvent;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -21,28 +18,29 @@ public class ServerApiUtils {
     public final static String APPLICATION_SERVER_REQUEST_UPDATE_CONTACTS_URL = "/api.php";
     public final static String APPLICATION_SERVER_MIMETYPE_JSON = "application/json";
 
-    //(String requestMethod,URL url, String contentType,  String data)
-    public static MyServerResponse addContactToServer(DbContactEvent dbContactEvent) {
+    //(String requestMethod,URL url, String contentType,  String serializedData)
+    public static MyServerResponse addContactToServer(String serializedData) {
         MyServerResponse myServerResponse = new MyServerResponse();
-        Log.i("ServerUtils", " sending to server contactId: " + dbContactEvent.getId() + " data:" + dbContactEvent.getSerializedData());
+        MyLog.i("ServerUtils.addContactToServer"," data:" + serializedData);
         try{
             URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_ADD_CONTACTS_URL);
-            myServerResponse = MyConnectionUtils.doAndroidRequest("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,"[" + dbContactEvent.getSerializedData() + "]");
+            myServerResponse = MyConnectionUtils.doAndroidRequest("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,serializedData);
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         }
         return myServerResponse;
     }
 
-    public static MyServerResponse updateContactIntoServer(DbContactEvent dbContactEvent) {
-        return addContactToServer(dbContactEvent);
+
+    public static MyServerResponse updateContactIntoServer(String serializedData) {
+        return addContactToServer(serializedData);
     }
 
-    public static MyServerResponse deleteContactFromServer(String csIdList) {
+    public static MyServerResponse deleteContactFromServer(String serializedData) {
         MyServerResponse myServerResponse = new MyServerResponse();
-        Log.i("ServerUtils"," data:" + csIdList);
+        MyLog.i("ServerUtils.deleteContactFromServer"," data:" + serializedData);
         try{
-            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_REMOVE_CONTACTS_URL + "/" +csIdList);
+            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_REMOVE_CONTACTS_URL + "/" +serializedData);
             myServerResponse = MyConnectionUtils.doAndroidRequest("DELETE",url ,APPLICATION_SERVER_MIMETYPE_JSON,"");
         } catch (MalformedURLException ex) {
             ex.printStackTrace();

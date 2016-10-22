@@ -27,4 +27,8 @@ public  class GenericDbDAO {
     public void setTransactionSuccessful () {
         db.setTransactionSuccessful();
     }
+
+    public void close() {
+        db.close();
+    }
 }
