@@ -55,7 +55,7 @@ public class MyConnectionUtils {
             if(connection.getErrorStream() != null) myServerResponse.setResponseError(TypeConverter.inputStreamToString(connection.getErrorStream()));
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("connection failed ");
+            System.out.println("server connection failed:device is offline? ");
             return myServerResponse;
         } finally {
             if (connection != null) {

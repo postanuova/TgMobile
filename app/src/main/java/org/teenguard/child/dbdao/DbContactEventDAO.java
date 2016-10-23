@@ -62,6 +62,11 @@ public class DbContactEventDAO extends GenericDbDAO {
         return true;
     }
 
+    public boolean delete(String idList) {
+        db.execSQL("DELETE FROM " + CONTACT_EVENT_TABLE + " WHERE _id IN(" + idList + ");");
+        return true;
+    }
+
 
     public Cursor getDbContactEventCursor() {
         //String[] cols = new String[] {CONTACT_EVENT_ID, CONTACT_EVENT_CS_ID, CONTACT_EVENT_TYPE,CONTACT_EVENT_SERIALIZED_DATA};
@@ -102,5 +107,6 @@ public class DbContactEventDAO extends GenericDbDAO {
         return dbContactEventAL;
     }
 
-    
+
+
 }
