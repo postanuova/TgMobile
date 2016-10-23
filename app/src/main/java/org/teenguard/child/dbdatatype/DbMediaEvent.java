@@ -11,8 +11,15 @@ public class DbMediaEvent {
 
     private int id; //autoincrement
     private int csId; //is the phone_id
-    private int eventType; //add, modofy, delete
+    private int eventType; //add, modify, delete
     private String serializedData; //json data
+
+    public DbMediaEvent(int id, int csId, int eventType, String serializedData) {
+        this.id = id;
+        this.csId = csId;//contact.contact_id
+        this.eventType = eventType;
+        this.serializedData = serializedData;
+    }
 
     public int getId() {
         return id;
@@ -45,5 +52,14 @@ public class DbMediaEvent {
     public void setSerializedData(String serializedData) {
         this.serializedData = serializedData;
     }
+
+    public void dump() {
+        System.out.println("-------------DB MEDIA EVENT DUMP-------------");
+        System.out.println("id = " + id);
+        System.out.println("csId = " + csId);
+        System.out.println("eventType = " + eventType);
+        System.out.println("serializedData = " + serializedData);
+    }
+
 }
 

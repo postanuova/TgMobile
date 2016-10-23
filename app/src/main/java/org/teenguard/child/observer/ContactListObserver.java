@@ -41,7 +41,7 @@ public class ContactListObserver extends ContentObserver {
             MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user contact list");
             insertDeviceContactHMIntoDB();
         }
-        MyLog.i(this,"invoking on change ContactObserver startup");
+        MyLog.i(this,"invoking on change ContactObserver on startup");
         onChange(false);
 
 
@@ -189,7 +189,6 @@ public class ContactListObserver extends ContentObserver {
         //per ogni deviceContactHM.phoneId (key) che non esiste in dbContactHM aggiungilo al db alla coda addedContactAL dei contatti da aggiungere
         int counter = 0;
         ArrayList <DeviceContact> addedDeviceContactAL = new ArrayList();
-        ArrayList <DbContactEvent> dbAddContactEventAL = new ArrayList();
         for (int key : deviceContactHM.keySet()) {
             if(!dbContactHM.containsKey(key)) {
                 MyLog.i(this,"manageContactAdded: added key (phoneId)= " + key);

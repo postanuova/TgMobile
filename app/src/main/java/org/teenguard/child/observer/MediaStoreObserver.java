@@ -8,7 +8,9 @@ import android.util.Log;
 import org.teenguard.child.dao.DeviceMediaDAO;
 import org.teenguard.child.datatype.DeviceMedia;
 import org.teenguard.child.dbdao.DbMediaDAO;
+import org.teenguard.child.dbdao.DbMediaEventDAO;
 import org.teenguard.child.dbdatatype.DbMedia;
+import org.teenguard.child.dbdatatype.DbMediaEvent;
 import org.teenguard.child.utils.MyLog;
 
 import java.util.ArrayList;
@@ -21,11 +23,22 @@ import java.util.concurrent.ConcurrentHashMap;
 //http://stackoverflow.com/questions/22012274/contentobserver-onchange-method-gets-called-many-times
 public class MediaStoreObserver extends ContentObserver {
     DbMediaDAO dbMediaDAO = new DbMediaDAO();
+    DbMediaEventDAO dbMediaEventDAO = new DbMediaEventDAO();
     ConcurrentHashMap<Integer,DeviceMedia> deviceMediaHM = new ConcurrentHashMap();
     ConcurrentHashMap<Integer,DbMedia> dbMediaHM = new ConcurrentHashMap();
 
     public MediaStoreObserver(Handler handler) {
         super(handler);
+        deviceMediaHM = DeviceMediaDAO.getDeviceMediaHM();
+        dbMediaHM = dbMediaDAO.getDbMediaHM();
+        if (dbMediaHM.size() == 0) {
+            MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user contact list");
+            insertDeviceMediaHMIntoDB();
+        }
+        MyLog.i(this,"invoking on change MediaObserver on startup");
+        onChange(false);
+
+
     }
 
     @Override
@@ -39,24 +52,25 @@ public class MediaStoreObserver extends ContentObserver {
         MyLog.i(this,"<<<< USER MEDIA LIST CHANGED >>>>");
         super.onChange(selfChange);
 //load user_media_list
-            deviceMediaHM = DeviceMediaDAO.getDeviceMediaHM();
-            dbMediaHM = dbMediaDAO.getDbMediaHM();
-            MyLog.i(this,"deviceMediaHM.size = " + deviceMediaHM.size() + " dbMediaHM.size = " + dbMediaHM.size());
-            if(dbMediaHM.size() == 0) {
-                MyLog.i(this,"dbHM =0 -->  empty DB: populate DB with user media list");
-                manageEmptyDB();
-            }
+        deviceMediaHM = DeviceMediaDAO.getDeviceMediaHM();
+        dbMediaHM = dbMediaDAO.getDbMediaHM();
+        MyLog.i(this,"deviceMediaHM.size = " + deviceMediaHM.size() + " dbMediaHM.size = " + dbMediaHM.size());
 
-            if((dbMediaHM.size() >0) && (deviceMediaHM.size() > dbMediaHM.size())) {
-                MyLog.i(this,"deviceHM > dbHM : media added");
-                manageMediaAdded();
-            }
+        if(dbMediaHM.size() == 0) {
+            MyLog.i(this,"dbHM =0 -->  empty DB: populate DB with user media list");
+            insertDeviceMediaHMIntoDB();
+        }
+
+        if((dbMediaHM.size() >0) && (deviceMediaHM.size() > dbMediaHM.size())) {
+            MyLog.i(this,"deviceHM > dbHM : media added");
+            manageMediaAdded();
+        }
 
 
-            if((dbMediaHM.size() >0) && (deviceMediaHM.size() < dbMediaHM.size())) {
-                MyLog.i(this,"userHM < dbHM : media deleted");
-                manageMediaDeleted();
-            }
+        if((dbMediaHM.size() >0) && (deviceMediaHM.size() < dbMediaHM.size())) {
+            MyLog.i(this,"userHM < dbHM : media deleted");
+            manageMediaDeleted();
+        }
         }
 
     private void manageEmptyDB() {
@@ -64,24 +78,38 @@ public class MediaStoreObserver extends ContentObserver {
     }
 
     private void manageMediaAdded() {
-        MyLog.i(this,"manageMediaAdded not completed");
+        MyLog.i(this, "manageMediaAdded not completed");
         //per ogni deviceMediaHM.phoneId (key) che non esiste in dbMediaHM aggiungilo al db alla coda addedMediaAL dei contatti da aggiungere
         int counter = 0;
         ArrayList<DeviceMedia> addedDeviceMediaAL = new ArrayList();
         for (int key : deviceMediaHM.keySet()) {
-            if(!dbMediaHM.containsKey(key)) {
-                MyLog.i(this,"added key (phoneId)= " + key);
+            if (!dbMediaHM.containsKey(key)) {
+                MyLog.i(this, "added key (phoneId)= " + key);
                 addedDeviceMediaAL.add(deviceMediaHM.get(key));
-                counter ++;
+                counter++;
             }
         }
-        MyLog.i(this,"added media counter= " + counter);
-        for (DeviceMedia deviceMedia:addedDeviceMediaAL) {//build dbMedias from deviceMedia
-            DbMedia dbMedia = new DbMedia(0,deviceMedia.getPhoneId());
+        MyLog.i(this, "added media counter= " + counter);
+        for (DeviceMedia deviceMedia : addedDeviceMediaAL) {//build dbMedias from deviceMedia
+            DbMedia dbMedia = new DbMedia(0, deviceMedia.getPhoneId());
             long idInserted = dbMediaDAO.upsert(dbMedia);//is insert
-            MyLog.i(this,"inserted into db _id: " + idInserted);
-            deviceMedia.dump();
-            MyLog.i(this,"SEND NEW USER MEDIA TO SERVER");
+            MyLog.i(this, "inserted into db _id: " + idInserted);
+            dbMedia.setId(idInserted);
+            DbMediaEvent dbMediaEvent = new DbMediaEvent(0, deviceMedia.getPhoneId(), DbMediaEvent.MEDIA_EVENT_ADD, deviceMedia.getMetadataJsonSTR());
+            dbMediaDAO.beginTransaction();
+            try {
+                throw new UnsupportedOperationException("manageMediaAdded try block not implemented");
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<finally in esecuzioneeeeeeeeeeee");
+                if (dbMediaDAO.db.inTransaction()) {
+                    dbMediaDAO.endTransaction(); //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
+                    System.out.println("closed transaction");
+                }
+                /*dbContactDAO.close();
+                dbContactEventDAO.close();*/
+            }
         }
     }
 
