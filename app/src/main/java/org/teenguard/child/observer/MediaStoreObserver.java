@@ -34,7 +34,7 @@ public class MediaStoreObserver extends ContentObserver {
         deviceMediaHM = DeviceMediaDAO.getDeviceMediaHM();
         dbMediaHM = dbMediaDAO.getDbMediaHM();
         if (dbMediaHM.size() == 0) {
-            MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user contact list");
+            MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user contact list: REMEMBER TO IMPLEMENT BULK INSERT!!!!!!!!!!");
             insertDeviceMediaHMIntoDB();
         }
      /*   MyLog.i(this,"invoking on change MediaObserver on startup");
@@ -73,10 +73,6 @@ public class MediaStoreObserver extends ContentObserver {
             MyLog.i(this,"userHM < dbHM : media deleted");
             manageMediaDeleted();
         }
-        }
-
-    private void manageEmptyDB() {
-        insertDeviceMediaHMIntoDB();
     }
 
     private void manageMediaAdded() {
@@ -152,9 +148,8 @@ public class MediaStoreObserver extends ContentObserver {
             dbMedia.dump();
             dbMediaDAO.beginTransaction();
             try {
-                long mediaId = dbMediaDAO.upsert(dbMedia);//is insert
-                MyLog.i(this, "inserted into db _id: " + mediaId);
-                dbMedia.setId(mediaId);//il dbMedia in ram e' allineato con quello del db
+                MyLog.i(this, "removing from media _id: " + dbMedia.getId());
+                 dbMediaDAO.removeMedia(dbMedia);
                 DbMediaEvent dbMediaEvent = new DbMediaEvent(0, dbMedia.getPhoneId(), DbMediaEvent.MEDIA_EVENT_DELETE, dbMedia.getJson().getJSonString());
                 MyLog.i(this, "inserting into media_event json "  + dbMediaEvent.getSerializedData());
                 long mediaEventId = dbMediaEventDAO.upsert(dbMediaEvent);
@@ -179,7 +174,7 @@ public class MediaStoreObserver extends ContentObserver {
                 System.out.println("finally");
                 if (dbMediaDAO.db.inTransaction()) {
                     dbMediaDAO.endTransaction(); //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
-                    System.out.println("closed transaction");
+                    System.out.println(" closed transaction");
                 }
                /* dbMediaDAO.close();
                 dbMediaEventDAO.close();
@@ -188,22 +183,88 @@ public class MediaStoreObserver extends ContentObserver {
         }
     }
 
-    private void flushMediaEventTable() {
-        System.out.println("flushing media table not implemented");
-        //throw new UnsupportedOperationException("flushMediaEventTable not yet implemented");
+    /**
+     * transmit events to server and cleanup events table
+     */
+    public void flushMediaEventTable() {
+        MyLog.i(this, "FLUSHING contact event table");
+        //DbContactEventDAO dbContactEventDAO = new DbContactEventDAO();
+        ArrayList<DbMediaEvent> dbMediaEventAL = dbMediaEventDAO.getList();
+        if(dbMediaEventAL.size() == 0 ) {
+            MyLog.i(this, " no events to flush: return");
+            return;
+        }
+        StringBuilder addEventSB = new StringBuilder();
+        StringBuilder deleteEventSB = new StringBuilder();
+        String addEventIdToRemoveList = "";         //lista degli eventi ADD da rimuovere dal db dopo l'ok del server
+        String deleteEventIdToRemoveList = "";      //lista degli eventi DELETE da rimuovere dal db dopo l'ok del server
+
+        for (DbMediaEvent dbMediaEvent : dbMediaEventAL) {
+            dbMediaEvent.dump();
+            switch (dbMediaEvent.getEventType()) {
+                case DbMediaEvent.MEDIA_EVENT_ADD: {
+                    addEventSB.append(dbMediaEvent.getSerializedData() + ",");
+                    addEventIdToRemoveList += dbMediaEvent.getId() + ",";
+                    break;
+                }
+                case DbMediaEvent.MEDIA_EVENT_DELETE: {
+                    deleteEventSB.append("\"" + dbMediaEvent.getCsId() + "\"" + ",");
+                    deleteEventIdToRemoveList += dbMediaEvent.getId() + ",";
+                    break;
+                }
+            }
+        }//fine for
+
+        /////add
+        String addDataBulkSTR = addEventSB.toString();
+        if (addDataBulkSTR.length() > 0) {//ci sono eventi add
+            if (addDataBulkSTR.endsWith(",")) {
+                addDataBulkSTR = addDataBulkSTR.substring(0, addDataBulkSTR.length() - 1);
+            }
+            if (addEventIdToRemoveList.endsWith(",")) {
+                addEventIdToRemoveList = addEventIdToRemoveList.substring(0, addEventIdToRemoveList.length() - 1);
+            }
+            System.out.println("addDataBulkSTR = " + addDataBulkSTR);
+            addDataBulkSTR = "[" + addDataBulkSTR + "]";
+            MyServerResponse myServerResponse = ServerApiUtils.addMediaToServer(addDataBulkSTR);
+            if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+                MyLog.i(this, " ADD BULK MEDIA SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
+                dbMediaEventDAO.delete(addEventIdToRemoveList);
+                MyLog.i(this, "deleted from events list " + addEventIdToRemoveList);
+            }
+        }
+
+        /////delete
+        String deleteDataBulkSTR = deleteEventSB.toString();
+        if (deleteDataBulkSTR.length() > 0) { //ci sono eventi delete
+            if (deleteDataBulkSTR.endsWith(",")) {
+                deleteDataBulkSTR = deleteDataBulkSTR.substring(0, deleteDataBulkSTR.length() - 1);
+            }
+            if (deleteEventIdToRemoveList.endsWith(",")) {
+                deleteEventIdToRemoveList = deleteEventIdToRemoveList.substring(0, deleteEventIdToRemoveList.length() - 1);
+            }
+            System.out.println("deleteDataBulkSTR = " + deleteDataBulkSTR);
+            deleteDataBulkSTR = "[" + deleteDataBulkSTR + "]";
+            MyServerResponse myServerResponse = ServerApiUtils.deleteMediaFromServer(deleteDataBulkSTR);
+            if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+                MyLog.i(this, "DELETE BULK MEDIA SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
+                dbMediaEventDAO.delete(deleteEventIdToRemoveList);
+                MyLog.i(this, "deleted from events list " + deleteEventIdToRemoveList);
+            }
+        }
     }
 
     private boolean insertDeviceMediaHMIntoDB() {
-        MyLog.i(this,"deviceMediaHM" + deviceMediaHM.size());
+        MyLog.i(this,"deviceMediaHM" + deviceMediaHM.size() + " inserting into media table: wait...");
         long nInserted = 0;
         for (DeviceMedia deviceMedia : deviceMediaHM.values()) {
-            MyLog.i(this,"inserting deviceMedia = " + " phoneId = " + deviceMedia.getPhoneId());
+            //MyLog.i(this,"inserting deviceMedia = " + " phoneId = " + deviceMedia.getPhoneId());
             DbMedia dbMedia = new DbMedia(0,deviceMedia.getPhoneId());
             long idInserted = dbMediaDAO.upsert(dbMedia);
-            System.out.println("_idInserted = " + idInserted);
+            //System.out.println("_idInserted = " + idInserted);
             nInserted ++;
         }
-        MyLog.i(this," Inserted " +  nInserted + " records into media");
+        MyLog.i(this," Inserted " +  nInserted + " records into media table");
         flushMediaEventTable();//not tested
         return true;
     }

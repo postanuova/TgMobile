@@ -73,19 +73,8 @@ public class DbContactEventDAO extends GenericDbDAO {
     }
 
 
-    public Cursor getDbContactEventCursor() {
-        //String[] cols = new String[] {CONTACT_EVENT_ID, CONTACT_EVENT_CS_ID, CONTACT_EVENT_TYPE,CONTACT_EVENT_SERIALIZED_DATA};
-        Cursor mCursor = db.rawQuery("SELECT _id,cs_id,event_type,serialized_data FROM contact_event",null);
-        //Cursor mCursor = db.query(true, CONTACT_TABLE,cols,null, null, null, null, null, null);
-        return mCursor; // iterate to get each value.
-    }
-
     public ArrayList<DbContactEvent> getList() {
-        Cursor cursor = getDbContactEventCursor();
-        //String columnAR [] = cursor.getColumnNames();
-        /*for (String column: columnAR) {
-            System.out.println("column = " + column);
-        }*/
+        Cursor cursor = db.rawQuery("SELECT _id,cs_id,event_type,serialized_data FROM contact_event",null);
         ArrayList <DbContactEvent> dbContactEventAL = new <DbContactEvent> ArrayList();
         DbContactEvent dbContactEvent;
         if (cursor != null) {

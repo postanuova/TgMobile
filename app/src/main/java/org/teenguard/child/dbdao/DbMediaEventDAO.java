@@ -1,9 +1,12 @@
 package org.teenguard.child.dbdao;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 
 import org.teenguard.child.dbdatatype.DbMediaEvent;
 import org.teenguard.child.utils.MyLog;
+
+import java.util.ArrayList;
 
 import static org.teenguard.child.dbdao.DbMediaDAO.MEDIA_TABLE;
 
@@ -58,6 +61,35 @@ public class DbMediaEventDAO extends GenericDbDAO {
         db.execSQL("DELETE FROM " + MEDIA_TABLE + ";");
         return true;
     }
+
+    public ArrayList<DbMediaEvent> getList() {
+        Cursor cursor = db.rawQuery("SELECT _id,cs_id,event_type,serialized_data FROM media_event",null);
+        ArrayList <DbMediaEvent> dbMediaEventAL = new <DbMediaEvent> ArrayList();
+        DbMediaEvent dbMediaEvent;
+        if (cursor != null) {
+            MyLog.i(this,"<<<<<<<<<<<<<<<< dbMediaEvent cursor.count" + cursor.getCount());
+            int addCounter = 0;
+            while (cursor.moveToNext()) {
+                addCounter++;
+                //dbMedia = new DbMedia(cursor);
+                int id = cursor.getInt(cursor.getColumnIndex(MEDIA_EVENT_ID));
+                int csId = cursor.getInt(cursor.getColumnIndex(MEDIA_EVENT_CS_ID));
+                int eventType = cursor.getInt(cursor.getColumnIndex(MEDIA_EVENT_TYPE));
+                String serializedData = cursor.getString(cursor.getColumnIndex(MEDIA_EVENT_SERIALIZED_DATA));
+                dbMediaEvent = new DbMediaEvent(id, csId, eventType,serializedData);
+                dbMediaEventAL.add(dbMediaEvent);
+            }
+            MyLog.i(this,"dbMediaEventAL.size " + dbMediaEventAL.size());
+            if(!cursor.isClosed()) {
+                cursor.close();
+            }
+        } else {
+            MyLog.i(this,"WARNING: CURSOR IS NULL");
+        }
+        return dbMediaEventAL;
+    }
+
+
 
     /**
      *

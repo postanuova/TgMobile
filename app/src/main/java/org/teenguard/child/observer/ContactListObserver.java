@@ -38,7 +38,7 @@ public class ContactListObserver extends ContentObserver {
         dbContactHM = dbContactDAO.getDbContactHM();
         deviceContactHM = DeviceContactDAO.getDeviceContactHM();
         if(dbContactHM.size() == 0) {
-            MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user contact list");
+            MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user contact list: REMEMBER TO IMPLEMENT BULK INSERT!!!!!!!!!!");
             insertDeviceContactHMIntoDB();
         }
        /* MyLog.i(this,"invoking on change ContactObserver on startup");
@@ -140,6 +140,7 @@ public class ContactListObserver extends ContentObserver {
                 MyLog.i(this, "deleted from events list " + deleteEventIdToRemoveList);
             }
         }
+        System.out.println("contact event flushed");
     }
 
     @Override
@@ -181,6 +182,7 @@ public class ContactListObserver extends ContentObserver {
         }
         /*dbContactEventDAO.close();
         dbContactDAO.close();*/
+
     }
 
 
@@ -222,8 +224,8 @@ public class ContactListObserver extends ContentObserver {
                     MyLog.i(this,"SENT NEW USER CONTACT TO SERVER");
                     dbContactEvent.deleteMe();
                 }
-                flushContactEventTable();
-                System.out.println("flushed");
+               /* flushContactEventTable();*/
+
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -283,8 +285,7 @@ public class ContactListObserver extends ContentObserver {
                     MyLog.i(this,"SENT UPDATED CONTACT TO SERVER");
                     dbContactEvent.deleteMe();
                 }
-                flushContactEventTable();
-                System.out.println("flushed");
+                /*flushContactEventTable();*/
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -340,8 +341,8 @@ public class ContactListObserver extends ContentObserver {
                     dbContactEvent.deleteMe();
                     MyLog.i(this,"REMOVED CONTACT EVENT FROM DB");
                 }
-                flushContactEventTable();
-                System.out.println("flushed");
+                /*flushContactEventTable();
+                System.out.println("flushed");*/
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -363,18 +364,18 @@ public class ContactListObserver extends ContentObserver {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private boolean insertDeviceContactHMIntoDB() {
-        MyLog.i(this,"deviceContactHM" + deviceContactHM.size());
+        MyLog.i(this,"deviceContactHM" + deviceContactHM.size() + " inserting into contact table: wait...");
             //emptyContactTable();
             long nInserted = 0;
             for (DeviceContact deviceContact : deviceContactHM.values()) {
-                MyLog.i(this,"inserting deviceContact = " + deviceContact.getName() + " phoneId = " + deviceContact.getPhoneId());
+                //MyLog.i(this,"inserting deviceContact = " + deviceContact.getName() + " phoneId = " + deviceContact.getPhoneId());
                 DbContact dbContact = new DbContact(0,deviceContact.getPhoneId(),deviceContact.getName(),deviceContact.getLastModified(),deviceContact.getNumbersJSonAR());
                 long idInserted = dbContactDAO.upsert(dbContact);
-                System.out.println("_idInserted = " + idInserted);
+                //System.out.println("_idInserted = " + idInserted);
                 nInserted ++;
             }
-            MyLog.i(this," Inserted " +  nInserted + " records into contact");
-        flushContactEventTable();//not tested
+            MyLog.i(this,"Inserted " +  nInserted + " records into contact table");
+      /*  flushContactEventTable();*/
         return true;
     }
 }
