@@ -13,15 +13,21 @@ import java.net.URL;
 public class ServerApiUtils {
     public final static String APPLICATION_SERVER_PROTOCOL = "http://";
     public final static String APPLICATION_SERVER_IP_ADDRESS = "92.222.83.28";
+    public final static String APPLICATION_SERVER_MIMETYPE_JSON = "application/json";
+
     public final static String APPLICATION_SERVER_REQUEST_ADD_CONTACTS_URL = "/api.php";
     public final static String APPLICATION_SERVER_REQUEST_REMOVE_CONTACTS_URL = "/api.php";
     public final static String APPLICATION_SERVER_REQUEST_UPDATE_CONTACTS_URL = "/api.php";
-    public final static String APPLICATION_SERVER_MIMETYPE_JSON = "application/json";
+
+    public final static String APPLICATION_SERVER_REQUEST_ADD_MEDIA_URL = "/api.php";
+    public final static String APPLICATION_SERVER_REQUEST_REMOVE_MEDIA_URL = "/api.php";
+    public final static String APPLICATION_SERVER_REQUEST_UPDATE_MEDIA_URL = "/api.php";
+
 
     //(String requestMethod,URL url, String contentType,  String serializedData)
     public static MyServerResponse addContactToServer(String serializedData) {
         MyServerResponse myServerResponse = new MyServerResponse();
-        MyLog.i("ServerUtils.addContactToServer"," data:" + serializedData);
+        MyLog.i(" ServerUtils.addContactToServer","addContactToServer data:" + serializedData);
         try{
             URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_ADD_CONTACTS_URL);
             myServerResponse = MyConnectionUtils.doAndroidRequest("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,serializedData);
@@ -38,7 +44,7 @@ public class ServerApiUtils {
 
     public static MyServerResponse deleteContactFromServer(String serializedData) {
         MyServerResponse myServerResponse = new MyServerResponse();
-        MyLog.i("ServerUtils.deleteContactFromServer"," data:" + serializedData);
+        MyLog.i("ServerUtils.deleteContactFromServer","deleteContactFromServer data:" + serializedData);
         try{
             URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_REMOVE_CONTACTS_URL + "/" +serializedData);
             myServerResponse = MyConnectionUtils.doAndroidRequest("DELETE",url ,APPLICATION_SERVER_MIMETYPE_JSON,"");
@@ -48,6 +54,29 @@ public class ServerApiUtils {
         return myServerResponse;
     }
 
+    public static MyServerResponse addMediaToServer(String serializedData) {
+        MyServerResponse myServerResponse = new MyServerResponse();
+        MyLog.i("ServerUtils.addMediaToServer","addMediaToServer data:" + serializedData);
+        try{
+            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_ADD_MEDIA_URL);
+            myServerResponse = MyConnectionUtils.doAndroidRequest("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,serializedData);
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        }
+        return myServerResponse;
+    }
+
+    public static MyServerResponse deleteMediaFromServer(String serializedData) {
+        MyServerResponse myServerResponse = new MyServerResponse();
+        MyLog.i("ServerUtils"," deleteMediaFromServer data:" + serializedData);
+        try{
+            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_REMOVE_MEDIA_URL);
+            myServerResponse = MyConnectionUtils.doAndroidRequest("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,serializedData);
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        }
+        return myServerResponse;
+    }
 
 
 }

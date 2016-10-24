@@ -1,5 +1,7 @@
 package org.teenguard.child.dbdatatype;
 
+import org.teenguard.child.utils.JSon;
+
 /**
  * Created by chris on 16/10/16.
  */
@@ -13,6 +15,14 @@ public class DbMedia {
         this.setId(id);
         this.setPhoneId(phoneId);
     }
+
+    public JSon getJson() {
+        JSon jSon = new JSon();
+        jSon.add("id", this.getId());
+        jSon.add("phoneId", this.phoneId);
+        return  jSon;
+    }
+
 
     public void dump() {
         System.out.println("-------------DB MEDIA DUMP-------------");

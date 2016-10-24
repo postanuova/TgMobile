@@ -7,11 +7,13 @@ import android.util.Log;
 
 import org.teenguard.child.dao.DeviceMediaDAO;
 import org.teenguard.child.datatype.DeviceMedia;
+import org.teenguard.child.datatype.MyServerResponse;
 import org.teenguard.child.dbdao.DbMediaDAO;
 import org.teenguard.child.dbdao.DbMediaEventDAO;
 import org.teenguard.child.dbdatatype.DbMedia;
 import org.teenguard.child.dbdatatype.DbMediaEvent;
 import org.teenguard.child.utils.MyLog;
+import org.teenguard.child.utils.ServerApiUtils;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,8 +37,8 @@ public class MediaStoreObserver extends ContentObserver {
             MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user contact list");
             insertDeviceMediaHMIntoDB();
         }
-        MyLog.i(this,"invoking on change MediaObserver on startup");
-        onChange(false);
+     /*   MyLog.i(this,"invoking on change MediaObserver on startup");
+        onChange(false);*/
 
 
     }
@@ -84,7 +86,7 @@ public class MediaStoreObserver extends ContentObserver {
         ArrayList<DeviceMedia> addedDeviceMediaAL = new ArrayList();
         for (int key : deviceMediaHM.keySet()) {
             if (!dbMediaHM.containsKey(key)) {
-                MyLog.i(this, "added key (phoneId)= " + key);
+                MyLog.i(this, " added key (phoneId)= " + key);
                 addedDeviceMediaAL.add(deviceMediaHM.get(key));
                 counter++;
             }
@@ -92,30 +94,48 @@ public class MediaStoreObserver extends ContentObserver {
         MyLog.i(this, "added media counter= " + counter);
         for (DeviceMedia deviceMedia : addedDeviceMediaAL) {//build dbMedias from deviceMedia
             DbMedia dbMedia = new DbMedia(0, deviceMedia.getPhoneId());
-            long idInserted = dbMediaDAO.upsert(dbMedia);//is insert
-            MyLog.i(this, "inserted into db _id: " + idInserted);
-            dbMedia.setId(idInserted);
-            DbMediaEvent dbMediaEvent = new DbMediaEvent(0, deviceMedia.getPhoneId(), DbMediaEvent.MEDIA_EVENT_ADD, deviceMedia.getMetadataJsonSTR());
             dbMediaDAO.beginTransaction();
             try {
-                throw new UnsupportedOperationException("manageMediaAdded try block not implemented");
+                long mediaId = dbMediaDAO.upsert(dbMedia);//is insert
+                MyLog.i(this, "inserted into db _id: " + mediaId);
+                dbMedia.setId(mediaId);//il dbMedia in ram e' allineato con quello del db
+                DbMediaEvent dbMediaEvent = new DbMediaEvent(0, deviceMedia.getPhoneId(), DbMediaEvent.MEDIA_EVENT_ADD, deviceMedia.getMetadataJsonSTR());
+                MyLog.i(this, "inserting into media_event json "  + dbMediaEvent.getSerializedData());
+                long mediaEventId = dbMediaEventDAO.upsert(dbMediaEvent);
+                dbMediaEvent.setId(mediaEventId);
+                MyLog.i(this, "inserted into media_event._id  " + dbMediaEvent.getId());
+                MyLog.i(this, "committing transaction");
+                dbMediaDAO.setTransactionSuccessful();    //>>>>>>>>>>>>>>>>COMMIT TRANSACTION>>>>>>>>>>>>>>>>>>
+                MyLog.i(this, "ending transaction");
+                dbMediaDAO.endTransaction();              //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
+                MyLog.i(this,"SENDING NEW USER MEDIA TO SERVER");
+                MyServerResponse myServerResponse = ServerApiUtils.addMediaToServer("[" + dbMediaEvent.getSerializedData() + "]");
+                myServerResponse.dump();
+                if(myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+                    MyLog.i(this,"SENT NEW USER MEDIA TO SERVER");
+                    dbMediaEvent.deleteMe();
+                }
+                flushMediaEventTable();
+                System.out.println("flushed");
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
-                System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<finally in esecuzioneeeeeeeeeeee");
+                System.out.println("finally");
                 if (dbMediaDAO.db.inTransaction()) {
                     dbMediaDAO.endTransaction(); //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
                     System.out.println("closed transaction");
                 }
-                /*dbContactDAO.close();
-                dbContactEventDAO.close();*/
+              /* dbMediaDAO.close();
+                dbMediaEventDAO.close();
+                System.out.println("closed DAO");*/
             }
         }
     }
 
 
+
+
     private void manageMediaDeleted() {
-        MyLog.i(this,"manageMediaDeleted not COMPLETED");
         //per ogni dbMediaHM.phoneId (key) che non esiste in deviceMediaHM rimuovilo dal db alla coda removedMediaAL dei contatti da rimuovere
         int counter = 0;
         ArrayList <DbMedia> removedDbMediaAL = new ArrayList();
@@ -130,10 +150,47 @@ public class MediaStoreObserver extends ContentObserver {
         MyLog.i(this,"removed media counter= " + counter);
         for (DbMedia dbMedia:removedDbMediaAL) {
             dbMedia.dump();
-            dbMediaDAO.removeMedia(dbMedia);
-            MyLog.i(this,"removed from db");
-            MyLog.i(this,"SEND REMOVED MEDIA TO SERVER");
+            dbMediaDAO.beginTransaction();
+            try {
+                long mediaId = dbMediaDAO.upsert(dbMedia);//is insert
+                MyLog.i(this, "inserted into db _id: " + mediaId);
+                dbMedia.setId(mediaId);//il dbMedia in ram e' allineato con quello del db
+                DbMediaEvent dbMediaEvent = new DbMediaEvent(0, dbMedia.getPhoneId(), DbMediaEvent.MEDIA_EVENT_DELETE, dbMedia.getJson().getJSonString());
+                MyLog.i(this, "inserting into media_event json "  + dbMediaEvent.getSerializedData());
+                long mediaEventId = dbMediaEventDAO.upsert(dbMediaEvent);
+                dbMediaEvent.setId(mediaEventId);
+                MyLog.i(this, "inserted into media_event._id  " + dbMediaEvent.getId());
+                MyLog.i(this, "committing transaction");
+                dbMediaDAO.setTransactionSuccessful();    //>>>>>>>>>>>>>>>>COMMIT TRANSACTION>>>>>>>>>>>>>>>>>>
+                MyLog.i(this, "ending transaction");
+                dbMediaDAO.endTransaction();              //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
+                MyLog.i(this,"SENDING REMOVED MEDIA TO SERVER");
+                MyServerResponse myServerResponse = ServerApiUtils.deleteMediaFromServer(String.valueOf(dbMediaEvent.getCsId()));
+                myServerResponse.dump();
+                if(myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+                    MyLog.i(this,"REMOVED MEDIA FROM SERVER");
+                    dbMediaEvent.deleteMe();
+                }
+                flushMediaEventTable();
+                System.out.println("flushed");
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                System.out.println("finally");
+                if (dbMediaDAO.db.inTransaction()) {
+                    dbMediaDAO.endTransaction(); //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
+                    System.out.println("closed transaction");
+                }
+               /* dbMediaDAO.close();
+                dbMediaEventDAO.close();
+                System.out.println("closed DAO");*/
+            }
         }
+    }
+
+    private void flushMediaEventTable() {
+        System.out.println("flushing media table not implemented");
+        //throw new UnsupportedOperationException("flushMediaEventTable not yet implemented");
     }
 
     private boolean insertDeviceMediaHMIntoDB() {
@@ -147,14 +204,8 @@ public class MediaStoreObserver extends ContentObserver {
             nInserted ++;
         }
         MyLog.i(this," Inserted " +  nInserted + " records into media");
+        flushMediaEventTable();//not tested
         return true;
     }
-
-
-
-
-
-
-
 
 }

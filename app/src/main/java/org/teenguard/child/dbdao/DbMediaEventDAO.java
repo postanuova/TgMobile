@@ -48,9 +48,9 @@ public class DbMediaEventDAO extends GenericDbDAO {
         return upsert(id, csId, eventType, serializedData);
     }
 
-    public void remove(DbMediaEvent dbMediaEvent) {
-        String deleteQuery = "DELETE FROM " + MEDIA_EVENT_TABLE + " WHERE " + MEDIA_EVENT_ID + "=" + dbMediaEvent.getId() + ";";
-        MyLog.i(this, "deleting contactEvent = " + dbMediaEvent.getId() + " serialized data " + dbMediaEvent.getSerializedData());
+    public void delete(DbMediaEvent dbMediaEvent) {
+        String deleteQuery = " DELETE FROM " + MEDIA_EVENT_TABLE + " WHERE " + MEDIA_EVENT_ID + "=" + dbMediaEvent.getId() + ";";
+        MyLog.i(this, "deleting mediaEvent = " + dbMediaEvent.getId() + " serialized data " + dbMediaEvent.getSerializedData());
         db.execSQL(deleteQuery);
     }
 
@@ -58,4 +58,15 @@ public class DbMediaEventDAO extends GenericDbDAO {
         db.execSQL("DELETE FROM " + MEDIA_TABLE + ";");
         return true;
     }
+
+    /**
+     *
+     * @param idList csv list of id to delete
+     * @return
+     */
+    public boolean delete(String idList) {
+        db.execSQL("DELETE FROM " + MEDIA_EVENT_TABLE + " WHERE _id IN(" + idList + ");");
+        return true;
+    }
+
 }

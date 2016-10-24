@@ -62,6 +62,11 @@ public class DbContactEventDAO extends GenericDbDAO {
         return true;
     }
 
+    /**
+     *
+     * @param idList csv list of id to delete
+     * @return
+     */
     public boolean delete(String idList) {
         db.execSQL("DELETE FROM " + CONTACT_EVENT_TABLE + " WHERE _id IN(" + idList + ");");
         return true;

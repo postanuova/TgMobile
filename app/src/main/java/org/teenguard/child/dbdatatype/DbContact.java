@@ -39,7 +39,7 @@ public class DbContact {
             jSon.add("last_name", "");
             jSon.addArray("phone_numbers", "[" + this.getSerializedData() + "]");
         return  jSon;
-        }
+    }
 
 
     public void dump() {

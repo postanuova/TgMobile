@@ -41,8 +41,8 @@ public class ContactListObserver extends ContentObserver {
             MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user contact list");
             insertDeviceContactHMIntoDB();
         }
-        MyLog.i(this,"invoking on change ContactObserver on startup");
-        onChange(false);
+       /* MyLog.i(this,"invoking on change ContactObserver on startup");
+        onChange(false);*/
 
 
     }
@@ -52,7 +52,7 @@ public class ContactListObserver extends ContentObserver {
      */
     public void flushContactEventTable() {
         MyLog.i(this, "FLUSHING contact event table");
-        DbContactEventDAO dbContactEventDAO = new DbContactEventDAO();
+        //DbContactEventDAO dbContactEventDAO = new DbContactEventDAO();
         ArrayList<DbContactEvent> dbContactEventAL = dbContactEventDAO.getList();
         if(dbContactEventAL.size() == 0 ) {
             MyLog.i(this, "no events to flush: return");
@@ -197,7 +197,7 @@ public class ContactListObserver extends ContentObserver {
             }
         }
         MyLog.i(this,"added contact counter= " + counter);
-        DbContactDAO dbContactDAO = new DbContactDAO();
+        //DbContactDAO dbContactDAO = new DbContactDAO();
         for (DeviceContact deviceContact:addedDeviceContactAL) {//build dbContacts from deviceContact
             DbContact dbContact = new DbContact(0,deviceContact.getPhoneId(),deviceContact.getName(),deviceContact.getLastModified(),deviceContact.getNumbersJSonAR());
             dbContactDAO.beginTransaction(); //>>>>>>>>>>>>>>>>START TRANSACTION>>>>>>>>>>>>>>>>>>
@@ -211,7 +211,9 @@ public class ContactListObserver extends ContentObserver {
                 long contactEventId = dbContactEventDAO.upsert(dbContactEvent);
                 dbContactEvent.setId(contactEventId);
                 MyLog.i(this, "inserted into contact_event._id  " + dbContactEvent.getId());
+                MyLog.i(this, "committing transaction");
                 dbContactDAO.setTransactionSuccessful();    //>>>>>>>>>>>>>>>>COMMIT TRANSACTION>>>>>>>>>>>>>>>>>>
+                MyLog.i(this, "ending transaction");
                 dbContactDAO.endTransaction();              //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
                 MyLog.i(this,"SENDING NEW USER CONTACT TO SERVER");
                 MyServerResponse myServerResponse = addContactToServer("[" + dbContactEvent.getSerializedData() + "]");
@@ -225,13 +227,14 @@ public class ContactListObserver extends ContentObserver {
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
-                System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<finally in esecuzioneeeeeeeeeeee");
+                System.out.println("finally");
                 if(dbContactDAO.db.inTransaction()) {
                     dbContactDAO.endTransaction(); //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
                     System.out.println("closed transaction");
                 }
                 /*dbContactDAO.close();
-                dbContactEventDAO.close();*/
+                dbContactEventDAO.close();
+                System.out.println("closed DAO");*/
             }
         }
     }
@@ -291,7 +294,8 @@ public class ContactListObserver extends ContentObserver {
                     System.out.println("closed transaction");
                 }
                 /*dbContactDAO.close();
-                dbContactEventDAO.close();*/
+                dbContactEventDAO.close();
+                System.out.println("closed DAO");*/
             }
         }
     }
@@ -347,8 +351,9 @@ public class ContactListObserver extends ContentObserver {
                     dbContactDAO.endTransaction(); //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
                     System.out.println("finally closed transaction");
                 }
-                /*dbContactDAO.close();
-                dbContactEventDAO.close();*/
+               /*dbContactDAO.close();
+                dbContactEventDAO.close();
+                System.out.println("closed DAO");*/
             }
         }
     }
@@ -369,14 +374,7 @@ public class ContactListObserver extends ContentObserver {
                 nInserted ++;
             }
             MyLog.i(this," Inserted " +  nInserted + " records into contact");
+        flushContactEventTable();//not tested
         return true;
     }
-
-
-
-
-
-
-
-
 }

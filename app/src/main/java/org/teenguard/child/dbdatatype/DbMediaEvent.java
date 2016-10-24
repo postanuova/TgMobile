@@ -1,5 +1,7 @@
 package org.teenguard.child.dbdatatype;
 
+import org.teenguard.child.dbdao.DbMediaEventDAO;
+
 /**
  * Created by chris on 18/10/16.
  */
@@ -9,23 +11,23 @@ public class DbMediaEvent {
     public final static int MEDIA_EVENT_DELETE = 1;
     public final static int MEDIA_EVENT_COMPRESSED = 2;
 
-    private int id; //autoincrement
+    private long id; //autoincrement
     private int csId; //is the phone_id
     private int eventType; //add, modify, delete
-    private String serializedData; //json data
+    private String serializedData; //json data che verranno inviati al server
 
-    public DbMediaEvent(int id, int csId, int eventType, String serializedData) {
+    public DbMediaEvent(long id, int csId, int eventType, String serializedData) {
         this.id = id;
         this.csId = csId;//contact.contact_id
         this.eventType = eventType;
         this.serializedData = serializedData;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -51,6 +53,11 @@ public class DbMediaEvent {
 
     public void setSerializedData(String serializedData) {
         this.serializedData = serializedData;
+    }
+
+    public void deleteMe() {
+        DbMediaEventDAO dbMediaEventDAO = new DbMediaEventDAO();
+        dbMediaEventDAO.delete(this);
     }
 
     public void dump() {
