@@ -16,7 +16,7 @@ import static org.teenguard.child.dbdao.DbMediaDAO.MEDIA_TABLE;
 
 public class DbMediaEventDAO extends GenericDbDAO {
     //contact table
-    public final static String MEDIA_EVENT_TABLE = "contact_event";
+    public final static String MEDIA_EVENT_TABLE = "media_event";
     public final static String MEDIA_EVENT_ID = "_id";
     public final static String MEDIA_EVENT_CS_ID = "cs_id"; //foreign key references contact._id
     public final static String MEDIA_EVENT_TYPE = "event_type";

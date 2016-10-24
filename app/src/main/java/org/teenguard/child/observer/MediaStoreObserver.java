@@ -95,7 +95,7 @@ public class MediaStoreObserver extends ContentObserver {
             dbMediaDAO.beginTransaction();
             try {
                 long mediaId = dbMediaDAO.upsert(dbMedia);//is insert
-                MyLog.i(this, "inserted into db _id: " + mediaId);
+                MyLog.i(this, "inserted into media table _id: " + mediaId);
                 dbMedia.setId(mediaId);//il dbMedia in ram e' allineato con quello del db
                 DbMediaEvent dbMediaEvent = new DbMediaEvent(0, deviceMedia.getPhoneId(), DbMediaEvent.MEDIA_EVENT_ADD, deviceMedia.getMetadataJsonSTR());
                 MyLog.i(this, "inserting into media_event json "  + dbMediaEvent.getSerializedData());
