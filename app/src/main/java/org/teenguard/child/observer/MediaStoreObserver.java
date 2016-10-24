@@ -52,6 +52,7 @@ public class MediaStoreObserver extends ContentObserver {
     @Override
     public void onChange(boolean selfChange, Uri uri) {
         MyLog.i(this,"<<<< USER MEDIA LIST CHANGED >>>>");
+
         super.onChange(selfChange);
 //load user_media_list
         deviceMediaHM = DeviceMediaDAO.getDeviceMediaHM();
@@ -73,6 +74,7 @@ public class MediaStoreObserver extends ContentObserver {
             MyLog.i(this,"userHM < dbHM : media deleted");
             manageMediaDeleted();
         }
+        flushMediaEventTable();
     }
 
     private void manageMediaAdded() {
@@ -111,8 +113,8 @@ public class MediaStoreObserver extends ContentObserver {
                     MyLog.i(this,"SENT NEW USER MEDIA TO SERVER");
                     dbMediaEvent.deleteMe();
                 }
-                flushMediaEventTable();
-                System.out.println("flushed");
+                /*flushMediaEventTable();
+                System.out.println("flushed");*/
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -166,8 +168,7 @@ public class MediaStoreObserver extends ContentObserver {
                     MyLog.i(this,"REMOVED MEDIA FROM SERVER");
                     dbMediaEvent.deleteMe();
                 }
-                flushMediaEventTable();
-                System.out.println("flushed");
+                /*flushMediaEventTable();*/
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -265,7 +266,7 @@ public class MediaStoreObserver extends ContentObserver {
             nInserted ++;
         }
         MyLog.i(this," Inserted " +  nInserted + " records into media table");
-        flushMediaEventTable();//not tested
+        /*flushMediaEventTable();//not tested*/
         return true;
     }
 

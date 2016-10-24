@@ -47,101 +47,7 @@ public class ContactListObserver extends ContentObserver {
 
     }
 
-    /**
-     * transmit events to server and cleanup events table
-     */
-    public void flushContactEventTable() {
-        MyLog.i(this, "FLUSHING contact event table");
-        //DbContactEventDAO dbContactEventDAO = new DbContactEventDAO();
-        ArrayList<DbContactEvent> dbContactEventAL = dbContactEventDAO.getList();
-        if(dbContactEventAL.size() == 0 ) {
-            MyLog.i(this, "no events to flush: return");
-            return;
-        }
-        StringBuilder addEventSB = new StringBuilder();
-        StringBuilder updateEventSB = new StringBuilder();
-        StringBuilder deleteEventSB = new StringBuilder();
-        String addEventIdToRemoveList = "";         //lista degli eventi ADD da rimuovere dal db dopo l'ok del server
-        String updateEventIdToRemoveList = "";      //lista degli eventi UPDATE da rimuovere dal db dopo l'ok del server
-        String deleteEventIdToRemoveList = "";      //lista degli eventi DELETE da rimuovere dal db dopo l'ok del server
 
-        for (DbContactEvent dbContactEvent : dbContactEventAL) {
-            dbContactEvent.dump();
-            switch (dbContactEvent.getEventType()) {
-                case DbContactEvent.CONTACT_EVENT_ADD: {
-                    addEventSB.append(dbContactEvent.getSerializedData() + ",");
-                    addEventIdToRemoveList += dbContactEvent.getId() + ",";
-                    break;
-                }
-                case DbContactEvent.CONTACT_EVENT_MODIFY: {
-                    updateEventSB.append(dbContactEvent.getSerializedData() + ",");
-                    updateEventIdToRemoveList += dbContactEvent.getId() + ",";
-                    break;
-                }
-                case DbContactEvent.CONTACT_EVENT_DELETE: {
-                    deleteEventSB.append("\"" + dbContactEvent.getCsId() + "\"" + ",");
-                    deleteEventIdToRemoveList += dbContactEvent.getId() + ",";
-                    break;
-                }
-            }
-        }//fine for
-
-        /////add
-        String addDataBulkSTR = addEventSB.toString();
-        if (addDataBulkSTR.length() > 0) {//ci sono eventi add
-            if (addDataBulkSTR.endsWith(",")) {
-                addDataBulkSTR = addDataBulkSTR.substring(0, addDataBulkSTR.length() - 1);
-            }
-            if (addEventIdToRemoveList.endsWith(",")) {
-                addEventIdToRemoveList = addEventIdToRemoveList.substring(0, addEventIdToRemoveList.length() - 1);
-            }
-            System.out.println("addDataBulkSTR = " + addDataBulkSTR);
-            addDataBulkSTR = "[" + addDataBulkSTR + "]";
-            MyServerResponse myServerResponse = ServerApiUtils.addContactToServer(addDataBulkSTR);
-            if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                MyLog.i(this, "ADD BULK CONTACT SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
-                dbContactEventDAO.delete(addEventIdToRemoveList);
-                MyLog.i(this, "deleted from events list " + addEventIdToRemoveList);
-            }
-        }
-        /////update
-        String updateEventSTR = updateEventSB.toString();
-        if (updateEventSTR.length() > 0) { //ci sono eventi update
-            if (updateEventSTR.endsWith(",")) {
-                updateEventSTR = updateEventSTR.substring(0, updateEventSTR.length() - 1);
-            }
-            if (updateEventIdToRemoveList.endsWith(",")) {
-                updateEventIdToRemoveList = updateEventIdToRemoveList.substring(0, updateEventIdToRemoveList.length() - 1);
-            }
-            System.out.println("updateEventSTR = " + updateEventSTR);
-            updateEventSTR = "[" + updateEventSTR + "]";
-            MyServerResponse myServerResponse = ServerApiUtils.updateContactIntoServer(updateEventSTR);
-            if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                MyLog.i(this, "UPDATE BULK CONTACT SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
-                dbContactEventDAO.delete(updateEventIdToRemoveList);
-                MyLog.i(this, "deleted from events list " + updateEventIdToRemoveList);
-            }
-        }
-        /////delete
-        String deleteDataBulkSTR = deleteEventSB.toString();
-        if (deleteDataBulkSTR.length() > 0) { //ci sono eventi delete
-            if (deleteDataBulkSTR.endsWith(",")) {
-                deleteDataBulkSTR = deleteDataBulkSTR.substring(0, deleteDataBulkSTR.length() - 1);
-            }
-            if (deleteEventIdToRemoveList.endsWith(",")) {
-                deleteEventIdToRemoveList = deleteEventIdToRemoveList.substring(0, deleteEventIdToRemoveList.length() - 1);
-            }
-            System.out.println("deleteDataBulkSTR = " + deleteDataBulkSTR);
-            deleteDataBulkSTR = "[" + deleteDataBulkSTR + "]";
-            MyServerResponse myServerResponse = ServerApiUtils.deleteContactFromServer(deleteDataBulkSTR);
-            if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                MyLog.i(this, "DELETE BULK CONTACT SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
-                dbContactEventDAO.delete(deleteEventIdToRemoveList);
-                MyLog.i(this, "deleted from events list " + deleteEventIdToRemoveList);
-            }
-        }
-        System.out.println("contact event flushed");
-    }
 
     @Override
     public void onChange(boolean selfChange) {
@@ -182,7 +88,7 @@ public class ContactListObserver extends ContentObserver {
         }
         /*dbContactEventDAO.close();
         dbContactDAO.close();*/
-
+        flushContactEventTable();
     }
 
 
@@ -377,5 +283,102 @@ public class ContactListObserver extends ContentObserver {
             MyLog.i(this,"Inserted " +  nInserted + " records into contact table");
       /*  flushContactEventTable();*/
         return true;
+    }
+
+    /**
+     * transmit events to server and cleanup events table
+     */
+    public void flushContactEventTable() {
+        MyLog.i(this, "FLUSHING contact event table");
+        //DbContactEventDAO dbContactEventDAO = new DbContactEventDAO();
+        ArrayList<DbContactEvent> dbContactEventAL = dbContactEventDAO.getList();
+        if(dbContactEventAL.size() == 0 ) {
+            MyLog.i(this, "no events to flush: return");
+            return;
+        }
+        StringBuilder addEventSB = new StringBuilder();
+        StringBuilder updateEventSB = new StringBuilder();
+        StringBuilder deleteEventSB = new StringBuilder();
+        String addEventIdToRemoveList = "";         //lista degli eventi ADD da rimuovere dal db dopo l'ok del server
+        String updateEventIdToRemoveList = "";      //lista degli eventi UPDATE da rimuovere dal db dopo l'ok del server
+        String deleteEventIdToRemoveList = "";      //lista degli eventi DELETE da rimuovere dal db dopo l'ok del server
+
+        for (DbContactEvent dbContactEvent : dbContactEventAL) {
+            dbContactEvent.dump();
+            switch (dbContactEvent.getEventType()) {
+                case DbContactEvent.CONTACT_EVENT_ADD: {
+                    addEventSB.append(dbContactEvent.getSerializedData() + ",");
+                    addEventIdToRemoveList += dbContactEvent.getId() + ",";
+                    break;
+                }
+                case DbContactEvent.CONTACT_EVENT_MODIFY: {
+                    updateEventSB.append(dbContactEvent.getSerializedData() + ",");
+                    updateEventIdToRemoveList += dbContactEvent.getId() + ",";
+                    break;
+                }
+                case DbContactEvent.CONTACT_EVENT_DELETE: {
+                    deleteEventSB.append("\"" + dbContactEvent.getCsId() + "\"" + ",");
+                    deleteEventIdToRemoveList += dbContactEvent.getId() + ",";
+                    break;
+                }
+            }
+        }//fine for
+
+        /////add
+        String addDataBulkSTR = addEventSB.toString();
+        if (addDataBulkSTR.length() > 0) {//ci sono eventi add
+            if (addDataBulkSTR.endsWith(",")) {
+                addDataBulkSTR = addDataBulkSTR.substring(0, addDataBulkSTR.length() - 1);
+            }
+            if (addEventIdToRemoveList.endsWith(",")) {
+                addEventIdToRemoveList = addEventIdToRemoveList.substring(0, addEventIdToRemoveList.length() - 1);
+            }
+            System.out.println("addDataBulkSTR = " + addDataBulkSTR);
+            addDataBulkSTR = "[" + addDataBulkSTR + "]";
+                MyServerResponse myServerResponse = ServerApiUtils.addContactToServer(addDataBulkSTR);
+
+            if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+                MyLog.i(this, "ADD BULK CONTACT SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
+                dbContactEventDAO.delete(addEventIdToRemoveList);
+                MyLog.i(this, "deleted from events list " + addEventIdToRemoveList);
+            }
+        }
+        /////update
+        String updateEventSTR = updateEventSB.toString();
+        if (updateEventSTR.length() > 0) { //ci sono eventi update
+            if (updateEventSTR.endsWith(",")) {
+                updateEventSTR = updateEventSTR.substring(0, updateEventSTR.length() - 1);
+            }
+            if (updateEventIdToRemoveList.endsWith(",")) {
+                updateEventIdToRemoveList = updateEventIdToRemoveList.substring(0, updateEventIdToRemoveList.length() - 1);
+            }
+            System.out.println("updateEventSTR = " + updateEventSTR);
+            updateEventSTR = "[" + updateEventSTR + "]";
+            MyServerResponse myServerResponse = ServerApiUtils.updateContactIntoServer(updateEventSTR);
+            if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+                MyLog.i(this, "UPDATE BULK CONTACT SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
+                dbContactEventDAO.delete(updateEventIdToRemoveList);
+                MyLog.i(this, "deleted from events list " + updateEventIdToRemoveList);
+            }
+        }
+        /////delete
+        String deleteDataBulkSTR = deleteEventSB.toString();
+        if (deleteDataBulkSTR.length() > 0) { //ci sono eventi delete
+            if (deleteDataBulkSTR.endsWith(",")) {
+                deleteDataBulkSTR = deleteDataBulkSTR.substring(0, deleteDataBulkSTR.length() - 1);
+            }
+            if (deleteEventIdToRemoveList.endsWith(",")) {
+                deleteEventIdToRemoveList = deleteEventIdToRemoveList.substring(0, deleteEventIdToRemoveList.length() - 1);
+            }
+            System.out.println("deleteDataBulkSTR = " + deleteDataBulkSTR);
+            deleteDataBulkSTR = "[" + deleteDataBulkSTR + "]";
+            MyServerResponse myServerResponse = ServerApiUtils.deleteContactFromServer(deleteDataBulkSTR);
+            if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+                MyLog.i(this, "DELETE BULK CONTACT SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
+                dbContactEventDAO.delete(deleteEventIdToRemoveList);
+                MyLog.i(this, "deleted from events list " + deleteEventIdToRemoveList);
+            }
+        }
+
     }
 }
