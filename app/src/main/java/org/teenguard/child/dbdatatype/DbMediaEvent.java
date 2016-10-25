@@ -12,13 +12,13 @@ public class DbMediaEvent {
     public final static int MEDIA_EVENT_COMPRESSED = 2;
 
     private long id; //autoincrement
-    private int csId; //is the phone_id
+    private long csId; //is the phone_id
     private int eventType; //add, modify, delete
     private String serializedData; //json data che verranno inviati al server
 
     public DbMediaEvent(long id, int csId, int eventType, String serializedData) {
         this.id = id;
-        this.csId = csId;//contact.contact_id
+        this.csId = csId;//media._id
         this.eventType = eventType;
         this.serializedData = serializedData;
     }
@@ -31,11 +31,11 @@ public class DbMediaEvent {
         this.id = id;
     }
 
-    public int getCsId() {
+    public long getCsId() {
         return csId;
     }
 
-    public void setCsId(int csId) {
+    public void setCsId(long csId) {
         this.csId = csId;
     }
 

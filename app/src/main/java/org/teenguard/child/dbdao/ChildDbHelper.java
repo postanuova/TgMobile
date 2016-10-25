@@ -11,7 +11,9 @@ import org.teenguard.child.utils.MyLog;
  */
 
 // W/SQLiteConnectionPool: A SQLiteConnection object for database '/data/data/org.teenguard.localizationappnew/databases/contactDB' was leaked!  Please fix your application to end transactions in progress properly and to close the database when it is no longer needed.
-
+// TODO: 25/10/16 gestione transazioni centralizzata
+// TODO: 25/10/16  rendere l'helper un singleton
+//http://stackoverflow.com/questions/21644132/trying-to-increase-speed-of-bulk-inserts-in-sqlite
 public class ChildDbHelper extends SQLiteOpenHelper {
 
 

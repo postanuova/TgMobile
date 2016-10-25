@@ -2,6 +2,7 @@ package org.teenguard.child.dbdao;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteStatement;
 
 import org.teenguard.child.dbdatatype.DbContact;
 import org.teenguard.child.utils.MyLog;
@@ -120,6 +121,36 @@ public class DbContactDAO extends GenericDbDAO{
         String deleteQuery = "DELETE FROM " + CONTACT_TABLE + " WHERE " + CONTACT_ID + "=" + dbContact.getId() + ";";
         MyLog.i(this,"deleting contact = " + dbContact.getName() + " phoneId = " + dbContact.getPhoneId() + " query " + deleteQuery);
         db.execSQL(deleteQuery);
+    }
+
+    /*this.id = id;
+    this.phoneId = phoneId;
+    this.name = name;
+    this.lastModified = lastModified;
+    this.setSerializedData(serializedData);*/
+    public boolean bulkInsert(ConcurrentHashMap<Integer,DbContact> dbContactHM) {
+        String sql = "insert into contact values(?,?,?,?,?);";
+        SQLiteStatement sqLiteStatement = db.compileStatement(sql);
+        beginTransaction();
+        try {
+            for (DbContact dbContact : dbContactHM.values()) {
+                sqLiteStatement.clearBindings();
+                sqLiteStatement.bindNull(0);
+                sqLiteStatement.bindLong(1,dbContact.getPhoneId());
+                sqLiteStatement.bindString(2,dbContact.getName());
+                sqLiteStatement.bindLong(3,dbContact.getLastModified());
+                sqLiteStatement.bindString(4,dbContact.getSerializedData());
+                sqLiteStatement.executeInsert();
+            }
+            setTransactionSuccessful();
+        } catch (Exception e) {
+            System.out.println("ERROR: BULK INSERT FAILED");
+            e.printStackTrace();
+        }
+            finally {
+                endTransaction();
+            }
+        return true;
     }
 
     public DbContact getDbContactFromPhoneId (int phoneId) {

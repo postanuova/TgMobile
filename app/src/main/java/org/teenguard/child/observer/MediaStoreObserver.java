@@ -34,8 +34,9 @@ public class MediaStoreObserver extends ContentObserver {
         deviceMediaHM = DeviceMediaDAO.getDeviceMediaHM();
         dbMediaHM = dbMediaDAO.getDbMediaHM();
         if (dbMediaHM.size() == 0) {
-            MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user contact list: REMEMBER TO IMPLEMENT BULK INSERT!!!!!!!!!!");
-            insertDeviceMediaHMIntoDB();
+            MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user media list:BULK INSERT!!!!!!!!!!");
+            //insertDeviceMediaHMIntoDB();
+            dbMediaDAO.bulkInsert(dbMediaHM);
         }
      /*   MyLog.i(this,"invoking on change MediaObserver on startup");
         onChange(false);*/
@@ -61,7 +62,8 @@ public class MediaStoreObserver extends ContentObserver {
 
         if(dbMediaHM.size() == 0) {
             MyLog.i(this,"dbHM =0 -->  empty DB: populate DB with user media list");
-            insertDeviceMediaHMIntoDB();
+            //insertDeviceMediaHMIntoDB();
+            dbMediaDAO.bulkInsert(dbMediaHM);
         }
 
         if((dbMediaHM.size() >0) && (deviceMediaHM.size() > dbMediaHM.size())) {
@@ -71,7 +73,7 @@ public class MediaStoreObserver extends ContentObserver {
 
 
         if((dbMediaHM.size() >0) && (deviceMediaHM.size() < dbMediaHM.size())) {
-            MyLog.i(this,"userHM < dbHM : media deleted");
+            MyLog.i(this," userHM < dbHM : media deleted");
             manageMediaDeleted();
         }
         flushMediaEventTable();
@@ -108,6 +110,7 @@ public class MediaStoreObserver extends ContentObserver {
                 dbMediaDAO.endTransaction();              //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
                 MyLog.i(this,"SENDING NEW USER MEDIA TO SERVER");
                 MyServerResponse myServerResponse = ServerApiUtils.addMediaToServer("[" + dbMediaEvent.getSerializedData() + "]");
+                //TODO: coda compressione
                 myServerResponse.dump();
                 if(myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
                     MyLog.i(this,"SENT NEW USER MEDIA TO SERVER");
@@ -255,7 +258,12 @@ public class MediaStoreObserver extends ContentObserver {
         }
     }
 
+    /**
+     * used with empty db
+     * @return
+     */
     private boolean insertDeviceMediaHMIntoDB() {
+        //// TODO: 25/10/16 bulk insert
         MyLog.i(this,"deviceMediaHM" + deviceMediaHM.size() + " inserting into media table: wait...");
         long nInserted = 0;
         for (DeviceMedia deviceMedia : deviceMediaHM.values()) {

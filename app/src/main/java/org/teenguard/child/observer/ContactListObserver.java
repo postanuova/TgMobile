@@ -38,8 +38,9 @@ public class ContactListObserver extends ContentObserver {
         dbContactHM = dbContactDAO.getDbContactHM();
         deviceContactHM = DeviceContactDAO.getDeviceContactHM();
         if(dbContactHM.size() == 0) {
-            MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user contact list: REMEMBER TO IMPLEMENT BULK INSERT!!!!!!!!!!");
-            insertDeviceContactHMIntoDB();
+            MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user contact list: BULK INSERT!!!!!!!!!!");
+            //insertDeviceContactHMIntoDB();
+            dbContactDAO.bulkInsert(dbContactHM);
         }
        /* MyLog.i(this,"invoking on change ContactObserver on startup");
         onChange(false);*/
@@ -68,7 +69,8 @@ public class ContactListObserver extends ContentObserver {
 
         if(dbContactHM.size() == 0) {
             MyLog.i(this,"dbHM =0 --> onChange empty DB: populate DB with user contact list");
-            insertDeviceContactHMIntoDB();
+            //insertDeviceContactHMIntoDB();
+            dbContactDAO.bulkInsert(dbContactHM);
         }
 
         if((dbContactHM.size() >0) && (deviceContactHM.size() == dbContactHM.size())) {
@@ -114,7 +116,7 @@ public class ContactListObserver extends ContentObserver {
                 deviceContact.dump();
                 MyLog.i(this, "inserted into contact _id: " + contactId);
                 dbContact.setId(contactId);
-                DbContactEvent dbContactEvent = new DbContactEvent(0, deviceContact.getPhoneId(), DbContactEvent.CONTACT_EVENT_ADD, dbContact.getJson().getJSonString());
+                DbContactEvent dbContactEvent = new DbContactEvent(0, dbContact.getId(), DbContactEvent.CONTACT_EVENT_ADD, dbContact.getJson().getJSonString());
                 MyLog.i(this, "inserting into contact_event json " + dbContact.getJson().getJSonString());
                 long contactEventId = dbContactEventDAO.upsert(dbContactEvent);
                 dbContactEvent.setId(contactEventId);
@@ -177,7 +179,7 @@ public class ContactListObserver extends ContentObserver {
                 dbContact.dump();
                 MyLog.i(this, "updated into contact _id: " + contactId);
 
-                DbContactEvent dbContactEvent = new DbContactEvent(0, dbContact.getPhoneId(), DbContactEvent.CONTACT_EVENT_MODIFY, dbContact.getJson().getJSonString());
+                DbContactEvent dbContactEvent = new DbContactEvent(0, dbContact.getId(), DbContactEvent.CONTACT_EVENT_MODIFY, dbContact.getJson().getJSonString());
                 MyLog.i(this, "inserting into contact_event json " + dbContact.getJson().getJSonString());
                 long contactEventId = dbContactEventDAO.upsert(dbContactEvent);
                 dbContactEvent.setId(contactEventId);
@@ -228,7 +230,7 @@ public class ContactListObserver extends ContentObserver {
             try {
                 dbContactDAO.removeContact(dbContact);
                 MyLog.i(this,"removed from db");
-                DbContactEvent dbContactEvent = new DbContactEvent(0, dbContact.getPhoneId(), DbContactEvent.CONTACT_EVENT_DELETE, dbContact.getJson().getJSonString());
+                DbContactEvent dbContactEvent = new DbContactEvent(0, dbContact.getId(), DbContactEvent.CONTACT_EVENT_DELETE, dbContact.getJson().getJSonString());
                 MyLog.i(this, "inserting into contact_event json " + dbContact.getJson().getJSonString());
                 long contactEventId = dbContactEventDAO.upsert(dbContactEvent);
                 dbContactEvent.setId(contactEventId);
@@ -239,7 +241,7 @@ public class ContactListObserver extends ContentObserver {
                 dbContactDAO.endTransaction();
                 MyLog.i(this," SEND REMOVED CONTACT TO SERVER");
                 MyServerResponse myServerResponse = new MyServerResponse();
-                myServerResponse = ServerApiUtils.deleteContactFromServer(String.valueOf(dbContactEvent.getCsId()));
+                myServerResponse = ServerApiUtils.deleteContactFromServer(String.valueOf(dbContactEvent.getCsId()));//csId contiene contact._id
                 //VolleyConnectionUtils.doRequest(Request.Method.POST,"http://92.222.83.28/api.php","[" + dbContactEvent.getSerializedData() + "]");
                 myServerResponse.dump();
                 if(myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
@@ -270,6 +272,7 @@ public class ContactListObserver extends ContentObserver {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private boolean insertDeviceContactHMIntoDB() {
+        // TODO: 25/10/16 bulk insert 
         MyLog.i(this,"deviceContactHM" + deviceContactHM.size() + " inserting into contact table: wait...");
             //emptyContactTable();
             long nInserted = 0;
@@ -281,9 +284,11 @@ public class ContactListObserver extends ContentObserver {
                 nInserted ++;
             }
             MyLog.i(this,"Inserted " +  nInserted + " records into contact table");
-      /*  flushContactEventTable();*/
         return true;
     }
+
+
+
 
     /**
      * transmit events to server and cleanup events table

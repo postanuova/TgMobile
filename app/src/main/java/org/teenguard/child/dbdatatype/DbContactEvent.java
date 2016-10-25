@@ -12,11 +12,11 @@ public class DbContactEvent {
     public final static int CONTACT_EVENT_DELETE = 2;
 
     private long id; //autoincrement
-    private int csId; //is the phone_id
+    private long csId; //is contact._id
     private int eventType; //add, modofy, delete
     private String serializedData; //json data
 
-    public DbContactEvent(int id, int csId,int eventType, String serializedData) {
+    public DbContactEvent(long id, long csId,int eventType, String serializedData) {
         this.id = id;//autoincrement
         this.csId = csId;//contact.contact_id
         this.eventType = eventType;
@@ -31,11 +31,11 @@ public class DbContactEvent {
         this.id = id;
     }
 
-    public int getCsId() {
+    public long getCsId() {
         return csId;
     }
 
-    public void setCsId(int csId) {
+    public void setCsId(long csId) {
         this.csId = csId;
     }
 

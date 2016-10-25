@@ -2,6 +2,7 @@ package org.teenguard.child.dbdao;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteStatement;
 
 import org.teenguard.child.dbdatatype.DbMedia;
 import org.teenguard.child.utils.MyLog;
@@ -94,6 +95,28 @@ public class DbMediaDAO extends GenericDbDAO{
 
     public boolean emptyTable() {
         db.execSQL("DELETE FROM " +MEDIA_TABLE + ";");
+        return true;
+    }
+
+    public boolean bulkInsert(ConcurrentHashMap<Integer,DbMedia> dbMediaHM) {
+        String sql = "insert into media values(?,?);";
+        SQLiteStatement sqLiteStatement = db.compileStatement(sql);
+        beginTransaction();
+        try {
+            for (DbMedia dbMedia : dbMediaHM.values()) {
+                sqLiteStatement.clearBindings();
+                sqLiteStatement.bindNull(0);
+                sqLiteStatement.bindLong(1,dbMedia.getPhoneId());
+                sqLiteStatement.executeInsert();
+            }
+            setTransactionSuccessful();
+        } catch (Exception e) {
+            System.out.println("ERROR: BULK INSERT FAILED");
+            e.printStackTrace();
+        }
+        finally {
+            endTransaction();
+        }
         return true;
     }
 
