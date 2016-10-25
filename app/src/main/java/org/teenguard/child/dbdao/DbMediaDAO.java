@@ -98,7 +98,8 @@ public class DbMediaDAO extends GenericDbDAO{
         return true;
     }
 
-    public boolean bulkInsert(ConcurrentHashMap<Integer,DbMedia> dbMediaHM) {
+    public long bulkInsert(ConcurrentHashMap<Integer,DbMedia> dbMediaHM) {
+        long nInserted = 0;
         String sql = "insert into media values(?,?);";
         SQLiteStatement sqLiteStatement = db.compileStatement(sql);
         beginTransaction();
@@ -108,6 +109,7 @@ public class DbMediaDAO extends GenericDbDAO{
                 sqLiteStatement.bindNull(0);
                 sqLiteStatement.bindLong(1,dbMedia.getPhoneId());
                 sqLiteStatement.executeInsert();
+                nInserted ++;
             }
             setTransactionSuccessful();
         } catch (Exception e) {
@@ -117,7 +119,7 @@ public class DbMediaDAO extends GenericDbDAO{
         finally {
             endTransaction();
         }
-        return true;
+        return nInserted;
     }
 
 }

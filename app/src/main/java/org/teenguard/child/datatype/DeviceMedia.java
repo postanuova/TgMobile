@@ -6,6 +6,8 @@ import android.provider.MediaStore;
 
 import org.teenguard.child.utils.JSon;
 
+import static android.R.attr.id;
+
 /**
  * Created by chris on 16/10/16.
  */
@@ -13,6 +15,11 @@ import org.teenguard.child.utils.JSon;
 public class DeviceMedia {
     public static final Uri PHOTO_INTERNAL_CONTENT_URI = MediaStore.Images.Media.INTERNAL_CONTENT_URI;
     public static final Uri PHOTO_EXTERNAL_CONTENT_URI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+
+    public static final int MEDIA_TYPE_PHOTO = 0;
+    public static final int MEDIA_TYPE_VIDEO = 1;
+    public static final int MEDIA_TYPE_AUDIO = 2;
+
     
     private int phoneId;
     private String dateTaken;
@@ -20,13 +27,23 @@ public class DeviceMedia {
     private int mediaDuration;
     private float latitude;
     private float longitude;
-    private int accuracy;
+    private float accuracy;
+    private String uri;
 
-    public DeviceMedia(int phoneId, String dateTaken) {
+    public DeviceMedia(int phoneId, String dateTaken, int mediaType,int mediaDuration,float latitude, float longitude, float accuracy, String uri) {
         this.phoneId = phoneId;
         this.dateTaken = dateTaken;
+        this.mediaType = mediaType;
+        this.mediaDuration = mediaDuration;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.accuracy = accuracy;
+        this.uri = uri;
 
     }
+
+
+
 
     public String getMetadataJsonSTR() {
         JSon jSon = new JSon();
@@ -42,9 +59,17 @@ public class DeviceMedia {
 
     public void dump() {
         System.out.println("-------------DEVICE MEDIA DUMP-------------");
-        //  System.out.println("id = " + id);
+        System.out.println("id = " + id);
         System.out.println("phoneId = " + phoneId);
         System.out.println("dateTaken = " + dateTaken);
+        System.out.println("phoneId = " + phoneId);
+        System.out.println("dateTaken = " + dateTaken);
+        System.out.println("mediaType = " + mediaType);
+        System.out.println("mediaDuration = " + mediaDuration);
+        System.out.println("latitude = " + latitude);
+        System.out.println("longitude = " + longitude);
+        System.out.println("accuracy = " + accuracy);
+        System.out.println("uri = " + uri);
     }
 
     public int getPhoneId() {
@@ -95,11 +120,19 @@ public class DeviceMedia {
         this.longitude = longitude;
     }
 
-    public int getAccuracy() {
+    public float getAccuracy() {
         return accuracy;
     }
 
-    public void setAccuracy(int accuracy) {
+    public void setAccuracy(float accuracy) {
         this.accuracy = accuracy;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 }

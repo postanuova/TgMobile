@@ -34,9 +34,11 @@ public class MediaStoreObserver extends ContentObserver {
         deviceMediaHM = DeviceMediaDAO.getDeviceMediaHM();
         dbMediaHM = dbMediaDAO.getDbMediaHM();
         if (dbMediaHM.size() == 0) {
-            MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user media list:BULK INSERT!!!!!!!!!!");
+            MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user media list:BULK INSERT!");
             //insertDeviceMediaHMIntoDB();
-            dbMediaDAO.bulkInsert(dbMediaHM);
+            MyLog.i(this,"deviceMediaHM" + deviceMediaHM.size() + " inserting into media table: wait...");
+            long nInserted = dbMediaDAO.bulkInsert(dbMediaHM);
+            MyLog.i(this," Inserted " +  nInserted + " records into media table");
         }
      /*   MyLog.i(this,"invoking on change MediaObserver on startup");
         onChange(false);*/
@@ -258,7 +260,7 @@ public class MediaStoreObserver extends ContentObserver {
         }
     }
 
-    /**
+    /**DEPRECATED
      * used with empty db
      * @return
      */
