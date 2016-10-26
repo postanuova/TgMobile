@@ -28,10 +28,11 @@ public class DeviceMedia {
     private float latitude;
     private float longitude;
     private float accuracy;
+    private String displayName;
     private String uri;
     private String path;
 
-    public DeviceMedia(int phoneId, long dateTaken, int mediaType,int mediaDuration,float latitude, float longitude, float accuracy, String uri, String path) {
+    public DeviceMedia(int phoneId, long dateTaken, int mediaType,int mediaDuration,float latitude, float longitude, float accuracy, String uri, String path, String displayName) {
         this.setPhoneId(phoneId);
         this.setDateTaken(dateTaken);
         this.setMediaType(mediaType);
@@ -41,6 +42,7 @@ public class DeviceMedia {
         this.setAccuracy(accuracy);
         this.setUri(uri);
         this.setPath(path);
+        this.displayName = displayName;
     }
 
 
@@ -63,8 +65,6 @@ public class DeviceMedia {
         System.out.println("id = " + id);
         System.out.println("phoneId = " + getPhoneId());
         System.out.println("dateTaken = " + getDateTaken());
-        System.out.println("phoneId = " + getPhoneId());
-        System.out.println("dateTaken = " + getDateTaken());
         System.out.println("mediaType = " + getMediaType());
         System.out.println("mediaDuration = " + getMediaDuration());
         System.out.println("latitude = " + getLatitude());
@@ -72,6 +72,7 @@ public class DeviceMedia {
         System.out.println("accuracy = " + getAccuracy());
         System.out.println("uri = " + getUri());
         System.out.println("path = " + getPath());
+        System.out.println("displayName = " + displayName);
     }
 
     public int getPhoneId() {
@@ -144,5 +145,13 @@ public class DeviceMedia {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 }

@@ -1,7 +1,6 @@
 package org.teenguard.child.utils;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -30,6 +29,12 @@ public class ImageUtils {
         Uri uri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 Integer.toString(phoneId));
         return uri;
+    }
+
+
+    public static Bitmap getBitmapFromDataPath(String dataPath) {
+        System.out.println("getBitmapFromDataPath :loading bitmap " + dataPath);
+        return BitmapFactory.decodeFile(dataPath);
     }
 
     public static Bitmap getImageBitmapFromURI(Uri uri) {
@@ -65,11 +70,9 @@ public class ImageUtils {
        return uri;
     }
 
-    public static Bitmap compress(Context inContext, Bitmap inImage) {
+    public static Bitmap compress(Bitmap inImage, int quality) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        //String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "chris_compresso", null);
-        //return Uri.parse(path);
+         inImage.compress(Bitmap.CompressFormat.JPEG, quality, bytes);
         return inImage;
     }
 
@@ -85,11 +88,11 @@ public class ImageUtils {
         System.out.println("bitmap getWidth = " + bitmap.getWidth());
     }
 
-    public static void storeImage(Bitmap image) {
+    public static File storeImage(Bitmap image) {
         File pictureFile = getOutputMediaFile();
         if (pictureFile == null) {
             System.out.println("Error creating media file, check storage permissions: ");// e.getMessage());
-            return;
+            return null;
         }
         try {
             FileOutputStream fos = new FileOutputStream(pictureFile);
@@ -100,6 +103,7 @@ public class ImageUtils {
         } catch (IOException e) {
             System.out.println(" Error accessing file: " + e.getMessage());
         }
+        return pictureFile;
     }
 
     private static File getOutputMediaFile(){

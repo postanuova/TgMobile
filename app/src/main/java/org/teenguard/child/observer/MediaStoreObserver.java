@@ -1,6 +1,7 @@
 package org.teenguard.child.observer;
 
 import android.database.ContentObserver;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
@@ -12,9 +13,11 @@ import org.teenguard.child.dbdao.DbMediaDAO;
 import org.teenguard.child.dbdao.DbMediaEventDAO;
 import org.teenguard.child.dbdatatype.DbMedia;
 import org.teenguard.child.dbdatatype.DbMediaEvent;
+import org.teenguard.child.utils.ImageUtils;
 import org.teenguard.child.utils.MyLog;
 import org.teenguard.child.utils.ServerApiUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -74,11 +77,11 @@ public class MediaStoreObserver extends ContentObserver {
             MyLog.i(this," userHM < dbHM : media deleted");
             manageMediaDeleted();
         }
-        flushMediaEventTable();
+        // TODO: 26/10/16 riattivare il flush!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+        //flushMediaEventTable();
     }
 
     private void manageMediaAdded() {
-        MyLog.i(this, "manageMediaAdded not completed");
         //per ogni deviceMediaHM.phoneId (key) che non esiste in dbMediaHM aggiungilo al db alla coda addedMediaAL dei contatti da aggiungere
         int counter = 0;
         ArrayList<DeviceMedia> addedDeviceMediaAL = new ArrayList();
@@ -106,16 +109,33 @@ public class MediaStoreObserver extends ContentObserver {
                 dbMediaDAO.setTransactionSuccessful();    //>>>>>>>>>>>>>>>>COMMIT TRANSACTION>>>>>>>>>>>>>>>>>>
                 MyLog.i(this, "ending transaction");
                 dbMediaDAO.endTransaction();              //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
-                MyLog.i(this,"SENDING NEW USER MEDIA TO SERVER");
+                MyLog.i(this,"SENDING NEW USER MEDIA(METADATA) TO SERVER");
                 MyServerResponse myServerResponse = ServerApiUtils.addMediaToServer("[" + dbMediaEvent.getSerializedData() + "]");
-                //TODO: coda compressione
                 myServerResponse.dump();
                 if(myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                    MyLog.i(this,"SENT NEW USER MEDIA TO SERVER");
-                    dbMediaEvent.deleteMe();
+                    MyLog.i(this,"SENT NEW USER MEDIA(METADATA) TO SERVER");
+                    dbMediaEvent.setEventType(DbMediaEvent.MEDIA_EVENT_SENT_METADATA_ONLY);
+                    dbMediaEventDAO.upsert(dbMediaEvent);
                 }
-                /*flushMediaEventTable();
-                System.out.println("flushed");*/
+                //TODO: coda compressione dbMediaEvent.deleteMe();
+                //resize e compressione
+                Bitmap bitmap = ImageUtils.getBitmapFromDataPath(dbMediaEvent.getPath());
+                System.out.println("original bitmap");
+                ImageUtils.dump(bitmap);
+                bitmap = ImageUtils.scaleBitmap(bitmap,300);
+                System.out.println("scaled bitmap");
+                ImageUtils.dump(bitmap);
+                bitmap = ImageUtils.compress(bitmap,35);
+                System.out.println("compressed bitmap");
+                ImageUtils.dump(bitmap);
+                File imageFile = ImageUtils.storeImage(bitmap);
+                System.out.println("imageFile.getAbsolutePath() = " + imageFile.getAbsolutePath());
+               
+                //scrivi path di compressione
+                //aggiorna flag mediaEvent
+                //invio file raw
+                //se response ok cancella da mediaEvent
+
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {

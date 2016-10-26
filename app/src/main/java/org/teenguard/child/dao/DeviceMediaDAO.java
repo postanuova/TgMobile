@@ -57,8 +57,12 @@ public class DeviceMediaDAO {
                 int mediaType = DeviceMedia.MEDIA_TYPE_PHOTO;
                 String dataPath = deviceMediaCursor.getString(dataPathIdx);
                 String displayName = deviceMediaCursor.getString(displayNameIdx);
-                System.out.println("dataPath = " + dataPath);
-                System.out.println("displayName = " + displayName);
+               /* System.out.println("dataPath = " + dataPath);
+                System.out.println("displayName = " + displayName);*/
+                String uriSTR = ImageUtils.uriFromFilename(displayName).getEncodedPath();
+                DeviceMedia deviceMedia = new DeviceMedia(phoneId, dateTaken, mediaType, mediaDuration, latitude, longitude, accuracy, uriSTR,dataPath,displayName);
+                deviceMediaHM.put(phoneId, deviceMedia);
+                deviceMedia.dump();
                 /*if (dataPath.contains("PHOTO_20161026")) {
                     Uri uri = ImageUtils.getUriFromPhoneId(phoneId);
                     System.out.println(">>>>>>>>>uri.getEncodedPath() = " + uri.getEncodedPath());
@@ -75,11 +79,9 @@ public class DeviceMediaDAO {
                     ImageUtils.storeImage(bitmap);
                     System.out.println("- ------------------");
                 }*/
-                String uriSTR = ImageUtils.uriFromFilename(displayName).getEncodedPath();
-                //public DeviceMedia(int phoneId, String dateTaken, int mediaType,int mediaDuration,float latitude, float longitude, float accuracy, String uri)
-                DeviceMedia deviceMedia = new DeviceMedia(phoneId, dateTaken, mediaType, mediaDuration, latitude, longitude, accuracy, uriSTR,dataPath);
-                deviceMediaHM.put(phoneId, deviceMedia);
-                deviceMedia.dump();
+
+                // public DeviceMedia(int phoneId, long dateTaken, int mediaType,int mediaDuration,float latitude, float longitude, float accuracy, String uri, String path) {
+
             }
             if ((deviceMediaCursor != null) && (!deviceMediaCursor.isClosed())) {
                 deviceMediaCursor.close();

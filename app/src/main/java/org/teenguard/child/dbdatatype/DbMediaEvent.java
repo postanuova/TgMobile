@@ -9,7 +9,10 @@ import org.teenguard.child.dbdao.DbMediaEventDAO;
 public class DbMediaEvent {
     public final static int MEDIA_EVENT_ADD = 0;
     public final static int MEDIA_EVENT_DELETE = 1;
-    public final static int MEDIA_EVENT_COMPRESSED = 2;
+    public final static int MEDIA_EVENT_SENT_METADATA_ONLY = 2;
+    public final static int MEDIA_EVENT_COMPRESSED = 3;
+
+
 
     private long id; //autoincrement
     private long csId; //is the phone_id
@@ -94,5 +97,7 @@ private String path;
     public void setCompressedMediaPath(String compressedMediaPath) {
         this.compressedMediaPath = compressedMediaPath;
     }
+
+
 }
 
