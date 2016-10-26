@@ -37,13 +37,9 @@ public class MediaStoreObserver extends ContentObserver {
             MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user media list:BULK INSERT!");
             //insertDeviceMediaHMIntoDB();
             MyLog.i(this,"deviceMediaHM" + deviceMediaHM.size() + " inserting into media table: wait...");
-            long nInserted = dbMediaDAO.bulkInsert(dbMediaHM);
+            long nInserted = dbMediaDAO.bulkInsert(deviceMediaHM);
             MyLog.i(this," Inserted " +  nInserted + " records into media table");
         }
-     /*   MyLog.i(this,"invoking on change MediaObserver on startup");
-        onChange(false);*/
-
-
     }
 
     @Override
@@ -65,7 +61,7 @@ public class MediaStoreObserver extends ContentObserver {
         if(dbMediaHM.size() == 0) {
             MyLog.i(this,"dbHM =0 -->  empty DB: populate DB with user media list");
             //insertDeviceMediaHMIntoDB();
-            dbMediaDAO.bulkInsert(dbMediaHM);
+            dbMediaDAO.bulkInsert(deviceMediaHM);
         }
 
         if((dbMediaHM.size() >0) && (deviceMediaHM.size() > dbMediaHM.size())) {
@@ -98,10 +94,10 @@ public class MediaStoreObserver extends ContentObserver {
             DbMedia dbMedia = new DbMedia(0, deviceMedia.getPhoneId());
             dbMediaDAO.beginTransaction();
             try {
-                long mediaId = dbMediaDAO.upsert(dbMedia);//is insert
+                long mediaId = dbMediaDAO.upsert(dbMedia);//is always insert
                 MyLog.i(this, "inserted into media table _id: " + mediaId);
                 dbMedia.setId(mediaId);//il dbMedia in ram e' allineato con quello del db
-                DbMediaEvent dbMediaEvent = new DbMediaEvent(0, deviceMedia.getPhoneId(), DbMediaEvent.MEDIA_EVENT_ADD, deviceMedia.getMetadataJsonSTR());
+                DbMediaEvent dbMediaEvent = new DbMediaEvent(0, deviceMedia.getPhoneId(), DbMediaEvent.MEDIA_EVENT_ADD, deviceMedia.getMetadataJsonSTR(),deviceMedia.getPath(),"not-compressed");
                 MyLog.i(this, "inserting into media_event json "  + dbMediaEvent.getSerializedData());
                 long mediaEventId = dbMediaEventDAO.upsert(dbMediaEvent);
                 dbMediaEvent.setId(mediaEventId);
@@ -153,11 +149,15 @@ public class MediaStoreObserver extends ContentObserver {
         MyLog.i(this,"removed media counter= " + counter);
         for (DbMedia dbMedia:removedDbMediaAL) {
             dbMedia.dump();
+            DeviceMedia deviceMedia = deviceMediaHM.get(dbMedia.getPhoneId());
+            if(deviceMedia == null) {
+                throw new NullPointerException("deviceMedia is null");
+            }
             dbMediaDAO.beginTransaction();
             try {
                 MyLog.i(this, "removing from media _id: " + dbMedia.getId());
                  dbMediaDAO.removeMedia(dbMedia);
-                DbMediaEvent dbMediaEvent = new DbMediaEvent(0, dbMedia.getPhoneId(), DbMediaEvent.MEDIA_EVENT_DELETE, dbMedia.getJson().getJSonString());
+                DbMediaEvent dbMediaEvent = new DbMediaEvent(0, dbMedia.getPhoneId(), DbMediaEvent.MEDIA_EVENT_DELETE, dbMedia.getJson().getJSonString(),deviceMedia.getPath(),"unknown");
                 MyLog.i(this, "inserting into media_event json "  + dbMediaEvent.getSerializedData());
                 long mediaEventId = dbMediaEventDAO.upsert(dbMediaEvent);
                 dbMediaEvent.setId(mediaEventId);

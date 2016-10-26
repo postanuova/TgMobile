@@ -22,24 +22,25 @@ public class DeviceMedia {
 
     
     private int phoneId;
-    private String dateTaken;
+    private long dateTaken;
     private int mediaType;
     private int mediaDuration;
     private float latitude;
     private float longitude;
     private float accuracy;
     private String uri;
+    private String path;
 
-    public DeviceMedia(int phoneId, String dateTaken, int mediaType,int mediaDuration,float latitude, float longitude, float accuracy, String uri) {
-        this.phoneId = phoneId;
-        this.dateTaken = dateTaken;
-        this.mediaType = mediaType;
-        this.mediaDuration = mediaDuration;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.accuracy = accuracy;
-        this.uri = uri;
-
+    public DeviceMedia(int phoneId, long dateTaken, int mediaType,int mediaDuration,float latitude, float longitude, float accuracy, String uri, String path) {
+        this.setPhoneId(phoneId);
+        this.setDateTaken(dateTaken);
+        this.setMediaType(mediaType);
+        this.setMediaDuration(mediaDuration);
+        this.setLatitude(latitude);
+        this.setLongitude(longitude);
+        this.setAccuracy(accuracy);
+        this.setUri(uri);
+        this.setPath(path);
     }
 
 
@@ -47,29 +48,30 @@ public class DeviceMedia {
 
     public String getMetadataJsonSTR() {
         JSon jSon = new JSon();
-        jSon.add("id",phoneId);
-        jSon.add("date", dateTaken);
-        jSon.add("media_type",mediaType);
-        jSon.add("media_duration",mediaDuration);
-        jSon.add("latitude",latitude);
-        jSon.add("longitude",longitude);
-        jSon.add("accuracy",accuracy);
+        jSon.add("id", getPhoneId());
+        jSon.add("date", getDateTaken());
+        jSon.add("media_type", getMediaType());
+        jSon.add("media_duration", getMediaDuration());
+        jSon.add("latitude", getLatitude());
+        jSon.add("longitude", getLongitude());
+        jSon.add("accuracy", getAccuracy());
         return jSon.getJSonString();
     }
 
     public void dump() {
         System.out.println("-------------DEVICE MEDIA DUMP-------------");
         System.out.println("id = " + id);
-        System.out.println("phoneId = " + phoneId);
-        System.out.println("dateTaken = " + dateTaken);
-        System.out.println("phoneId = " + phoneId);
-        System.out.println("dateTaken = " + dateTaken);
-        System.out.println("mediaType = " + mediaType);
-        System.out.println("mediaDuration = " + mediaDuration);
-        System.out.println("latitude = " + latitude);
-        System.out.println("longitude = " + longitude);
-        System.out.println("accuracy = " + accuracy);
-        System.out.println("uri = " + uri);
+        System.out.println("phoneId = " + getPhoneId());
+        System.out.println("dateTaken = " + getDateTaken());
+        System.out.println("phoneId = " + getPhoneId());
+        System.out.println("dateTaken = " + getDateTaken());
+        System.out.println("mediaType = " + getMediaType());
+        System.out.println("mediaDuration = " + getMediaDuration());
+        System.out.println("latitude = " + getLatitude());
+        System.out.println("longitude = " + getLongitude());
+        System.out.println("accuracy = " + getAccuracy());
+        System.out.println("uri = " + getUri());
+        System.out.println("path = " + getPath());
     }
 
     public int getPhoneId() {
@@ -78,14 +80,6 @@ public class DeviceMedia {
 
     public void setPhoneId(int phoneId) {
         this.phoneId = phoneId;
-    }
-
-    public String getLookupKey() {
-        return dateTaken;
-    }
-
-    public void setLookupKey(String dateTaken) {
-        this.dateTaken = dateTaken;
     }
 
     public int getMediaType() {
@@ -134,5 +128,21 @@ public class DeviceMedia {
 
     public void setUri(String uri) {
         this.uri = uri;
+    }
+
+    public long getDateTaken() {
+        return dateTaken;
+    }
+
+    public void setDateTaken(long dateTaken) {
+        this.dateTaken = dateTaken;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

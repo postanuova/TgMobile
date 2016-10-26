@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
+import org.teenguard.child.datatype.DeviceMedia;
 import org.teenguard.child.dbdatatype.DbMedia;
 import org.teenguard.child.utils.MyLog;
 
@@ -98,16 +99,35 @@ public class DbMediaDAO extends GenericDbDAO{
         return true;
     }
 
-    public long bulkInsert(ConcurrentHashMap<Integer,DbMedia> dbMediaHM) {
+/*
+    private int phoneId;
+    private long dateTaken;
+    private int mediaType;
+    private int mediaDuration;
+    private float latitude;
+    private float longitude;
+    private float accuracy;
+    private String uri;
+    private String path;
+ */
+    public long bulkInsert(ConcurrentHashMap<Integer,DeviceMedia> deviceMediaHM) {
         long nInserted = 0;
-        String sql = "insert into media values(?,?);";
+        String sql = "insert into media values(?,?)";
         SQLiteStatement sqLiteStatement = db.compileStatement(sql);
         beginTransaction();
         try {
-            for (DbMedia dbMedia : dbMediaHM.values()) {
+            for (DeviceMedia deviceMedia : deviceMediaHM.values()) {
                 sqLiteStatement.clearBindings();
-                sqLiteStatement.bindNull(0);
-                sqLiteStatement.bindLong(1,dbMedia.getPhoneId());
+                sqLiteStatement.bindNull(1);
+                sqLiteStatement.bindLong(2,deviceMedia.getPhoneId());
+                /*sqLiteStatement.bindLong(3,deviceMedia.getDateTaken());
+                sqLiteStatement.bindLong(4,deviceMedia.getMediaType());
+                sqLiteStatement.bindLong(5,deviceMedia.getMediaDuration());
+                sqLiteStatement.bindDouble(6,deviceMedia.getLatitude());
+                sqLiteStatement.bindDouble(7,deviceMedia.getLongitude());
+                sqLiteStatement.bindDouble(8,deviceMedia.getAccuracy());
+                sqLiteStatement.bindString(9,deviceMedia.getUri());
+                sqLiteStatement.bindString(10,deviceMedia.getPath());*/
                 sqLiteStatement.executeInsert();
                 nInserted ++;
             }

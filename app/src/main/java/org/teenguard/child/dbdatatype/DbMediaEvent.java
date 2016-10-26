@@ -15,12 +15,29 @@ public class DbMediaEvent {
     private long csId; //is the phone_id
     private int eventType; //add, modify, delete
     private String serializedData; //json data che verranno inviati al server
+private String path;
+    private String compressedMediaPath;
 
-    public DbMediaEvent(long id, int csId, int eventType, String serializedData) {
+    public DbMediaEvent(long id, int csId, int eventType, String serializedData,String path, String compressedMediaPath) {
         this.id = id;
         this.csId = csId;//media._id
         this.eventType = eventType;
         this.serializedData = serializedData;
+        this.setPath(path); //media path contained in deviceMedia
+        this.setCompressedMediaPath(compressedMediaPath);  //media compressed path, the path after compression
+    }
+
+
+
+
+    public void dump() {
+        System.out.println("-------------DB MEDIA EVENT DUMP-------------");
+        System.out.println("id = " + id);
+        System.out.println("csId = " + csId);
+        System.out.println("eventType = " + eventType);
+        System.out.println("serializedData = " + serializedData);
+        System.out.println("path = " + path);
+        System.out.println("compressedMediaPath = " + compressedMediaPath);
     }
 
     public long getId() {
@@ -60,13 +77,22 @@ public class DbMediaEvent {
         dbMediaEventDAO.delete(this);
     }
 
-    public void dump() {
-        System.out.println("-------------DB MEDIA EVENT DUMP-------------");
-        System.out.println("id = " + id);
-        System.out.println("csId = " + csId);
-        System.out.println("eventType = " + eventType);
-        System.out.println("serializedData = " + serializedData);
+
+
+    public String getPath() {
+        return path;
     }
 
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getCompressedMediaPath() {
+        return compressedMediaPath;
+    }
+
+    public void setCompressedMediaPath(String compressedMediaPath) {
+        this.compressedMediaPath = compressedMediaPath;
+    }
 }
 

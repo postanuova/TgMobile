@@ -21,12 +21,15 @@ public class DbMediaEventDAO extends GenericDbDAO {
     public final static String MEDIA_EVENT_CS_ID = "cs_id"; //foreign key references contact._id
     public final static String MEDIA_EVENT_TYPE = "event_type";
     public final static String MEDIA_EVENT_SERIALIZED_DATA = "serialized_data";
+    public final static String MEDIA_EVENT_PATH = "path";
+    public final static String MEDIA_EVENT_COMPRESSED_MEDIA_PATH = "compressed_media_path";
+
 
     public DbMediaEventDAO() {
         super();
     }
 
-    private long upsert(long id, long csId, int eventType, String serializedData) {
+    private long upsert(long id, long csId, int eventType, String serializedData, String path, String compressedMediaPath) {
         ContentValues values = new ContentValues();
 
         if (id == 0) {
@@ -34,11 +37,15 @@ public class DbMediaEventDAO extends GenericDbDAO {
             values.put(MEDIA_EVENT_CS_ID, csId);
             values.put(MEDIA_EVENT_TYPE, eventType);
             values.put(MEDIA_EVENT_SERIALIZED_DATA, serializedData);
+            values.put(MEDIA_EVENT_PATH,path);
+            values.put(MEDIA_EVENT_COMPRESSED_MEDIA_PATH, compressedMediaPath);
             return db.insert(MEDIA_EVENT_TABLE, null, values);
         } else {
             values.put(MEDIA_EVENT_CS_ID, csId);
             values.put(MEDIA_EVENT_TYPE, eventType);
             values.put(MEDIA_EVENT_SERIALIZED_DATA, serializedData);
+            values.put(MEDIA_EVENT_PATH,path);
+            values.put(MEDIA_EVENT_COMPRESSED_MEDIA_PATH, compressedMediaPath);
             return db.update(MEDIA_EVENT_TABLE, values, MEDIA_EVENT_ID + "=" + id, null);
         }
     }
@@ -48,7 +55,9 @@ public class DbMediaEventDAO extends GenericDbDAO {
         long csId = dbMediaEvent.getCsId();
         int eventType = dbMediaEvent.getEventType();
         String serializedData = dbMediaEvent.getSerializedData();
-        return upsert(id, csId, eventType, serializedData);
+        String path = dbMediaEvent.getPath();
+        String compressedMediaPath = dbMediaEvent.getCompressedMediaPath();
+        return upsert(id, csId, eventType, serializedData, path, compressedMediaPath);
     }
 
     public void delete(DbMediaEvent dbMediaEvent) {
@@ -76,7 +85,9 @@ public class DbMediaEventDAO extends GenericDbDAO {
                 int csId = cursor.getInt(cursor.getColumnIndex(MEDIA_EVENT_CS_ID));
                 int eventType = cursor.getInt(cursor.getColumnIndex(MEDIA_EVENT_TYPE));
                 String serializedData = cursor.getString(cursor.getColumnIndex(MEDIA_EVENT_SERIALIZED_DATA));
-                dbMediaEvent = new DbMediaEvent(id, csId, eventType,serializedData);
+                String path = cursor.getString(cursor.getColumnIndex(MEDIA_EVENT_PATH));
+                String compressedMediaPath = cursor.getString(cursor.getColumnIndex(MEDIA_EVENT_COMPRESSED_MEDIA_PATH));
+                dbMediaEvent = new DbMediaEvent(id, csId, eventType,serializedData,path , compressedMediaPath);
                 dbMediaEventAL.add(dbMediaEvent);
             }
             MyLog.i(this,"dbMediaEventAL.size " + dbMediaEventAL.size());

@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
+import org.teenguard.child.datatype.DeviceContact;
 import org.teenguard.child.dbdatatype.DbContact;
 import org.teenguard.child.utils.MyLog;
 
@@ -128,18 +129,18 @@ public class DbContactDAO extends GenericDbDAO{
     this.name = name;
     this.lastModified = lastModified;
     this.setSerializedData(serializedData);*/
-    public boolean bulkInsert(ConcurrentHashMap<Integer,DbContact> dbContactHM) {
+    public boolean bulkInsert(ConcurrentHashMap<Integer,DeviceContact> deviceContactHM) {
         String sql = "insert into contact values(?,?,?,?,?);";
         SQLiteStatement sqLiteStatement = db.compileStatement(sql);
         beginTransaction();
         try {
-            for (DbContact dbContact : dbContactHM.values()) {
+            for (DeviceContact deviceContact : deviceContactHM.values()) {
                 sqLiteStatement.clearBindings();
-                sqLiteStatement.bindNull(0);
-                sqLiteStatement.bindLong(1,dbContact.getPhoneId());
-                sqLiteStatement.bindString(2,dbContact.getName());
-                sqLiteStatement.bindLong(3,dbContact.getLastModified());
-                sqLiteStatement.bindString(4,dbContact.getSerializedData());
+                sqLiteStatement.bindNull(1);
+                sqLiteStatement.bindLong(2,deviceContact.getPhoneId());
+                sqLiteStatement.bindString(3,deviceContact.getName());
+                sqLiteStatement.bindLong(4,deviceContact.getLastModified());
+                sqLiteStatement.bindString(5,deviceContact.getNumbersJSonAR());
                 sqLiteStatement.executeInsert();
             }
             setTransactionSuccessful();

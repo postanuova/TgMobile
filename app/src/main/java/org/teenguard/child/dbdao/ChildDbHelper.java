@@ -18,7 +18,7 @@ public class ChildDbHelper extends SQLiteOpenHelper {
 
 
     public static final String CHILD_DB_NAME = "contactDB";
-    public static final int CHILD_DB_VERSION = 14;
+    public static final int CHILD_DB_VERSION = 15;
 
     private static final String  CREATE_TABLE_CONTACT=
             "CREATE TABLE contact (" +
@@ -47,7 +47,9 @@ public class ChildDbHelper extends SQLiteOpenHelper {
                     "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "cs_id INTEGER," +
                     "event_type INTEGER," +
-                    "serialized_data TEXT"+
+                    "serialized_data TEXT,"+
+                    "path TEXT," +
+                    "compresssed_media_path TEXT" +
             ");";
 
     private static final String DROP_TABLE_CONTACT = "DROP TABLE IF EXISTS contact;";

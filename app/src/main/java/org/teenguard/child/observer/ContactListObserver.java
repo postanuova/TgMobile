@@ -40,7 +40,7 @@ public class ContactListObserver extends ContentObserver {
         if(dbContactHM.size() == 0) {
             MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user contact list: BULK INSERT!!!!!!!!!!");
             //insertDeviceContactHMIntoDB();
-            dbContactDAO.bulkInsert(dbContactHM);
+            dbContactDAO.bulkInsert(deviceContactHM);
         }
        /* MyLog.i(this,"invoking on change ContactObserver on startup");
         onChange(false);*/
@@ -70,7 +70,7 @@ public class ContactListObserver extends ContentObserver {
         if(dbContactHM.size() == 0) {
             MyLog.i(this,"dbHM =0 --> onChange empty DB: populate DB with user contact list");
             //insertDeviceContactHMIntoDB();
-            dbContactDAO.bulkInsert(dbContactHM);
+            dbContactDAO.bulkInsert(deviceContactHM);
         }
 
         if((dbContactHM.size() >0) && (deviceContactHM.size() == dbContactHM.size())) {
