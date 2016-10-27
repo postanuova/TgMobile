@@ -13,9 +13,11 @@ import org.teenguard.child.dbdao.DbMediaDAO;
 import org.teenguard.child.dbdao.DbMediaEventDAO;
 import org.teenguard.child.dbdatatype.DbMedia;
 import org.teenguard.child.dbdatatype.DbMediaEvent;
+import org.teenguard.child.utils.Constant;
 import org.teenguard.child.utils.ImageUtils;
 import org.teenguard.child.utils.MyLog;
 import org.teenguard.child.utils.ServerApiUtils;
+import org.teenguard.child.utils.TypeConverter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -110,7 +112,7 @@ public class MediaStoreObserver extends ContentObserver {
                 MyLog.i(this, "ending transaction");
                 dbMediaDAO.endTransaction();              //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
                 MyLog.i(this,"SENDING NEW USER MEDIA(METADATA) TO SERVER");
-                MyServerResponse myServerResponse = ServerApiUtils.addMediaToServer("[" + dbMediaEvent.getSerializedData() + "]");
+                MyServerResponse myServerResponse = ServerApiUtils.addMediaMetadataToServer("[" + dbMediaEvent.getSerializedData() + "]");
                 myServerResponse.dump();
                 if(myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
                     MyLog.i(this,"SENT NEW USER MEDIA(METADATA) TO SERVER");
@@ -123,7 +125,7 @@ public class MediaStoreObserver extends ContentObserver {
                 //Bitmap bitmap = ImageUtils.getBitmapFromDataPath("/storage/emulated/0/Download/nebula.jpg");
                 System.out.println("original bitmap");
                 ImageUtils.dump(bitmap);
-                bitmap = ImageUtils.myScaleBitmap(bitmap,960);
+                bitmap = ImageUtils.myScaleBitmap(bitmap, Constant.MAX_IMAGE_SIZE);
                 System.out.println("scaled bitmap");
                 ImageUtils.dump(bitmap);
                 //File imageFile = ImageUtils.storeImage(bitmap);
@@ -133,6 +135,7 @@ public class MediaStoreObserver extends ContentObserver {
                 bitmap = ImageUtils.compress(bitmap,35);
                 System.out.println("compressed bitmap");
                 ImageUtils.dump(bitmap);
+                // TODO: 27/10/16 disattivare la scrittura su file
                 File imageFile = ImageUtils.storeImage(bitmap);
                 System.out.println(" imageFile.getAbsolutePath() = " + imageFile.getAbsolutePath());
                 //scrivi path di compressione
@@ -140,10 +143,19 @@ public class MediaStoreObserver extends ContentObserver {
                 dbMediaEvent.setEventType(DbMediaEvent.MEDIA_EVENT_COMPRESSED);
                 dbMediaEvent.setCompressedMediaPath(imageFile.getAbsolutePath());
                 dbMediaEventDAO.upsert(dbMediaEvent);
-                // TODO: 27/10/16 send files to server 
-                //invio file raw
-                //se response ok cancella da mediaEvent
+                //building header
 
+                //invio file raw
+                myServerResponse = ServerApiUtils.addMediaMetadataAndMediaDataToServer(deviceMedia.getJSonRequestHeader(), TypeConverter.bitMapToBase64String(bitmap));
+                bitmap.recycle();
+                myServerResponse.dump();
+                //se response ok cancella da mediaEvent
+                if(myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+                    MyLog.i(this,"SENT NEW USER MEDIA(METADATA + MEDIA) TO SERVER");
+                    dbMediaEvent.setEventType(DbMediaEvent.MEDIA_EVENT_SENT_METADATA_AND_MEDIA);
+                    dbMediaEventDAO.upsert(dbMediaEvent);
+                    // TODO: 27/10/16  dbMediaEvent.deleteMe(); attivareeeeeeee
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -221,6 +233,7 @@ public class MediaStoreObserver extends ContentObserver {
      * transmit events to server and cleanup events table
      */
     public void flushMediaEventTable() {
+        // TODO: 27/10/16 not completely implemented flushing : sends metadata, missing media
         MyLog.i(this, "FLUSHING contact event table");
         //DbContactEventDAO dbContactEventDAO = new DbContactEventDAO();
         ArrayList<DbMediaEvent> dbMediaEventAL = dbMediaEventDAO.getList();
@@ -260,7 +273,7 @@ public class MediaStoreObserver extends ContentObserver {
             }
             System.out.println("addDataBulkSTR = " + addDataBulkSTR);
             addDataBulkSTR = "[" + addDataBulkSTR + "]";
-            MyServerResponse myServerResponse = ServerApiUtils.addMediaToServer(addDataBulkSTR);
+            MyServerResponse myServerResponse = ServerApiUtils.addMediaMetadataToServer(addDataBulkSTR);
             if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
                 MyLog.i(this, " ADD BULK MEDIA SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
                 dbMediaEventDAO.delete(addEventIdToRemoveList);

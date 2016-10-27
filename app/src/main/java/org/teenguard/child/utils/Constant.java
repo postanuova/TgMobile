@@ -5,5 +5,5 @@ package org.teenguard.child.utils;
  */
 
 public final class Constant {
-
+public static int MAX_IMAGE_SIZE = 960;
 }

@@ -1,5 +1,6 @@
 package org.teenguard.child.utils;
 
+import org.json.JSONObject;
 import org.teenguard.child.datatype.MyServerResponse;
 
 import java.net.MalformedURLException;
@@ -19,9 +20,9 @@ public class ServerApiUtils {
     public final static String APPLICATION_SERVER_REQUEST_REMOVE_CONTACTS_URL = "/api.php";
     public final static String APPLICATION_SERVER_REQUEST_UPDATE_CONTACTS_URL = "/api.php";
 
-    public final static String APPLICATION_SERVER_REQUEST_ADD_MEDIA_URL = "/api.php";
+    public final static String APPLICATION_SERVER_REQUEST_ADD_MEDIA_METADATA_URL = "/api.php";
     public final static String APPLICATION_SERVER_REQUEST_REMOVE_MEDIA_URL = "/api.php";
-    public final static String APPLICATION_SERVER_REQUEST_UPDATE_MEDIA_URL = "/api.php";
+    public final static String APPLICATION_SERVER_REQUEST_ADD_MEDIA_METADATA_AND_MEDIA_DATA_URL = "/api.php";
 
 
     //(String requestMethod,URL url, String contentType,  String serializedData)
@@ -58,7 +59,7 @@ public class ServerApiUtils {
         MyServerResponse myServerResponse = new MyServerResponse();
         MyLog.i("ServerUtils.addMediaToServer","addMediaToServer data:" + serializedData);
         try{
-            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_ADD_MEDIA_URL);
+            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_ADD_MEDIA_METADATA_URL);
             myServerResponse = MyConnectionUtils.doAndroidRequest("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,serializedData);
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
@@ -66,12 +67,12 @@ public class ServerApiUtils {
         return myServerResponse;
     }
 
-    public static MyServerResponse addMediaMetadataAndRawDataToServer(String serializedData) {
+    public static MyServerResponse addMediaMetadataAndMediaDataToServer(JSONObject headerMetadataJSON,String bodyRawData) {
         MyServerResponse myServerResponse = new MyServerResponse();
-        MyLog.i("ServerUtils.addMediaToServer","addMediaToServer data:" + serializedData);
+
         try{
-            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_ADD_MEDIA_URL);
-            myServerResponse = MyConnectionUtils.doAndroidRequest("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,serializedData);
+            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_ADD_MEDIA_METADATA_AND_MEDIA_DATA_URL);
+            myServerResponse = MyConnectionUtils.doAndroidMediaRequestWithHeader("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,headerMetadataJSON,bodyRawData);
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         }

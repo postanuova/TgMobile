@@ -4,6 +4,8 @@ package org.teenguard.child.datatype;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.teenguard.child.utils.JSon;
 
 import static android.R.attr.id;
@@ -45,9 +47,14 @@ public class DeviceMedia {
         this.displayName = displayName;
     }
 
+public DeviceMedia(String serializedData) {
 
+}
 
-
+    /**
+     *
+     * @return a String to put into serialized_data of media_event.serialized_data table;
+     */
     public String getMetadataJsonSTR() {
         JSon jSon = new JSon();
         jSon.add("id", getPhoneId());
@@ -59,6 +66,29 @@ public class DeviceMedia {
         jSon.add("accuracy", getAccuracy());
         return jSon.getJSonString();
     }
+
+    /**
+     *
+     * @return a JSon object used to populate header of a request which sends matadata end raw image to server
+     */
+    public JSONObject getJSonRequestHeader() {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("id", getPhoneId());
+            json.put("date", getDateTaken());
+            json.put("media_type", getMediaType());
+            json.put("media_duration", getMediaDuration());
+            json.put("latitude", getLatitude());
+            json.put("longitude", getLongitude());
+            json.put("accuracy", getAccuracy());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
+
+
 
     public void dump() {
         System.out.println("-------------DEVICE MEDIA DUMP-------------");

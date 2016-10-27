@@ -11,7 +11,7 @@ public class DbMediaEvent {
     public final static int MEDIA_EVENT_DELETE = 1;
     public final static int MEDIA_EVENT_SENT_METADATA_ONLY = 2;
     public final static int MEDIA_EVENT_COMPRESSED = 3;
-
+    public final static int MEDIA_EVENT_SENT_METADATA_AND_MEDIA = 4;
 
 
     private long id; //autoincrement
