@@ -23,6 +23,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.teenguard.child.dbdao.GenericDbDAO.db;
+
 /**
  * Created by chris on 09/10/16.
  */
@@ -102,8 +104,8 @@ public class MediaStoreObserver extends ContentObserver {
                 long mediaId = dbMediaDAO.upsert(dbMedia);//is always insert
                 MyLog.i(this, "inserted into media table _id: " + mediaId);
                 dbMedia.setId(mediaId);//il dbMedia in ram e' allineato con quello del db
-                DbMediaEvent dbMediaEvent = new DbMediaEvent(0, deviceMedia.getPhoneId(), DbMediaEvent.MEDIA_EVENT_ADD, deviceMedia.getMetadataJsonSTR(),deviceMedia.getPath(),"not-compressed");
-                MyLog.i(this, "inserting into media_event json "  + dbMediaEvent.getSerializedData());
+                DbMediaEvent dbMediaEvent = new DbMediaEvent(0, deviceMedia.getPhoneId(), DbMediaEvent.MEDIA_EVENT_ADD, deviceMedia.getMetadataJsonSTR(), deviceMedia.getPath(), "not-compressed");
+                MyLog.i(this, "inserting into media_event json " + dbMediaEvent.getSerializedData());
                 long mediaEventId = dbMediaEventDAO.upsert(dbMediaEvent);
                 dbMediaEvent.setId(mediaEventId);
                 MyLog.i(this, "inserted into media_event._id  " + dbMediaEvent.getId());
@@ -111,65 +113,60 @@ public class MediaStoreObserver extends ContentObserver {
                 dbMediaDAO.setTransactionSuccessful();    //>>>>>>>>>>>>>>>>COMMIT TRANSACTION>>>>>>>>>>>>>>>>>>
                 MyLog.i(this, "ending transaction");
                 dbMediaDAO.endTransaction();              //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
-                MyLog.i(this,"SENDING NEW USER MEDIA(METADATA) TO SERVER");
+                MyLog.i(this, "SENDING NEW USER MEDIA(METADATA) TO SERVER");
                 MyServerResponse myServerResponse = ServerApiUtils.addMediaMetadataToServer("[" + dbMediaEvent.getSerializedData() + "]");
                 myServerResponse.dump();
-                if(myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                    MyLog.i(this,"SENT NEW USER MEDIA(METADATA) TO SERVER");
-                    dbMediaEvent.setEventType(DbMediaEvent.MEDIA_EVENT_SENT_METADATA_ONLY);
+                if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+                    MyLog.i(this, "SENT NEW USER MEDIA(METADATA) TO SERVER");
+                    dbMediaEvent.setEventType(DbMediaEvent.DEBUG_MEDIA_EVENT_SENT_METADATA_ONLY);
                     dbMediaEventDAO.upsert(dbMediaEvent);
                 }
 
-                //resize e compressione
-               Bitmap bitmap = ImageUtils.getBitmapFromDataPath(dbMediaEvent.getPath());
-                //Bitmap bitmap = ImageUtils.getBitmapFromDataPath("/storage/emulated/0/Download/nebula.jpg");
-                System.out.println("original bitmap");
-                ImageUtils.dump(bitmap);
-                bitmap = ImageUtils.myScaleBitmap(bitmap, Constant.MAX_IMAGE_SIZE);
-                System.out.println("scaled bitmap");
-                ImageUtils.dump(bitmap);
-                //File imageFile = ImageUtils.storeImage(bitmap);
+                Bitmap resizedBitmap = resizeCompressAndSetMediaEvent(dbMediaEvent);
 
-                //System.out.println(" imageFile.getAbsolutePath() = " + imageFile.getAbsolutePath());
-
-                bitmap = ImageUtils.compress(bitmap,35);
-                System.out.println("compressed bitmap");
-                ImageUtils.dump(bitmap);
-                // TODO: 27/10/16 disattivare la scrittura su file
-                File imageFile = ImageUtils.storeImage(bitmap);
-                System.out.println(" imageFile.getAbsolutePath() = " + imageFile.getAbsolutePath());
-                //scrivi path di compressione
-                //aggiorna flag mediaEvent
-                dbMediaEvent.setEventType(DbMediaEvent.MEDIA_EVENT_COMPRESSED);
-                dbMediaEvent.setCompressedMediaPath(imageFile.getAbsolutePath());
-                dbMediaEventDAO.upsert(dbMediaEvent);
-                //building header
-
-                //invio file raw
-                myServerResponse = ServerApiUtils.addMediaMetadataAndMediaDataToServer(deviceMedia.getJSonRequestHeader(), TypeConverter.bitMapToBase64String(bitmap));
-                bitmap.recycle();
+                //invio header e bitmap
+                myServerResponse = ServerApiUtils.addMediaMetadataAndMediaDataToServer(deviceMedia.getJSonRequestHeader(), TypeConverter.bitMapToBase64String(resizedBitmap));
+                resizedBitmap.recycle();//cleanup
                 myServerResponse.dump();
                 //se response ok cancella da mediaEvent
-                if(myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                    MyLog.i(this,"SENT NEW USER MEDIA(METADATA + MEDIA) TO SERVER");
-                    dbMediaEvent.setEventType(DbMediaEvent.MEDIA_EVENT_SENT_METADATA_AND_MEDIA);
+                if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+                    MyLog.i(this, "SENT NEW USER MEDIA(METADATA + MEDIA) TO SERVER");
+                    dbMediaEvent.setEventType(DbMediaEvent.DEBUG_MEDIA_EVENT_SENT_METADATA_AND_MEDIA_TO_DELETE);
                     dbMediaEventDAO.upsert(dbMediaEvent);
+                    // TODO: 27/10/16 cancellare file compresso
                     // TODO: 27/10/16  dbMediaEvent.deleteMe(); attivareeeeeeee
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 System.out.println("finally");
-                if (dbMediaDAO.db.inTransaction()) {
+                if (db.inTransaction()) {
                     dbMediaDAO.endTransaction(); //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
                     System.out.println("closed transaction");
                 }
-              /* dbMediaDAO.close();
-                dbMediaEventDAO.close();
-                System.out.println("closed DAO");*/
             }
         }
     }
+
+    /**
+     * resize bitmap and update MediaEvent status to compressed
+     * @param dbMediaEvent
+     * @return compressed bitmap handler
+     */
+    private Bitmap resizeCompressAndSetMediaEvent(DbMediaEvent dbMediaEvent) {
+        Bitmap bitmap = ImageUtils.getBitmapFromDataPath(dbMediaEvent.getPath());
+        bitmap = ImageUtils.myScaleBitmap(bitmap, Constant.MAX_IMAGE_SIZE);
+        File imageFile = ImageUtils.storeImage(bitmap);
+        System.out.println(" imageFile.getAbsolutePath() = " + imageFile.getAbsolutePath());
+        //scrivi path di compressione
+        dbMediaEvent.setEventType(DbMediaEvent.MEDIA_EVENT_COMPRESSED);
+        //aggiorna flag mediaEvent
+        dbMediaEvent.setCompressedMediaPath(imageFile.getAbsolutePath());
+        dbMediaEventDAO.upsert(dbMediaEvent);
+        return bitmap;
+    }
+
+
 
 
 
@@ -218,7 +215,7 @@ public class MediaStoreObserver extends ContentObserver {
                 e.printStackTrace();
             } finally {
                 System.out.println("finally");
-                if (dbMediaDAO.db.inTransaction()) {
+                if (db.inTransaction()) {
                     dbMediaDAO.endTransaction(); //>>>>>>>>>>>>>>>>END TRANSACTION>>>>>>>>>>>>>>>>>>
                     System.out.println(" closed transaction");
                 }
@@ -243,9 +240,10 @@ public class MediaStoreObserver extends ContentObserver {
         }
         StringBuilder addEventSB = new StringBuilder();
         StringBuilder deleteEventSB = new StringBuilder();
+        StringBuilder compressedEventSB = new StringBuilder();
         String addEventIdToRemoveList = "";         //lista degli eventi ADD da rimuovere dal db dopo l'ok del server
         String deleteEventIdToRemoveList = "";      //lista degli eventi DELETE da rimuovere dal db dopo l'ok del server
-
+        String compressedEventIdToRemoveList = "";
         for (DbMediaEvent dbMediaEvent : dbMediaEventAL) {
             dbMediaEvent.dump();
             switch (dbMediaEvent.getEventType()) {
@@ -257,6 +255,11 @@ public class MediaStoreObserver extends ContentObserver {
                 case DbMediaEvent.MEDIA_EVENT_DELETE: {
                     deleteEventSB.append("\"" + dbMediaEvent.getCsId() + "\"" + ",");
                     deleteEventIdToRemoveList += dbMediaEvent.getId() + ",";
+                    break;
+                }
+                case DbMediaEvent.MEDIA_EVENT_COMPRESSED: {
+                    compressedEventSB.append("\"" + dbMediaEvent.getCsId() + "\"" + ",");
+                    compressedEventIdToRemoveList += dbMediaEvent.getId() + ",";
                     break;
                 }
             }
@@ -281,6 +284,31 @@ public class MediaStoreObserver extends ContentObserver {
             }
         }
 
+/*
+scenario: ho nel db una lista di eventi add:
+la invio in bulk. in che stato vanno? sono eventi spediti ma non compressi:la compressione potrebbe fallire o potrebbe essere fatta in seguito.
+se li lascio in uno stato add al flush successivo li spedisco di nuovo
+mi serve uno stato sent_metadata only?
+ */
+        /////compress
+        String compressedDataBulkSTR = compressedEventSB.toString();
+        if (compressedDataBulkSTR.length() > 0) {//ci sono eventi compressed, da spedire uno per uno
+            if (compressedDataBulkSTR.endsWith(",")) {
+                compressedDataBulkSTR = compressedDataBulkSTR.substring(0, compressedDataBulkSTR.length() - 1);
+            }
+            if (compressedEventIdToRemoveList.endsWith(",")) {
+                compressedEventIdToRemoveList = compressedEventIdToRemoveList.substring(0, compressedEventIdToRemoveList.length() - 1);
+            }
+            System.out.println("compressedDataBulkSTR = " + compressedDataBulkSTR);
+            compressedDataBulkSTR = "[" + compressedDataBulkSTR + "]";
+            MyServerResponse myServerResponse = ServerApiUtils.addMediaMetadataToServer(compressedDataBulkSTR);
+            if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+                MyLog.i(this, " ADD BULK MEDIA SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
+                dbMediaEventDAO.delete(compressedEventIdToRemoveList);
+                MyLog.i(this, "deleted from events list " + compressedEventIdToRemoveList);
+            }
+        }
+
         /////delete
         String deleteDataBulkSTR = deleteEventSB.toString();
         if (deleteDataBulkSTR.length() > 0) { //ci sono eventi delete
@@ -301,24 +329,5 @@ public class MediaStoreObserver extends ContentObserver {
         }
     }
 
-    /**DEPRECATED
-     * used with empty db
-     * @return
-     */
-    private boolean insertDeviceMediaHMIntoDB() {
-        //// TODO: 25/10/16 bulk insert
-        MyLog.i(this,"deviceMediaHM" + deviceMediaHM.size() + " inserting into media table: wait...");
-        long nInserted = 0;
-        for (DeviceMedia deviceMedia : deviceMediaHM.values()) {
-            //MyLog.i(this,"inserting deviceMedia = " + " phoneId = " + deviceMedia.getPhoneId());
-            DbMedia dbMedia = new DbMedia(0,deviceMedia.getPhoneId());
-            long idInserted = dbMediaDAO.upsert(dbMedia);
-            //System.out.println("_idInserted = " + idInserted);
-            nInserted ++;
-        }
-        MyLog.i(this," Inserted " +  nInserted + " records into media table");
-        /*flushMediaEventTable();//not tested*/
-        return true;
-    }
 
 }

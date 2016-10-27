@@ -9,10 +9,10 @@ import org.teenguard.child.dbdao.DbMediaEventDAO;
 public class DbMediaEvent {
     public final static int MEDIA_EVENT_ADD = 0;
     public final static int MEDIA_EVENT_DELETE = 1;
-    public final static int MEDIA_EVENT_SENT_METADATA_ONLY = 2;
+    public final static int DEBUG_MEDIA_EVENT_SENT_METADATA_ONLY = 2;
     public final static int MEDIA_EVENT_COMPRESSED = 3;
-    public final static int MEDIA_EVENT_SENT_METADATA_AND_MEDIA = 4;
-
+    public final static int DEBUG_MEDIA_EVENT_SENT_METADATA_AND_MEDIA_TO_DELETE = 4;
+    public final static int DEBUG_MEDIA_EVENT_TO_DELETE = 4;
 
     private long id; //autoincrement
     private long csId; //is the phone_id
