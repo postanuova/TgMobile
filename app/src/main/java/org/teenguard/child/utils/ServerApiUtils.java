@@ -54,7 +54,19 @@ public class ServerApiUtils {
         return myServerResponse;
     }
 
-    public static MyServerResponse addMediaToServer(String serializedData) {
+    public static MyServerResponse addMediaMetadataToServer(String serializedData) {
+        MyServerResponse myServerResponse = new MyServerResponse();
+        MyLog.i("ServerUtils.addMediaToServer","addMediaToServer data:" + serializedData);
+        try{
+            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_ADD_MEDIA_URL);
+            myServerResponse = MyConnectionUtils.doAndroidRequest("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,serializedData);
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        }
+        return myServerResponse;
+    }
+
+    public static MyServerResponse addMediaMetadataAndRawDataToServer(String serializedData) {
         MyServerResponse myServerResponse = new MyServerResponse();
         MyLog.i("ServerUtils.addMediaToServer","addMediaToServer data:" + serializedData);
         try{

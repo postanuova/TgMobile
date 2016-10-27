@@ -117,22 +117,30 @@ public class MediaStoreObserver extends ContentObserver {
                     dbMediaEvent.setEventType(DbMediaEvent.MEDIA_EVENT_SENT_METADATA_ONLY);
                     dbMediaEventDAO.upsert(dbMediaEvent);
                 }
-                //TODO: coda compressione dbMediaEvent.deleteMe();
+
                 //resize e compressione
-                Bitmap bitmap = ImageUtils.getBitmapFromDataPath(dbMediaEvent.getPath());
+               Bitmap bitmap = ImageUtils.getBitmapFromDataPath(dbMediaEvent.getPath());
+                //Bitmap bitmap = ImageUtils.getBitmapFromDataPath("/storage/emulated/0/Download/nebula.jpg");
                 System.out.println("original bitmap");
                 ImageUtils.dump(bitmap);
-                bitmap = ImageUtils.scaleBitmap(bitmap,300);
+                bitmap = ImageUtils.myScaleBitmap(bitmap,960);
                 System.out.println("scaled bitmap");
                 ImageUtils.dump(bitmap);
+                //File imageFile = ImageUtils.storeImage(bitmap);
+
+                //System.out.println(" imageFile.getAbsolutePath() = " + imageFile.getAbsolutePath());
+
                 bitmap = ImageUtils.compress(bitmap,35);
                 System.out.println("compressed bitmap");
                 ImageUtils.dump(bitmap);
                 File imageFile = ImageUtils.storeImage(bitmap);
-                System.out.println("imageFile.getAbsolutePath() = " + imageFile.getAbsolutePath());
-               
+                System.out.println(" imageFile.getAbsolutePath() = " + imageFile.getAbsolutePath());
                 //scrivi path di compressione
                 //aggiorna flag mediaEvent
+                dbMediaEvent.setEventType(DbMediaEvent.MEDIA_EVENT_COMPRESSED);
+                dbMediaEvent.setCompressedMediaPath(imageFile.getAbsolutePath());
+                dbMediaEventDAO.upsert(dbMediaEvent);
+                // TODO: 27/10/16 send files to server 
                 //invio file raw
                 //se response ok cancella da mediaEvent
 

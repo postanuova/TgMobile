@@ -124,7 +124,7 @@ public class ImageUtils {
             }
         }
         // Create a media file name
-        String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmm").format(new Date());
+        String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss.SSS").format(new Date());
         File mediaFile;
         String mImageName="MI_"+ timeStamp +".jpg";
         mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
@@ -135,17 +135,25 @@ public class ImageUtils {
     /**
      *
      * @param mBitmap
-     * @param scaleSize max Height or width to Scale
-     * @return
+     * @param maxScaleSize max size
+     * @return scaled bitmap
      */
-    public static Bitmap scaleBitmap(Bitmap mBitmap,int scaleSize) {
-        int width = mBitmap.getWidth();
-        int height = mBitmap.getHeight();
-        float excessSizeRatio = width > height ? width / scaleSize : height / scaleSize;
-        Bitmap bitmap = Bitmap.createBitmap(mBitmap, 0, 0,(int) (width/excessSizeRatio),(int) (height/excessSizeRatio));
-        //mBitmap.recycle();// if you are not using mBitmap Obj
-        return bitmap;
+
+    public static Bitmap myScaleBitmap(Bitmap mBitmap,int maxScaleSize) {
+        float width = mBitmap.getWidth();
+        float height = mBitmap.getHeight();
+        float maxScaleFactor = 0F;
+        if(width > height && width >= maxScaleSize) maxScaleFactor = width / maxScaleSize;
+        if(height > width && height >= maxScaleSize) maxScaleFactor = height / maxScaleSize;
+        float scaledWidth =  width/maxScaleFactor;
+        float scaledHeigth = height/maxScaleFactor;
+        Matrix m = new Matrix();
+        m.setRectToRect(new RectF(0, 0, mBitmap.getWidth(), mBitmap.getHeight()), new RectF(0, 0, scaledWidth, scaledHeigth), Matrix.ScaleToFit.CENTER);
+        return Bitmap.createBitmap(mBitmap, 0, 0, mBitmap.getWidth(), mBitmap.getHeight(), m, true);
+        //return bitmap;
     }
+
+
 
 
     public static Uri uriFromFilename(String displayFileName) {
