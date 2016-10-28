@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.teenguard.child.dao.DeviceMediaDAO;
 import org.teenguard.child.datatype.DeviceMedia;
 import org.teenguard.child.datatype.MyServerResponse;
@@ -69,6 +71,7 @@ public class MediaStoreObserver extends ContentObserver {
             MyLog.i(this,"dbHM =0 -->  empty DB: populate DB with user media list");
             //insertDeviceMediaHMIntoDB();
             dbMediaDAO.bulkInsert(deviceMediaHM);
+            MyLog.i(this,"dpopulated DB with user media list");
         }
 
         if((dbMediaHM.size() >0) && (deviceMediaHM.size() > dbMediaHM.size())) {
@@ -125,7 +128,8 @@ public class MediaStoreObserver extends ContentObserver {
                 Bitmap resizedBitmap = resizeCompressAndSetMediaEvent(dbMediaEvent);
 
                 //invio header e bitmap
-                myServerResponse = ServerApiUtils.addMediaMetadataAndMediaDataToServer(deviceMedia.getJSonRequestHeader(), TypeConverter.bitMapToBase64String(resizedBitmap));
+                JSONObject jsonRequestHeader = new JSONObject(dbMediaEvent.getSerializedData()); //prima prendevo header direttamente da deviceMedia, ora lo leggo dal db: da testare
+                myServerResponse = ServerApiUtils.addMediaMetadataAndMediaDataToServer(jsonRequestHeader, TypeConverter.bitMapToBase64String(resizedBitmap));
                 resizedBitmap.recycle();//cleanup
                 myServerResponse.dump();
                 //se response ok cancella da mediaEvent
@@ -241,7 +245,7 @@ public class MediaStoreObserver extends ContentObserver {
         StringBuilder addEventSB = new StringBuilder();
         StringBuilder deleteEventSB = new StringBuilder();
         StringBuilder compressedEventSB = new StringBuilder();
-        String addEventIdToRemoveList = "";         //lista degli eventi ADD da rimuovere dal db dopo l'ok del server
+        String addEventIdList = "";         //lista degli eventi ADD da rimuovere dal db dopo l'ok del server
         String deleteEventIdToRemoveList = "";      //lista degli eventi DELETE da rimuovere dal db dopo l'ok del server
         String compressedEventIdToRemoveList = "";
         for (DbMediaEvent dbMediaEvent : dbMediaEventAL) {
@@ -249,7 +253,7 @@ public class MediaStoreObserver extends ContentObserver {
             switch (dbMediaEvent.getEventType()) {
                 case DbMediaEvent.MEDIA_EVENT_ADD: {
                     addEventSB.append(dbMediaEvent.getSerializedData() + ",");
-                    addEventIdToRemoveList += dbMediaEvent.getId() + ",";
+                    addEventIdList += dbMediaEvent.getId() + ",";
                     break;
                 }
                 case DbMediaEvent.MEDIA_EVENT_DELETE: {
@@ -271,19 +275,45 @@ public class MediaStoreObserver extends ContentObserver {
             if (addDataBulkSTR.endsWith(",")) {
                 addDataBulkSTR = addDataBulkSTR.substring(0, addDataBulkSTR.length() - 1);
             }
-            if (addEventIdToRemoveList.endsWith(",")) {
-                addEventIdToRemoveList = addEventIdToRemoveList.substring(0, addEventIdToRemoveList.length() - 1);
+            if (addEventIdList.endsWith(",")) {
+                addEventIdList = addEventIdList.substring(0, addEventIdList.length() - 1);
             }
             System.out.println("addDataBulkSTR = " + addDataBulkSTR);
-            addDataBulkSTR = "[" + addDataBulkSTR + "]";
-            MyServerResponse myServerResponse = ServerApiUtils.addMediaMetadataToServer(addDataBulkSTR);
+            MyServerResponse myServerResponse = ServerApiUtils.addMediaMetadataToServer("[" + addDataBulkSTR + "]");
             if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                MyLog.i(this, " ADD BULK MEDIA SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
-                dbMediaEventDAO.delete(addEventIdToRemoveList);
-                MyLog.i(this, "deleted from events list " + addEventIdToRemoveList);
+                MyLog.i(this, " ADD BULK MEDIA METADATA SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
+                ArrayList<DbMediaEvent> dbMediaEventAddAL = dbMediaEventDAO.getList("WHERE cs_id IN(" + addEventIdList + ")");
+                //sending metadata
+                for (DbMediaEvent dbMediaEvent : dbMediaEventAddAL) {
+                    dbMediaEvent.setEventType(DbMediaEvent.DEBUG_MEDIA_EVENT_SENT_METADATA_ONLY);
+                    dbMediaEventDAO.upsert(dbMediaEvent);
+                }
+                //now try to compress
+                for (DbMediaEvent dbMediaEvent : dbMediaEventAddAL) {
+                    Bitmap resizedBitmap = resizeCompressAndSetMediaEvent(dbMediaEvent);//event type: compressed
+                    dbMediaEventDAO.upsert(dbMediaEvent);
+                    //now try to send individually
+                    //invio header e bitmap
+                    try {
+                        JSONObject jsonRequestHeader = new JSONObject(dbMediaEvent.getSerializedData());
+                        myServerResponse = ServerApiUtils.addMediaMetadataAndMediaDataToServer(jsonRequestHeader, TypeConverter.bitMapToBase64String(resizedBitmap));
+                        resizedBitmap.recycle();//cleanup
+                        myServerResponse.dump();
+                        //se response ok cancella da mediaEvent
+                        if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+                            MyLog.i(this, "SENT NEW USER MEDIA(METADATA + MEDIA) TO SERVER");
+                            dbMediaEvent.setEventType(DbMediaEvent.DEBUG_MEDIA_EVENT_SENT_METADATA_AND_MEDIA_TO_DELETE);
+                            dbMediaEventDAO.upsert(dbMediaEvent);
+                            // TODO: 27/10/16 cancellare file compresso
+                            // TODO: 27/10/16  dbMediaEvent.deleteMe(); attivareeeeeeee
+                        }
+                    }catch(JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
             }
         }
-
 /*
 scenario: ho nel db una lista di eventi add:
 la invio in bulk. in che stato vanno? sono eventi spediti ma non compressi:la compressione potrebbe fallire o potrebbe essere fatta in seguito.

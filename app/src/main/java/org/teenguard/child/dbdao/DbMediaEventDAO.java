@@ -71,8 +71,13 @@ public class DbMediaEventDAO extends GenericDbDAO {
         return true;
     }
 
-    public ArrayList<DbMediaEvent> getList() {
-        Cursor cursor = db.rawQuery("SELECT _id,cs_id,event_type,serialized_data FROM media_event",null);
+
+    public ArrayList<DbMediaEvent> getList(String whereSQL) {
+        String query = "SELECT _id,cs_id,event_type,serialized_data FROM media_event ";
+        if(whereSQL != null) {
+            query += whereSQL;
+        }
+        Cursor cursor = db.rawQuery(query,null);
         ArrayList <DbMediaEvent> dbMediaEventAL = new <DbMediaEvent> ArrayList();
         DbMediaEvent dbMediaEvent;
         if (cursor != null) {
@@ -98,6 +103,11 @@ public class DbMediaEventDAO extends GenericDbDAO {
             MyLog.i(this,"WARNING: CURSOR IS NULL");
         }
         return dbMediaEventAL;
+    }
+
+
+    public ArrayList<DbMediaEvent> getList() {
+        return getList(null);
     }
 
 

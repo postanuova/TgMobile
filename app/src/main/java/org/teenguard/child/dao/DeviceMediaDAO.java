@@ -27,9 +27,15 @@ public class DeviceMediaDAO {
                 MediaStore.Images.ImageColumns.DATA,
                 MediaStore.Images.ImageColumns.DISPLAY_NAME
         };
+
+        ////////
+        String selection = "(" + MediaStore.Images.ImageColumns.DATE_TAKEN + "> 1477677004)";
+        System.out.println("selection = " + selection);
+        ////////
+
         //String sortOrder = ContactsContract.Contacts.DISPLAY_NAME + " ASC";
         ContentResolver contentResolver = MyApp.getContext().getContentResolver();
-        Cursor deviceMediaCursor = contentResolver.query(DeviceMedia.PHOTO_EXTERNAL_CONTENT_URI, projection, null, null, null);
+        Cursor deviceMediaCursor = contentResolver.query(DeviceMedia.PHOTO_EXTERNAL_CONTENT_URI, projection, selection, null, null);
 
         Log.i("DeviceMediaDAO", "getDeviceMediaHM : deviceMediaCursor columns " + deviceMediaCursor.getColumnCount() + " rows " + deviceMediaCursor.getCount());
         if (deviceMediaCursor != null) {
