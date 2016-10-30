@@ -14,7 +14,7 @@ import org.teenguard.child.observer.MediaStoreObserver;
 public class DeviceMonitoringService extends Service {
     ContactListObserver contactListObserver = new ContactListObserver(null);
     MediaStoreObserver mediaStoreObserver = new MediaStoreObserver(null);
-    GpsObserver gpsObserver = new GpsObserver(null);
+    GpsObserver gpsObserver;
 
     public DeviceMonitoringService() {
         Log.i("DeviceMonitoringService", "invoked constructor");
@@ -47,7 +47,7 @@ public class DeviceMonitoringService extends Service {
     }
 
     private void startMonitoringGPSChanges() {
-        Log.i(this.getClass().getName(), "startMonitoringGPSChanges: not implemented");
+         gpsObserver = new GpsObserver();
     }
 
     private void startMonitoringContactsChanges() {
@@ -60,7 +60,9 @@ public class DeviceMonitoringService extends Service {
         Log.i(this.getClass().getName(), ">>>>>>>>>>>>>>>>>unregistering observers observers");
         getContentResolver().unregisterContentObserver(contactListObserver);
         getContentResolver().unregisterContentObserver(mediaStoreObserver);
+/*
         getContentResolver().unregisterContentObserver(gpsObserver);
+*/
 
     }
 }
