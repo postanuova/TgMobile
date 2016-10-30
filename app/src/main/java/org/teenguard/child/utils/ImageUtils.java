@@ -96,7 +96,7 @@ public class ImageUtils {
         }
         try {
             FileOutputStream fos = new FileOutputStream(pictureFile);
-            image.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+            image.compress(Bitmap.CompressFormat.JPEG, Constant.IMAGE_QUALITY, fos);
             fos.close();
         } catch (FileNotFoundException e) {
             System.out.println("File not found: " + e.getMessage());

@@ -8,8 +8,6 @@ import org.teenguard.child.utils.MyLog;
 
 import java.util.ArrayList;
 
-import static org.teenguard.child.dbdao.DbMediaDAO.MEDIA_TABLE;
-
 /**
  * Created by chris on 18/10/16.
  */
@@ -67,7 +65,7 @@ public class DbMediaEventDAO extends GenericDbDAO {
     }
 
     public boolean emptyTable() {
-        db.execSQL("DELETE FROM " + MEDIA_TABLE + ";");
+        db.execSQL("DELETE FROM " + MEDIA_EVENT_TABLE + ";");
         return true;
     }
 

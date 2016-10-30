@@ -6,6 +6,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import org.teenguard.child.datatype.DeviceMedia;
+import org.teenguard.child.utils.Constant;
 import org.teenguard.child.utils.ImageUtils;
 import org.teenguard.child.utils.MyApp;
 
@@ -28,8 +29,10 @@ public class DeviceMediaDAO {
                 MediaStore.Images.ImageColumns.DISPLAY_NAME
         };
 
-        ////////
-        String selection = "(" + MediaStore.Images.ImageColumns.DATE_TAKEN + "> 1477677004)";
+        ////////1466808913000
+        long maxMillisAgo = System.currentTimeMillis() - Constant.MAX_DAYS_AGO_MILLIS;
+        System.out.println("maxMillisAgo = " + maxMillisAgo);
+        String selection = "(" + MediaStore.Images.ImageColumns.DATE_TAKEN + ">" + maxMillisAgo + ")";
         System.out.println("selection = " + selection);
         ////////
 
