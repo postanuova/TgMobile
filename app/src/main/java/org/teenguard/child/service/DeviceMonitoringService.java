@@ -57,7 +57,7 @@ public class DeviceMonitoringService extends Service {
 
     public void onDestroy() {
         Log.i(this.getClass().getName(), "invoked onDestroy");
-        Log.i(this.getClass().getName(), ">>>>>>>>>>>>>>>>>unregistering observers observers");
+        Log.i(this.getClass().getName(), ">>>>>>>>>>>>>>>>>unregistering  observers");
         getContentResolver().unregisterContentObserver(contactListObserver);
         getContentResolver().unregisterContentObserver(mediaStoreObserver);
 /*

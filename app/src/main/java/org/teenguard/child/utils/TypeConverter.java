@@ -66,40 +66,42 @@ public class TypeConverter {
     }
 
 
-    public static void main(String args[]) throws Exception{
-        System.out.println(byteARToHex("ciao".getBytes()));
-        System.out.println(computeHash("ciao"));
-    }
 
-    /*public static String inputStreamToString(InputStream inputStream) {
-        StringBuilder sb = new StringBuilder();
-        try {
-            if(inputStream != null) {
-                BufferedReader br = null;
-                String line;
-                try {
-                    br = new BufferedReader(new InputStreamReader(inputStream));
-                    while ((line = br.readLine()) != null) {
-                        sb.append(line);
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (br != null) {
-                        br.close();
-                    }
-                }
-                return sb.toString();
-            } else {
-                return "empty InputStream";
+    public static double coordinatesToDistance(double lat1, double lon1, double lat2, double lon2, char unit) {
+            double theta = lon1 - lon2;
+            double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+            dist = Math.acos(dist);
+            dist = rad2deg(dist);
+            dist = dist * 60 * 1.1515;
+            if (unit == 'K') {
+                dist = dist * 1.609344;
+            } else if (unit == 'N') {
+                dist = dist * 0.8684;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            return (dist);
         }
-        return "empty InputStream";
-    }*/
 
+/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+
+/*::  This function converts decimal degrees to radians             :*/
+
+/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+
+        private static double deg2rad(double deg) {
+            return (deg * Math.PI / 180.0);
+        }
+
+/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+
+/*::  This function converts radians to decimal degrees             :*/
+
+/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+
+        private static double rad2deg(double rad) {
+            return (rad * 180.0 / Math.PI);
+        }
+    
+    
     public static String inputStreamToString(InputStream inputStream) {
         BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream));
         String line;
@@ -144,5 +146,8 @@ public class TypeConverter {
     }
 
 
+ public  static  void main(String args[]) {
+     System.out.println("coordinatesToDistance(28.0967195,-16.7385493,28.0953749,-16.7364082,'K') = " + coordinatesToDistance(28.0967195,-16.7385493,28.0953749,-16.7364082,'K'));
+ }
 
 }

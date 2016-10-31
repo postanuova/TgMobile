@@ -23,6 +23,13 @@ import java.util.Date;
  */
 
 public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
+
+    public static int DISTANCE_METERS_TRIGGER = 200;
+    public static long TIME_MILLISECONDS_TRIGGER = 5000;
+    // TODO: 31/10/16 settare valori definitivi 
+    // public static int DISTANCE_METERS_TRIGGER = 1000; definitivi
+    //   public static long TIME_MILLISECONDS_TRIGGER = 300000;
+    //visits: meno di 300mt di spostamento nei 5 minuti
     private GoogleApiClient googleApiClient;
     private Location mCurrentLocation;
     private Date mLastUpdateTime;
@@ -45,8 +52,8 @@ public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, 
         Log.i(this.getClass().getName(),"<<<started onConnected");
         Log.i(this.getClass().getName(),"creating LocationRequest");
         mLocationRequest = LocationRequest.create();
-        mLocationRequest.setInterval(10000);
-        mLocationRequest.setSmallestDisplacement(5);
+        mLocationRequest.setInterval(TIME_MILLISECONDS_TRIGGER); //aggiorna posizione ogni 10 secondi
+        mLocationRequest.setSmallestDisplacement(DISTANCE_METERS_TRIGGER); //aggiorna posizione ogni 5 metri
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         if (ActivityCompat.checkSelfPermission(MyApp.getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&

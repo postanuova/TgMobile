@@ -77,7 +77,7 @@ public class LocalizationActivity extends AppCompatActivity implements GoogleApi
        Log.i(this.getClass().getName(),"creating LocationRequest");
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setInterval(10000);
-        mLocationRequest.setSmallestDisplacement(5);
+        mLocationRequest.setSmallestDisplacement(5);//metri
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
