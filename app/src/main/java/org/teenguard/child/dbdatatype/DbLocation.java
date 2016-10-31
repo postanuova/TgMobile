@@ -2,6 +2,8 @@ package org.teenguard.child.dbdatatype;
 
 import android.location.Location;
 
+import static org.teenguard.child.utils.TypeConverter.doubleTrunkTwoDigit;
+
 /**
  * Created by chris on 30/10/16.
  */
@@ -21,7 +23,7 @@ public class DbLocation {
         System.out.println("date = " + date);
         System.out.println("latitude = " + latitude);
         System.out.println("longitude = " + longitude);
-        System.out.println("accuracy = " + accuracy);
+        System.out.println("accuracy = " + doubleTrunkTwoDigit(accuracy));
         System.out.println("trigger = " + trigger);
     }
 

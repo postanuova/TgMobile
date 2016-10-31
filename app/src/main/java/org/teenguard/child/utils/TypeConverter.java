@@ -75,9 +75,14 @@ public class TypeConverter {
             dist = dist * 60 * 1.1515;
             if (unit == 'K') {
                 dist = dist * 1.609344;
-            } else if (unit == 'N') {
+            }
+            if (unit == 'N') {
                 dist = dist * 0.8684;
             }
+        if (unit == 'm') {
+            dist = dist * 1.609344 * 1000;
+        }
+
             return (dist);
         }
 
@@ -101,7 +106,13 @@ public class TypeConverter {
             return (rad * 180.0 / Math.PI);
         }
     
-    
+
+    public static double doubleTrunkTwoDigit(double x) {
+        x = Math.floor(x*100);
+        x = x/100;
+        return x;
+    }
+
     public static String inputStreamToString(InputStream inputStream) {
         BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream));
         String line;
