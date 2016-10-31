@@ -2,6 +2,7 @@ package org.teenguard.child.observer;
 
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -111,6 +112,7 @@ public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, 
          dbLocationEventDAO = new DbLocationEventDAO();
         long id = dbLocationEventDAO.upsert(dbLocationEvent);
         dbLocationEvent.setId(id);
+        ///////////////NEEDS TO BE EXECUTED IN BACKGROUND/////////////////////
         MyLog.i(this, "SENDING NEW LOCATION TO SERVER");
         MyServerResponse myServerResponse = ServerApiUtils.addLocationToServer("[" + dbLocationEvent.buildSerializedDataString() + "]");
         myServerResponse.dump();
@@ -118,6 +120,7 @@ public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, 
             MyLog.i(this, "SENT NEW LOCATION TO SERVER, DELETING id "  + dbLocationEvent.getId());
             dbLocationEvent.deleteMe();
         }
+        //////////////////////////////////////////////////////////////////
         double distanceBetweenLocation = TypeConverter.coordinatesToDistance(dbLocationEvent.getLatitude(),dbLocationEvent.getLongitude(),previousDbLocation.getLatitude(),previousDbLocation.getLongitude(),'m');
         System.out.println("distance from previous (m) = " + TypeConverter.doubleTrunkTwoDigit(distanceBetweenLocation));
         long secondsBetweenLocation = (dbLocationEvent.getDate() - previousDbLocation.getDate())/1000;
@@ -127,6 +130,41 @@ public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, 
             System.out.println("<<<<<<<<< its a visit >>>>>>>>>");
         }
     }
+
+//////////////////////////////////
+    private class AsyncSendToServer extends AsyncTask<String, String, String> {
+
+    /**
+     * Override this method to perform a computation on a background thread. The
+     * specified parameters are the parameters passed to {@link #execute}
+     * by the caller of this task.
+     * <p>
+     * This method can call {@link #publishProgress} to publish updates
+     * on the UI thread.
+     *
+     * @param params The parameters of the task.
+     * @return A result, defined by the subclass of this task.
+     * @see #onPreExecute()
+     * @see #onPostExecute
+     * @see #publishProgress
+     */
+    @Override
+    protected String doInBackground(String... params) {
+        ///////////////NEEDS TO BE EXECUTED IN BACKGROUND/////////////////////
+        MyLog.i(this, "SENDING NEW LOCATION TO SERVER");
+        String serializedDataString = "[" + params[0] + "]";
+        MyServerResponse myServerResponse = ServerApiUtils.addLocationToServer(serializedDataString);
+        myServerResponse.dump();
+        if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+            MyLog.i(this, "SENT NEW LOCATION TO SERVER, DELETING  "  + serializedDataString);
+            dbLocationEvent.deleteMe();
+        }
+        //////////////////////////////////////////////////////////////////
+        return null;
+    }
+}
+    ///////////////////////////////
+
 
     public void flushLocationTable() {
         ArrayList <DbLocationEvent> dbLocationEventAL = dbLocationEventDAO.getList();
