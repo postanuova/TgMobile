@@ -14,10 +14,15 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import org.teenguard.child.dbdao.DbLocationDAO;
-import org.teenguard.child.dbdatatype.DbLocation;
+import org.teenguard.child.datatype.MyServerResponse;
+import org.teenguard.child.dbdao.DbLocationEventDAO;
+import org.teenguard.child.dbdatatype.DbLocationEvent;
 import org.teenguard.child.utils.MyApp;
+import org.teenguard.child.utils.MyLog;
+import org.teenguard.child.utils.ServerApiUtils;
 import org.teenguard.child.utils.TypeConverter;
+
+import java.util.ArrayList;
 
 /**
  * Created by chris on 30/10/16.
@@ -36,10 +41,10 @@ public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, 
 
     private GoogleApiClient googleApiClient;
     private Location mCurrentLocation;
-    private DbLocation previousDbLocation;
+    private DbLocationEvent previousDbLocation;
     private long mLastUpdateTime;
     private LocationRequest mLocationRequest;
-
+    private DbLocationEventDAO dbLocationEventDAO;
 
     public GpsObserver() {
         googleApiClient = new GoogleApiClient.Builder(MyApp.getContext())
@@ -75,7 +80,7 @@ public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, 
             // for ActivityCompat#requestPermissions for more details.
             return;
         } else { //ha tutti i diritti
-            previousDbLocation = new DbLocation(LocationServices.FusedLocationApi.getLastLocation(googleApiClient));
+            previousDbLocation = new DbLocationEvent(LocationServices.FusedLocationApi.getLastLocation(googleApiClient));
             System.out.println("last location");
             previousDbLocation.dump();
         }
@@ -101,24 +106,52 @@ public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, 
         System.out.println("GpsObserver.onLocationChanged()");
         mCurrentLocation = location;
         mLastUpdateTime = location.getTime();
-        // TODO: 30/10/16 save location to database
-        DbLocation dbLocation = new DbLocation(location);
-        dbLocation.dump();
-        DbLocationDAO dbLocationDAO = new DbLocationDAO();
-        dbLocationDAO.upsert(dbLocation);
-        //// TODO: 31/10/16 send to server
-        /*if (previousDbLocation == null) {
-            previousDbLocation = LocationServices.FusedLocationApi.getLastLocation();
-        }*/
-        double distanceBetweenLocation = TypeConverter.coordinatesToDistance(dbLocation.getLatitude(),dbLocation.getLongitude(),previousDbLocation.getLatitude(),previousDbLocation.getLongitude(),'m');
+        DbLocationEvent dbLocationEvent = new DbLocationEvent(location);
+        dbLocationEvent.dump();
+         dbLocationEventDAO = new DbLocationEventDAO();
+        long id = dbLocationEventDAO.upsert(dbLocationEvent);
+        dbLocationEvent.setId(id);
+        MyLog.i(this, "SENDING NEW LOCATION TO SERVER");
+        MyServerResponse myServerResponse = ServerApiUtils.addLocationToServer("[" + dbLocationEvent.buildSerializedDataString() + "]");
+        myServerResponse.dump();
+        if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+            MyLog.i(this, "SENT NEW LOCATION TO SERVER, DELETING id "  + dbLocationEvent.getId());
+            dbLocationEvent.deleteMe();
+        }
+        double distanceBetweenLocation = TypeConverter.coordinatesToDistance(dbLocationEvent.getLatitude(),dbLocationEvent.getLongitude(),previousDbLocation.getLatitude(),previousDbLocation.getLongitude(),'m');
         System.out.println("distance from previous (m) = " + TypeConverter.doubleTrunkTwoDigit(distanceBetweenLocation));
-        long secondsBetweenLocation = (dbLocation.getDate() - previousDbLocation.getDate())/1000;
+        long secondsBetweenLocation = (dbLocationEvent.getDate() - previousDbLocation.getDate())/1000;
         System.out.println("seconds from previous location = " + secondsBetweenLocation);
-        previousDbLocation = dbLocation;
+        previousDbLocation = dbLocationEvent;
         if((distanceBetweenLocation < VISIT_DISTANCE_METERS_THRESHOLD) && (secondsBetweenLocation * 1000 > VISIT_TIME_MILLISECONDS_THRESHOLD)) {
-            System.out.println("its a visit");
+            System.out.println("<<<<<<<<< its a visit >>>>>>>>>");
         }
     }
 
+    public void flushLocationTable() {
+        ArrayList <DbLocationEvent> dbLocationEventAL = dbLocationEventDAO.getList();
+        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder idToDeleteListSB = new StringBuilder(); //la usero' per cancellare gli eventi una volta inviati
+        for (DbLocationEvent dbLocationEvent:dbLocationEventAL) {
+            stringBuilder.append(dbLocationEvent.buildSerializedDataString());
+            stringBuilder.append(",");
+            idToDeleteListSB.append(dbLocationEvent.getId());
+        }
+        String bulkLocationEventSTR = stringBuilder.toString();
+        if(bulkLocationEventSTR.endsWith(",")) bulkLocationEventSTR = bulkLocationEventSTR.substring(0,bulkLocationEventSTR.length()-1);
+        String idToDeleteListSTR = stringBuilder.toString();
+        if(idToDeleteListSTR.endsWith(",")) idToDeleteListSTR = idToDeleteListSTR.substring(0,idToDeleteListSTR.length()-1);
+        //send to server
+        MyServerResponse myServerResponse = ServerApiUtils.addLocationToServer("[" + bulkLocationEventSTR + "]");
+        myServerResponse.dump();
+        if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+            MyLog.i(this, "SENT NEW BULK LOCATION TO SERVER:deleting ids " + idToDeleteListSTR);
+            //delete from db
+
+            dbLocationEventDAO.delete(idToDeleteListSTR);
+        }
+
+
+    }
     
 }

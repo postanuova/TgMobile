@@ -113,7 +113,6 @@ public class DbContactDAO extends GenericDbDAO{
         } else {
             MyLog.i(this,"WARNING: CURSOR IS NULL");
         }
-
         return dbContactHM;
     }
 

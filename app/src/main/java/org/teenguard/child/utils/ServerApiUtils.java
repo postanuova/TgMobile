@@ -24,6 +24,20 @@ public class ServerApiUtils {
     public final static String APPLICATION_SERVER_REQUEST_REMOVE_MEDIA_URL = "/api.php";
     public final static String APPLICATION_SERVER_REQUEST_ADD_MEDIA_METADATA_AND_MEDIA_DATA_URL = "/api.php";
 
+    public final static String APPLICATION_SERVER_REQUEST_ADD_LOCATION = "/api.php";
+
+
+    public static MyServerResponse addLocationToServer(String serializedData) {
+        MyServerResponse myServerResponse = new MyServerResponse();
+        MyLog.i(" ServerUtils.addLocationToServer","addLocationToServer data:" + serializedData);
+        try{
+            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_ADD_LOCATION);
+            myServerResponse = MyConnectionUtils.doAndroidRequest("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,serializedData);
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        }
+        return myServerResponse;
+    }
 
     //(String requestMethod,URL url, String contentType,  String serializedData)
     public static MyServerResponse addContactToServer(String serializedData) {

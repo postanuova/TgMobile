@@ -18,7 +18,7 @@ public class ChildDbHelper extends SQLiteOpenHelper {
 
 
     public static final String CHILD_DB_NAME = "contactDB";
-    public static final int CHILD_DB_VERSION = 17;
+    public static final int CHILD_DB_VERSION = 18;
 
     private static final String  CREATE_TABLE_CONTACT=
             "CREATE TABLE contact (" +
@@ -52,8 +52,8 @@ public class ChildDbHelper extends SQLiteOpenHelper {
                     "compressed_media_path TEXT" +
             ");";
 
-    private static final String CREATE_TABLE_LOCATION =
-            "CREATE TABLE location (" +
+    private static final String CREATE_TABLE_LOCATION_EVENT =
+            "CREATE TABLE location_event (" +
                     "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "date INTEGER," +
                     "latitude REAL," +
@@ -67,7 +67,7 @@ public class ChildDbHelper extends SQLiteOpenHelper {
     private static final String DROP_TABLE_CONTACT_EVENT = "DROP TABLE IF EXISTS contact_event;";
     private static final String DROP_TABLE_MEDIA = "DROP TABLE IF EXISTS media;";
     private static final String DROP_TABLE_MEDIA_EVENT = "DROP TABLE IF EXISTS media_event;";
-    private static final String DROP_TABLE_LOCATION =  "DROP TABLE IF EXISTS location;";
+    private static final String DROP_TABLE_LOCATION_EVENT =  "DROP TABLE IF EXISTS location_event;";
 
     public ChildDbHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -80,7 +80,7 @@ public class ChildDbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_CONTACT_EVENT);
         db.execSQL(CREATE_TABLE_MEDIA);
         db.execSQL(CREATE_TABLE_MEDIA_EVENT);
-        db.execSQL(CREATE_TABLE_LOCATION);
+        db.execSQL(CREATE_TABLE_LOCATION_EVENT);
         MyLog.i(this, "created db:"  + CHILD_DB_NAME + " version " + CHILD_DB_VERSION);
     }
 
@@ -92,7 +92,7 @@ public class ChildDbHelper extends SQLiteOpenHelper {
         db.execSQL(DROP_TABLE_CONTACT_EVENT);
         db.execSQL(DROP_TABLE_MEDIA);
         db.execSQL(DROP_TABLE_MEDIA_EVENT);
-        db.execSQL(DROP_TABLE_LOCATION);
+        db.execSQL(DROP_TABLE_LOCATION_EVENT);
         onCreate(db);
     }
 
@@ -102,7 +102,7 @@ public class ChildDbHelper extends SQLiteOpenHelper {
         db.execSQL(DROP_TABLE_CONTACT_EVENT);
         db.execSQL(DROP_TABLE_MEDIA);
         db.execSQL(DROP_TABLE_MEDIA_EVENT);
-        db.execSQL(DROP_TABLE_LOCATION);
+        db.execSQL(DROP_TABLE_LOCATION_EVENT);
         onCreate(db);
     }
 
