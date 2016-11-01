@@ -88,19 +88,22 @@ private long id;
         ArrayList <DbLocationEvent> dbLocationEventAL = new ArrayList<DbLocationEvent>();
         DbLocationEvent dbLocationEvent;
         if (cursor != null) {
-            while (cursor.moveToNext()) {
-                long id = cursor.getLong(cursor.getColumnIndex(LOCATION_EVENT_ID));
-                long date = cursor.getLong(cursor.getColumnIndex(LOCATION_EVENT_DATE));
-                double latitude = cursor.getDouble(cursor.getColumnIndex(LOCATION_EVENT_LATITUDE));
-                double longitude = cursor.getDouble(cursor.getColumnIndex(LOCATION_EVENT_LONGITUDE));
-                double accuracy = cursor.getDouble(cursor.getColumnIndex(LOCATION_EVENT_ACCURACY));
-                int trigger = cursor.getInt(cursor.getColumnIndex(LOCATION_EVENT_TRIGGER));
-                dbLocationEvent = new DbLocationEvent(id,date,latitude,longitude,accuracy,trigger);
-                dbLocationEventAL.add(dbLocationEvent);
-            }
-            if(!cursor.isClosed()) {
-                cursor.close();
-            }
+            try {
+                    while (cursor.moveToNext()) {
+                        long id = cursor.getLong(cursor.getColumnIndex(LOCATION_EVENT_ID));
+                        long date = cursor.getLong(cursor.getColumnIndex(LOCATION_EVENT_DATE));
+                        double latitude = cursor.getDouble(cursor.getColumnIndex(LOCATION_EVENT_LATITUDE));
+                        double longitude = cursor.getDouble(cursor.getColumnIndex(LOCATION_EVENT_LONGITUDE));
+                        double accuracy = cursor.getDouble(cursor.getColumnIndex(LOCATION_EVENT_ACCURACY));
+                        int trigger = cursor.getInt(cursor.getColumnIndex(LOCATION_EVENT_TRIGGER));
+                        dbLocationEvent = new DbLocationEvent(id,date,latitude,longitude,accuracy,trigger);
+                        dbLocationEventAL.add(dbLocationEvent);
+                    }
+                } finally {
+                    if (!cursor.isClosed()) {
+                        cursor.close();
+                    }
+        }
         } else {
             MyLog.i(this,"WARNING: CURSOR IS NULL");
         }

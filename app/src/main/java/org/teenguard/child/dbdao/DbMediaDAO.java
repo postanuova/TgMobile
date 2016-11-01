@@ -72,15 +72,18 @@ public class DbMediaDAO extends GenericDbDAO{
         ConcurrentHashMap dbMediaHM = new ConcurrentHashMap();
         DbMedia dbMedia;
         if (cursor != null) {
+            try {
             while (cursor.moveToNext()) {
                 int id = cursor.getInt(cursor.getColumnIndex(MEDIA_ID));
                 int phoneId = cursor.getInt(cursor.getColumnIndex(MEDIA_PHONE_ID));
                 dbMedia = new DbMedia(id, phoneId);
                 dbMediaHM.put(phoneId, dbMedia);
             }
+        } finally {
             if (!cursor.isClosed()) {
                 cursor.close();
             }
+        }
         } else {
             MyLog.i(this, "WARNING: CURSOR IS NULL");
         }

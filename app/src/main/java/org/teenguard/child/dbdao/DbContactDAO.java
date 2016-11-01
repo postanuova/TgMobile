@@ -86,29 +86,29 @@ public class DbContactDAO extends GenericDbDAO{
 
     public ConcurrentHashMap getDbContactHM() {
         Cursor cursor = getDbContactCursor();
-        //String columnAR [] = cursor.getColumnNames();
-        /*for (String column: columnAR) {
-            System.out.println("column = " + column);
-        }*/
         ConcurrentHashMap dbContactHM = new ConcurrentHashMap();
         DbContact dbContact;
         if (cursor != null) {
-            MyLog.i(this,"<<<<<<<<<<<<<<<< getDbContactHM cursor.count" + cursor.getCount());
-            int putCounter = 0;
-            while (cursor.moveToNext()) {
-                putCounter++;
-                //dbContact = new DbContact(cursor);
-                int id = cursor.getInt(cursor.getColumnIndex(CONTACT_ID));
-                int phoneId = cursor.getInt(cursor.getColumnIndex(CONTACT_PHONE_ID));
-                String name = cursor.getString(cursor.getColumnIndex(CONTACT_NAME));
-                long lastModified = cursor.getLong(cursor.getColumnIndex(CONTACT_LAST_MODIFIED));
-                String serializedData = cursor.getString(cursor.getColumnIndex(CONTACT_SERIALIZED_DATA));
-                dbContact = new DbContact(id, phoneId, name, lastModified, serializedData);
-                dbContactHM.put(dbContact.getPhoneId(),dbContact);
-            }
-            MyLog.i(this,"putCounter " + putCounter);
-            if(!cursor.isClosed()) {
-                cursor.close();
+            try {
+                MyLog.i(this, "<<<<<<<<<<<<<<<< getDbContactHM cursor.count" + cursor.getCount());
+                int putCounter = 0;
+                while (cursor.moveToNext()) {
+                    putCounter++;
+                    //dbContact = new DbContact(cursor);
+                    int id = cursor.getInt(cursor.getColumnIndex(CONTACT_ID));
+                    int phoneId = cursor.getInt(cursor.getColumnIndex(CONTACT_PHONE_ID));
+                    String name = cursor.getString(cursor.getColumnIndex(CONTACT_NAME));
+                    long lastModified = cursor.getLong(cursor.getColumnIndex(CONTACT_LAST_MODIFIED));
+                    String serializedData = cursor.getString(cursor.getColumnIndex(CONTACT_SERIALIZED_DATA));
+                    dbContact = new DbContact(id, phoneId, name, lastModified, serializedData);
+                    dbContactHM.put(dbContact.getPhoneId(), dbContact);
+                }
+                MyLog.i(this, "putCounter " + putCounter);
+
+            } finally {
+                if (!cursor.isClosed()) {
+                    cursor.close();
+                }
             }
         } else {
             MyLog.i(this,"WARNING: CURSOR IS NULL");
@@ -158,15 +158,19 @@ public class DbContactDAO extends GenericDbDAO{
         DbContact dbContact = null;
         Cursor cursor = db.rawQuery(query,null);
         if (cursor != null) {
-            while (cursor.moveToNext()) {
-                int id = cursor.getInt(cursor.getColumnIndex(CONTACT_ID));
-                //int phoneId = cursor.getInt(cursor.getColumnIndex(CONTACT_PHONE_ID));
-                String name = cursor.getString(cursor.getColumnIndex(CONTACT_NAME));
-                long lastModified = cursor.getLong(cursor.getColumnIndex(CONTACT_LAST_MODIFIED));
-                String serializedData = cursor.getString(cursor.getColumnIndex(CONTACT_SERIALIZED_DATA));
-                dbContact = new DbContact(id, phoneId, name, lastModified, serializedData);
-            }if(!cursor.isClosed()) {
-                cursor.close();
+            try{
+                while (cursor.moveToNext()) {
+                    int id = cursor.getInt(cursor.getColumnIndex(CONTACT_ID));
+                    //int phoneId = cursor.getInt(cursor.getColumnIndex(CONTACT_PHONE_ID));
+                    String name = cursor.getString(cursor.getColumnIndex(CONTACT_NAME));
+                    long lastModified = cursor.getLong(cursor.getColumnIndex(CONTACT_LAST_MODIFIED));
+                    String serializedData = cursor.getString(cursor.getColumnIndex(CONTACT_SERIALIZED_DATA));
+                    dbContact = new DbContact(id, phoneId, name, lastModified, serializedData);
+                }
+            } finally {
+                if (!cursor.isClosed()) {
+                    cursor.close();
+                }
             }
         } else {
             MyLog.i(this,"WARNING: CURSOR IS NULL");

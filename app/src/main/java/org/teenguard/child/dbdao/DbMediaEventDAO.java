@@ -79,6 +79,7 @@ public class DbMediaEventDAO extends GenericDbDAO {
         ArrayList <DbMediaEvent> dbMediaEventAL = new <DbMediaEvent> ArrayList();
         DbMediaEvent dbMediaEvent;
         if (cursor != null) {
+            try {
             MyLog.i(this,"<<<<<<<<<<<<<<<< dbMediaEvent cursor.count" + cursor.getCount());
             int addCounter = 0;
             while (cursor.moveToNext()) {
@@ -94,9 +95,11 @@ public class DbMediaEventDAO extends GenericDbDAO {
                 dbMediaEventAL.add(dbMediaEvent);
             }
             MyLog.i(this,"dbMediaEventAL.size " + dbMediaEventAL.size());
-            if(!cursor.isClosed()) {
+        } finally {
+            if (!cursor.isClosed()) {
                 cursor.close();
             }
+        }
         } else {
             MyLog.i(this,"WARNING: CURSOR IS NULL");
         }

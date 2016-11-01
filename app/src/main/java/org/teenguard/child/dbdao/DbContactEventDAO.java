@@ -78,21 +78,24 @@ public class DbContactEventDAO extends GenericDbDAO {
         ArrayList <DbContactEvent> dbContactEventAL = new <DbContactEvent> ArrayList();
         DbContactEvent dbContactEvent;
         if (cursor != null) {
-            MyLog.i(this,"<<<<<<<<<<<<<<<< dbContactEvent cursor.count" + cursor.getCount());
-            int addCounter = 0;
-            while (cursor.moveToNext()) {
-                addCounter++;
-                //dbContact = new DbContact(cursor);
-                int id = cursor.getInt(cursor.getColumnIndex(CONTACT_EVENT_ID));
-                int csId = cursor.getInt(cursor.getColumnIndex(CONTACT_EVENT_CS_ID));
-                int eventType = cursor.getInt(cursor.getColumnIndex(CONTACT_EVENT_TYPE));
-                String serializedData = cursor.getString(cursor.getColumnIndex(CONTACT_EVENT_SERIALIZED_DATA));
-                dbContactEvent = new DbContactEvent(id, csId, eventType,serializedData);
-                dbContactEventAL.add(dbContactEvent);
-            }
-            MyLog.i(this,"putCounter " + addCounter);
-            if(!cursor.isClosed()) {
-                cursor.close();
+            try {
+                MyLog.i(this,"<<<<<<<<<<<<<<<< dbContactEvent cursor.count" + cursor.getCount());
+                int addCounter = 0;
+                while (cursor.moveToNext()) {
+                    addCounter++;
+                    //dbContact = new DbContact(cursor);
+                    int id = cursor.getInt(cursor.getColumnIndex(CONTACT_EVENT_ID));
+                    int csId = cursor.getInt(cursor.getColumnIndex(CONTACT_EVENT_CS_ID));
+                    int eventType = cursor.getInt(cursor.getColumnIndex(CONTACT_EVENT_TYPE));
+                    String serializedData = cursor.getString(cursor.getColumnIndex(CONTACT_EVENT_SERIALIZED_DATA));
+                    dbContactEvent = new DbContactEvent(id, csId, eventType,serializedData);
+                    dbContactEventAL.add(dbContactEvent);
+                }
+                MyLog.i(this,"putCounter " + addCounter);
+            } finally {
+                if (!cursor.isClosed()) {
+                    cursor.close();
+                }
             }
         } else {
             MyLog.i(this,"WARNING: CURSOR IS NULL");
