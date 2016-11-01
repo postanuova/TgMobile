@@ -54,8 +54,8 @@ public class MyConnectionUtils {
             if(connection.getInputStream() != null) myServerResponse.setResponseBody(TypeConverter.inputStreamToString(connection.getInputStream()));
             if(connection.getErrorStream() != null) myServerResponse.setResponseError(TypeConverter.inputStreamToString(connection.getErrorStream()));
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("doAndroidRequest : server connection failed:device is offline? ");
+            //e.printStackTrace();
+            System.out.println("doAndroidRequest : server connection failed:is device offline? ");
             return myServerResponse;
         } finally {
             if (connection != null) {
@@ -111,8 +111,8 @@ public class MyConnectionUtils {
             if(connection.getInputStream() != null) myServerResponse.setResponseBody(TypeConverter.inputStreamToString(connection.getInputStream()));
             if(connection.getErrorStream() != null) myServerResponse.setResponseError(TypeConverter.inputStreamToString(connection.getErrorStream()));
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("doAndroidRequest : server connection failed:device is offline? ");
+            //e.printStackTrace();
+            System.out.println("doAndroidMediaRequestWithHeader : server connection failed:is device  offline? ");
             return myServerResponse;
         } finally {
             if (connection != null) {

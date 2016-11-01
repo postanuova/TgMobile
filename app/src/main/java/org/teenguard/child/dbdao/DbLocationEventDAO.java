@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 
 public class DbLocationEventDAO extends GenericDbDAO {
-    public final static String LOCATION_EVENT_TABLE = "location_event";
+    public final static String TABLE = "location_event";
     public final static String LOCATION_EVENT_ID = "_id"; //table primary key: IS THE CLIENT-SIDE ID
     public final static String LOCATION_EVENT_DATE = "date";
     public final static String LOCATION_EVENT_LATITUDE = "latitude";
@@ -35,20 +35,21 @@ private long id;
         ContentValues values = new ContentValues();
 
         if(id == 0) {
+            System.out.println("id = 0: insert");
             values.putNull(LOCATION_EVENT_ID);
             values.put(LOCATION_EVENT_DATE,date);
             values.put(LOCATION_EVENT_LATITUDE,latitude);
             values.put(LOCATION_EVENT_LONGITUDE, longitude);
             values.put(LOCATION_EVENT_ACCURACY, accuracy);
             values.put(LOCATION_EVENT_TRIGGER, trigger);
-            return db.insert (LOCATION_EVENT_TABLE, null, values);
+            return db.insert(TABLE, null, values);
         } else {
             values.put(LOCATION_EVENT_DATE,date);
             values.put(LOCATION_EVENT_LATITUDE,latitude);
             values.put(LOCATION_EVENT_LONGITUDE, longitude);
             values.put(LOCATION_EVENT_ACCURACY, accuracy);
             values.put(LOCATION_EVENT_TRIGGER, trigger);
-            return db.update(LOCATION_EVENT_TABLE,values,LOCATION_EVENT_ID +"=" + id,null);
+            return db.update(TABLE,values,LOCATION_EVENT_ID +"=" + id,null);
         }
     }
 
@@ -57,7 +58,7 @@ private long id;
     }
 
     public void delete(long id) {
-        String deleteQuery = "DELETE FROM " + LOCATION_EVENT_TABLE + " WHERE " + LOCATION_EVENT_ID + "=" + id + ";";
+        String deleteQuery = "DELETE FROM " + TABLE + " WHERE " + LOCATION_EVENT_ID + "=" + id + ";";
         MyLog.i(this,"deleting location id = " + id + " query " + deleteQuery);
         db.execSQL(deleteQuery);
 
@@ -68,12 +69,12 @@ private long id;
     public Cursor getDbLocationEventCursor() {
         String[] cols = new String[] {LOCATION_EVENT_ID,LOCATION_EVENT_DATE,LOCATION_EVENT_LATITUDE,LOCATION_EVENT_LONGITUDE,LOCATION_EVENT_ACCURACY,LOCATION_EVENT_ACCURACY};
         //Cursor mCursor = db.rawQuery("select _id,phone_id,name,last_modified from contact",null);
-        Cursor mCursor = db.query(true, LOCATION_EVENT_TABLE,cols,null, null, null, null, null, null);
+        Cursor mCursor = db.query(true, TABLE,cols,null, null, null, null, null, null);
         return mCursor; // iterate to get each value.
     }
 
     public void delete(String idList) {
-        String deleteQuery = " DELETE FROM " + LOCATION_EVENT_TABLE + " WHERE " + LOCATION_EVENT_ID  + " IN ("   + idList + ");";
+        String deleteQuery = " DELETE FROM " + TABLE + " WHERE " + LOCATION_EVENT_ID  + " IN ("   + idList + ");";
         System.out.println("deleteQuery = " + deleteQuery);
         db.execSQL(deleteQuery);
     }
@@ -106,5 +107,10 @@ private long id;
         return dbLocationEventAL;
     }
 
+    public boolean emptyTable() {
+        db.execSQL("DELETE FROM " + TABLE + ";");
+        return true;
+        //throw new UnsupportedOperationException("emptyContactTable not implemented");
+    }
 
 }

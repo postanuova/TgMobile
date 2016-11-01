@@ -2,6 +2,11 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:title="item_location_cleaner"
+        app:showAsAction="always"
+        android:id="@+id/item_location_cleaner"
+        android:icon="@drawable/ic_location_searching_black_24dp" />
+    <item
         android:title="item_send_db_contact_event"
         app:showAsAction="always"
         android:id="@+id/item_send_db_contact_event"

@@ -45,7 +45,7 @@ public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, 
     private DbLocationEvent previousDbLocation;
     private long mLastUpdateTime;
     private LocationRequest mLocationRequest;
-    private DbLocationEventDAO dbLocationEventDAO;
+   // private DbLocationEventDAO dbLocationEventDAO = new DbLocationEventDAO();
 
     public GpsObserver() {
         googleApiClient = new GoogleApiClient.Builder(MyApp.getContext())
@@ -62,7 +62,7 @@ public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, 
     public void onConnected(@Nullable Bundle bundle) {
         System.out.println("GpsObserver.onConnected()");
         Log.i(this.getClass().getName(),"<<<started onConnected");
-        Log.i(this.getClass().getName(),"creating LocationRequest");
+        Log.i(this.getClass().getName(),"setting LocationRequest parameters");
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setFastestInterval(LOCATION_TIME_MILLISECONDS_THRESHOLD);
         mLocationRequest.setInterval(LOCATION_TIME_MILLISECONDS_THRESHOLD); //aggiorna posizione ogni x secondi
@@ -81,13 +81,19 @@ public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, 
             // for ActivityCompat#requestPermissions for more details.
             return;
         } else { //ha tutti i diritti
-            previousDbLocation = new DbLocationEvent(LocationServices.FusedLocationApi.getLastLocation(googleApiClient));
-            System.out.println("last location");
-            previousDbLocation.dump();
-        }
-        Log.i(this.getClass().getName(),"executing LocationServices.FusedLocationApi.requestLocationUpdates");
-        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);
 
+            previousDbLocation = new DbLocationEvent(LocationServices.FusedLocationApi.getLastLocation(googleApiClient));
+            DbLocationEventDAO  dbLocationEventDAO = new DbLocationEventDAO();
+            long id = dbLocationEventDAO.upsert(previousDbLocation);
+            System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<id = " + id);
+            previousDbLocation.setId(id);
+            System.out.println("previousDbLocation.getId() = " + previousDbLocation.getId());
+            System.out.println("-------last known location------");
+            previousDbLocation.dump();
+            AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + previousDbLocation.buildSerializedDataString() + "]","" + previousDbLocation.getId());
+            asyncSendToServer.execute();
+        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);
         Log.i(this.getClass().getName(),">>>completed onConnected");
     }
 
@@ -109,64 +115,67 @@ public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, 
         mLastUpdateTime = location.getTime();
         DbLocationEvent dbLocationEvent = new DbLocationEvent(location);
         dbLocationEvent.dump();
-         dbLocationEventDAO = new DbLocationEventDAO();
+        DbLocationEventDAO  dbLocationEventDAO = new DbLocationEventDAO();
         long id = dbLocationEventDAO.upsert(dbLocationEvent);
+        System.out.println("<<<<<<<<< event id = " + id);
         dbLocationEvent.setId(id);
         ///////////////NEEDS TO BE EXECUTED IN BACKGROUND/////////////////////
-        MyLog.i(this, "SENDING NEW LOCATION TO SERVER");
+        /*MyLog.i(this, "SENDING NEW LOCATION TO SERVER");
         MyServerResponse myServerResponse = ServerApiUtils.addLocationToServer("[" + dbLocationEvent.buildSerializedDataString() + "]");
         myServerResponse.dump();
         if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
             MyLog.i(this, "SENT NEW LOCATION TO SERVER, DELETING id "  + dbLocationEvent.getId());
             dbLocationEvent.deleteMe();
-        }
+        }*/
+        AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbLocationEvent.buildSerializedDataString() + "]","" + dbLocationEvent.getId());
+        asyncSendToServer.execute();
         //////////////////////////////////////////////////////////////////
         double distanceBetweenLocation = TypeConverter.coordinatesToDistance(dbLocationEvent.getLatitude(),dbLocationEvent.getLongitude(),previousDbLocation.getLatitude(),previousDbLocation.getLongitude(),'m');
-        System.out.println("distance from previous (m) = " + TypeConverter.doubleTrunkTwoDigit(distanceBetweenLocation));
+        System.out.println(" distance from previous (m) = " + TypeConverter.doubleTrunkTwoDigit(distanceBetweenLocation));
         long secondsBetweenLocation = (dbLocationEvent.getDate() - previousDbLocation.getDate())/1000;
         System.out.println("seconds from previous location = " + secondsBetweenLocation);
         previousDbLocation = dbLocationEvent;
         if((distanceBetweenLocation < VISIT_DISTANCE_METERS_THRESHOLD) && (secondsBetweenLocation * 1000 > VISIT_TIME_MILLISECONDS_THRESHOLD)) {
-            System.out.println("<<<<<<<<< its a visit >>>>>>>>>");
+            System.out.println("<<<<<<<<< it's a visit >>>>>>>>>");
+            // TODO: 01/11/16 save visit
         }
     }
 
 //////////////////////////////////
     private class AsyncSendToServer extends AsyncTask<String, String, String> {
+    //http://www.journaldev.com/9708/android-asynctask-example-tutorial
+    String dataToSend;
+    String idToDeleteListSTR;
 
-    /**
-     * Override this method to perform a computation on a background thread. The
-     * specified parameters are the parameters passed to {@link #execute}
-     * by the caller of this task.
-     * <p>
-     * This method can call {@link #publishProgress} to publish updates
-     * on the UI thread.
-     *
-     * @param params The parameters of the task.
-     * @return A result, defined by the subclass of this task.
-     * @see #onPreExecute()
-     * @see #onPostExecute
-     * @see #publishProgress
-     */
+    public AsyncSendToServer(String dataToSend, String idToDeleteListSTR) {
+        this.dataToSend = dataToSend;
+        this.idToDeleteListSTR = idToDeleteListSTR;
+    }
     @Override
     protected String doInBackground(String... params) {
         ///////////////NEEDS TO BE EXECUTED IN BACKGROUND/////////////////////
-        MyLog.i(this, "SENDING NEW LOCATION TO SERVER");
-        String serializedDataString = "[" + params[0] + "]";
-        MyServerResponse myServerResponse = ServerApiUtils.addLocationToServer(serializedDataString);
+        MyLog.i(this, "ASYNC SENDING NEW LOCATION TO SERVER");
+        MyServerResponse myServerResponse = ServerApiUtils.addLocationToServer(dataToSend);
         myServerResponse.dump();
         if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-            MyLog.i(this, "SENT NEW LOCATION TO SERVER, DELETING  "  + serializedDataString);
-            dbLocationEvent.deleteMe();
+            MyLog.i(this, "SENT NEW LOCATION TO SERVER, DELETING  "  + idToDeleteListSTR);
+            DbLocationEventDAO  dbLocationEventDAO = new DbLocationEventDAO();
+            dbLocationEventDAO.delete(idToDeleteListSTR);
         }
-        //////////////////////////////////////////////////////////////////
         return null;
+    }
+
+    @Override
+    protected void onPostExecute(String s) {
+        super.onPostExecute(s);
+        System.out.println("completed async execution");
     }
 }
     ///////////////////////////////
 
 
     public void flushLocationTable() {
+        DbLocationEventDAO  dbLocationEventDAO = new DbLocationEventDAO();
         ArrayList <DbLocationEvent> dbLocationEventAL = dbLocationEventDAO.getList();
         StringBuilder stringBuilder = new StringBuilder();
         StringBuilder idToDeleteListSB = new StringBuilder(); //la usero' per cancellare gli eventi una volta inviati
@@ -179,15 +188,17 @@ public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, 
         if(bulkLocationEventSTR.endsWith(",")) bulkLocationEventSTR = bulkLocationEventSTR.substring(0,bulkLocationEventSTR.length()-1);
         String idToDeleteListSTR = stringBuilder.toString();
         if(idToDeleteListSTR.endsWith(",")) idToDeleteListSTR = idToDeleteListSTR.substring(0,idToDeleteListSTR.length()-1);
-        //send to server
-        MyServerResponse myServerResponse = ServerApiUtils.addLocationToServer("[" + bulkLocationEventSTR + "]");
+        AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + bulkLocationEventSTR + "]",idToDeleteListSTR);
+        asyncSendToServer.execute();
+        //send to server async
+        /*MyServerResponse myServerResponse = ServerApiUtils.addLocationToServer("[" + bulkLocationEventSTR + "]");
         myServerResponse.dump();
         if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
             MyLog.i(this, "SENT NEW BULK LOCATION TO SERVER:deleting ids " + idToDeleteListSTR);
             //delete from db
 
             dbLocationEventDAO.delete(idToDeleteListSTR);
-        }
+        }*/
 
 
     }

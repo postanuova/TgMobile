@@ -64,9 +64,7 @@ public class DbLocationEvent {
         return stringBuilder.toString();
     }
 
-    public void setId(long Id) {
-        this.id = id;
-    }
+
 
     public long getDate() {
         return date;
@@ -111,5 +109,10 @@ public class DbLocationEvent {
     public void deleteMe() {
         DbLocationEventDAO dbLocationEventDAO = new DbLocationEventDAO();
         dbLocationEventDAO.delete(this.getId());
+    }
+
+    public void setId(long id) {
+        System.out.println("setting id = " + id);
+        this.id = id;
     }
 }

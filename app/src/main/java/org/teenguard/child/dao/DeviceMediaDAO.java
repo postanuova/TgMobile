@@ -46,14 +46,13 @@ public class DeviceMediaDAO {
             for (int i = 0; i < columnNamesAR.length; i++) {
                 Log.i("media column names", i + " " + columnNamesAR[i]);
             }
-            // TODO: 25/10/16 solo ultimi tre mesi
             int _idIdx = deviceMediaCursor.getColumnIndex(MediaStore.Images.ImageColumns._ID);
             int dateTakenIdx = deviceMediaCursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN);
             int latitudeIdx = deviceMediaCursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE);
             int longitudeIdx = deviceMediaCursor.getColumnIndex(MediaStore.Images.ImageColumns.LONGITUDE);
             int dataPathIdx = deviceMediaCursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
             int displayNameIdx = deviceMediaCursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME);
-            //// TODO: 25/10/16 manca accuracy,
+            //// TODO: 25/10/16 manca accuracy che risulta sempre a zero
             int deviceMediaCounter = 0;
             while (deviceMediaCursor.moveToNext()) {
                 deviceMediaCounter++;
