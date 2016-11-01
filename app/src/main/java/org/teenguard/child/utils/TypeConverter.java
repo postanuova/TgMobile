@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -154,6 +155,16 @@ public class TypeConverter {
         byte[] b = baos.toByteArray();
         String temp = Base64.encodeToString(b, Base64.DEFAULT);
         return temp;
+    }
+
+    public static byte[] bitmapToByteAR(Bitmap b) {
+        //http://stackoverflow.com/questions/17023304/convert-bitmap-to-byte-array-without-bitmap-compressformat
+        //java.lang.RuntimeException: Buffer not large enough for pixels
+        aaaaaaaaaaa
+        int bytes = b.getDensity();
+        ByteBuffer buffer = ByteBuffer.allocate(bytes);
+        b.copyPixelsToBuffer(buffer);
+        return buffer.array();
     }
 
 

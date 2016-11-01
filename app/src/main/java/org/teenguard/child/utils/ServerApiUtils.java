@@ -1,5 +1,7 @@
 package org.teenguard.child.utils;
 
+import android.graphics.Bitmap;
+
 import org.json.JSONObject;
 import org.teenguard.child.datatype.MyServerResponse;
 
@@ -92,6 +94,20 @@ public class ServerApiUtils {
         }
         return myServerResponse;
     }
+
+    public static MyServerResponse addMediaMetadataAndBitmapToServer(JSONObject headerMetadataJSON,Bitmap bitmap) {
+        //http://stackoverflow.com/questions/9397076/android-sending-an-image-through-post
+        MyServerResponse myServerResponse = new MyServerResponse();
+        byte[] dataAR = TypeConverter.bitmapToByteAR(bitmap);
+        try{
+            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_ADD_MEDIA_METADATA_AND_MEDIA_DATA_URL);
+            myServerResponse = MyConnectionUtils.doAndroidMediaRequestWithHeader("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,headerMetadataJSON,dataAR.toString());
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        }
+        return myServerResponse;
+    }
+
 
     public static MyServerResponse deleteMediaFromServer(String serializedData) {
         MyServerResponse myServerResponse = new MyServerResponse();

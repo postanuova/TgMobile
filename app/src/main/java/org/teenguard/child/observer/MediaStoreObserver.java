@@ -129,7 +129,8 @@ public class MediaStoreObserver extends ContentObserver {
 
                 //invio header e bitmap
                 JSONObject jsonRequestHeader = new JSONObject(dbMediaEvent.getSerializedData()); //prima prendevo header direttamente da deviceMedia, ora lo leggo dal db: da testare
-                myServerResponse = ServerApiUtils.addMediaMetadataAndMediaDataToServer(jsonRequestHeader, TypeConverter.bitMapToBase64String(resizedBitmap));
+                //myServerResponse = ServerApiUtils.addMediaMetadataAndMediaDataToServer(jsonRequestHeader, TypeConverter.bitMapToBase64String(resizedBitmap));
+                myServerResponse = ServerApiUtils.addMediaMetadataAndBitmapToServer(jsonRequestHeader,resizedBitmap);
                 resizedBitmap.recycle();//cleanup
                 myServerResponse.dump();
                 //se response ok cancella da mediaEvent
@@ -297,6 +298,7 @@ public class MediaStoreObserver extends ContentObserver {
                     try {
                         JSONObject jsonRequestHeader = new JSONObject(dbMediaEvent.getSerializedData());
                         myServerResponse = ServerApiUtils.addMediaMetadataAndMediaDataToServer(jsonRequestHeader, TypeConverter.bitMapToBase64String(resizedBitmap));
+                        // TODO: 01/11/16 send as byte raw http://stackoverflow.com/questions/9397076/android-sending-an-image-through-post
                         resizedBitmap.recycle();//cleanup
                         myServerResponse.dump();
                         //se response ok cancella da mediaEvent
