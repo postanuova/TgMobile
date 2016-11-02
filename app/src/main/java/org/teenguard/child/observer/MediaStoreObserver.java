@@ -173,11 +173,6 @@ public class MediaStoreObserver extends ContentObserver {
         return bitmap;
     }
 
-
-
-
-
-
     private void manageMediaDeleted() {
         //per ogni dbMediaHM.phoneId (key) che non esiste in deviceMediaHM rimuovilo dal db alla coda removedMediaAL dei contatti da rimuovere
         int counter = 0;
