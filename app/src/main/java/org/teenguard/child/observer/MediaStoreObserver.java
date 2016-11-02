@@ -160,6 +160,7 @@ public class MediaStoreObserver extends ContentObserver {
      */
     private Bitmap resizeCompressAndSetMediaEvent(DbMediaEvent dbMediaEvent) {
         Bitmap bitmap = ImageUtils.getBitmapFromDataPath(dbMediaEvent.getPath());
+        System.out.println("original bitmap.getByteCount() = " + bitmap.getByteCount());
         bitmap = ImageUtils.myScaleBitmap(bitmap, Constant.IMAGE_MAX_SIZE);
         File imageFile = ImageUtils.storeImage(bitmap);
         System.out.println(" imageFile.getAbsolutePath() = " + imageFile.getAbsolutePath());
@@ -168,6 +169,7 @@ public class MediaStoreObserver extends ContentObserver {
         //aggiorna flag mediaEvent
         dbMediaEvent.setCompressedMediaPath(imageFile.getAbsolutePath());
         dbMediaEventDAO.upsert(dbMediaEvent);
+        System.out.println("compressed and scaled bitmap.getByteCount() = " + bitmap.getByteCount());
         return bitmap;
     }
 

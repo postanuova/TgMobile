@@ -31,7 +31,7 @@ import java.util.ArrayList;
 
 public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
 
-    public static int LOCATION_DISTANCE_METERS_THRESHOLD = 0;
+    public static int LOCATION_DISTANCE_METERS_THRESHOLD = 10;
     public static long LOCATION_TIME_MILLISECONDS_THRESHOLD = 100;
     public static int VISIT_DISTANCE_METERS_THRESHOLD = 10;
     public static int VISIT_TIME_MILLISECONDS_THRESHOLD = 10000;

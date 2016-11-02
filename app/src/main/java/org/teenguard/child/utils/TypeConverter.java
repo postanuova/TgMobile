@@ -159,10 +159,13 @@ public class TypeConverter {
 
     public static byte[] bitmapToByteAR(Bitmap b) {
         //http://stackoverflow.com/questions/17023304/convert-bitmap-to-byte-array-without-bitmap-compressformat
+
         //java.lang.RuntimeException: Buffer not large enough for pixels
-        aaaaaaaaaaa
-        int bytes = b.getDensity();
+
+        int bytes = b.getByteCount();
         ByteBuffer buffer = ByteBuffer.allocate(bytes);
+        System.out.println("buffer.array().length = " + buffer.array().length);
+        buffer.rewind();
         b.copyPixelsToBuffer(buffer);
         return buffer.array();
     }
