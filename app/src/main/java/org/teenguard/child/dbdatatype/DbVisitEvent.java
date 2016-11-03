@@ -1,5 +1,7 @@
 package org.teenguard.child.dbdatatype;
 
+import org.teenguard.child.dbdao.DbVisitEventDAO;
+
 import java.util.Date;
 
 /**
@@ -17,7 +19,8 @@ public class DbVisitEvent {
     public DbVisitEvent(){};
     
     
-    public DbVisitEvent(long arrivalDate, long departureDate, double latitude, double longitude,double accuracy) {
+    public DbVisitEvent(long id,long arrivalDate, long departureDate, double latitude, double longitude,double accuracy) {
+        this.id= id;
         this.arrivalDate = arrivalDate;
         this.departureDate = departureDate;
         this.latitude = latitude;
@@ -25,7 +28,8 @@ public class DbVisitEvent {
         this.accuracy = accuracy;
     }
 
-    
+
+
     public void dump() {
         System.out.println("--------- DB VISIT EVENT ---------");
         System.out.println("id = " + id);
@@ -34,6 +38,26 @@ public class DbVisitEvent {
         System.out.println("latitude = " + latitude);
         System.out.println("longitude = " + longitude);
         System.out.println("accuracy = " + accuracy);
+    }
+
+
+
+    public void deleteMe() {
+        DbVisitEventDAO dbVisitEventDAO = new DbVisitEventDAO();
+        dbVisitEventDAO.delete(this.getId());
+    }
+
+    public String buildSerializedDataString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("{");
+//        stringBuilder.append("\"id\":" + this.getId());
+        stringBuilder.append("\"arrival_date\":" + this.getArrivalDate());
+        stringBuilder.append("\"departure_date\":" + this.getDepartureDate());
+        stringBuilder.append("\"latitude\":" + this.getLatitude());
+        stringBuilder.append("\"longitude\":" + this.getLongitude());
+        stringBuilder.append("\"accuracy\":" + this.getAccuracy());
+        stringBuilder.append("}");
+        return stringBuilder.toString();
     }
 
     public long getId() {
@@ -82,5 +106,10 @@ public class DbVisitEvent {
 
     public void setAccuracy(double accuracy) {
         this.accuracy = accuracy;
+    }
+
+    public long writeMe() {
+        DbVisitEventDAO dbVisitEventDAO = new DbVisitEventDAO();
+        return dbVisitEventDAO.upsert(this);
     }
 }

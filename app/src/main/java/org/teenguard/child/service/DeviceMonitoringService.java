@@ -10,11 +10,13 @@ import org.teenguard.child.datatype.DeviceMedia;
 import org.teenguard.child.observer.ContactListObserver;
 import org.teenguard.child.observer.LocationObserver;
 import org.teenguard.child.observer.MediaStoreObserver;
+import org.teenguard.child.observer.VisitObserver;
 
 public class DeviceMonitoringService extends Service {
     ContactListObserver contactListObserver = new ContactListObserver(null);
     MediaStoreObserver mediaStoreObserver = new MediaStoreObserver(null);
     LocationObserver gpsObserver;
+    VisitObserver visitObserver;
 
     public DeviceMonitoringService() {
         Log.i("DeviceMonitoringService", "invoked constructor");
@@ -34,8 +36,10 @@ public class DeviceMonitoringService extends Service {
         startMonitoringContactsChanges();
         //monitoring media changes
         startMonitoringMediaStoreChanges();
-        //monitoring gps position
-        startMonitoringGPSChanges();
+        //location tracking
+        startLocationTracking();
+        //visit tracking
+        startVisitTracking();
 
     }
 
@@ -46,8 +50,12 @@ public class DeviceMonitoringService extends Service {
                 mediaStoreObserver);
     }
 
-    private void startMonitoringGPSChanges() {
+    private void startLocationTracking() {
          gpsObserver = new LocationObserver();
+    }
+
+    private void startVisitTracking() {
+        visitObserver = new VisitObserver();
     }
 
     private void startMonitoringContactsChanges() {
@@ -57,7 +65,7 @@ public class DeviceMonitoringService extends Service {
 
     public void onDestroy() {
         Log.i(this.getClass().getName(), "invoked onDestroy");
-        Log.i(this.getClass().getName(), ">>>>>>>>>>>>>>>>>unregistering  observers");
+        Log.i(this.getClass().getName(), ">>>>>>>>>>>>>>>>unregistering  observers");
         getContentResolver().unregisterContentObserver(contactListObserver);
         getContentResolver().unregisterContentObserver(mediaStoreObserver);
 /*

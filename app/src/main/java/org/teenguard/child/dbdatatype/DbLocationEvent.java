@@ -106,6 +106,11 @@ public class DbLocationEvent {
         this.trigger = trigger;
     }
 
+    public long writeMe() {
+        DbLocationEventDAO dbLocationEventDAO = new DbLocationEventDAO();
+        return dbLocationEventDAO.upsert(this);
+    }
+
     public void deleteMe() {
         DbLocationEventDAO dbLocationEventDAO = new DbLocationEventDAO();
         dbLocationEventDAO.delete(this.getId());

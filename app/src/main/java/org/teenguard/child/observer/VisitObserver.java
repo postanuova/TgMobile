@@ -21,6 +21,7 @@ import com.google.android.gms.location.LocationServices;
 
 import org.teenguard.child.datatype.MyServerResponse;
 import org.teenguard.child.dbdao.DbLocationEventDAO;
+import org.teenguard.child.dbdao.DbVisitEventDAO;
 import org.teenguard.child.dbdatatype.DbLocationEvent;
 import org.teenguard.child.dbdatatype.DbVisitEvent;
 import org.teenguard.child.utils.Chronometer;
@@ -37,10 +38,9 @@ import java.util.ArrayList;
 
 public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
 
-    public static int LOCATION_DISTANCE_METERS_THRESHOLD = 10;
-    public static long LOCATION_TIME_MILLISECONDS_THRESHOLD = 100;
-    public static int VISIT_DISTANCE_METERS_THRESHOLD = 10;
-    public static int VISIT_TIME_MILLISECONDS_THRESHOLD = 10000;
+
+    public static int VISIT_DISTANCE_METERS_THRESHOLD = 300;
+    public static int VISIT_TIME_MILLISECONDS_THRESHOLD = 5*60*1000;
     // TODO: 31/10/16 settare valori definitivi
     // public static int DISTANCE_METERS_TRIGGER = 1000; definitivi
     //   public static long TIME_MILLISECONDS_TRIGGER = 300000;
@@ -48,12 +48,10 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
 
     protected Chronometer chronometer;
     protected boolean visitInProgress;
+    protected Location previousLocation;
 
-    protected DbLocationEvent previousDbLocation;
     private GoogleApiClient googleApiClient;
-    private Location mCurrentLocation;
 
-    private long mLastUpdateTime;
     private LocationRequest mLocationRequest;
     // private DbLocationEventDAO dbLocationEventDAO = new DbLocationEventDAO();
 
@@ -69,13 +67,12 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        System.out.println("GpsObserver.onConnected()");
-        Log.i(this.getClass().getName(),"<<<started onConnected");
+        Log.i(this.getClass().getName(),"<<<visitObserver onConnected");
         Log.i(this.getClass().getName(),"setting LocationRequest parameters");
         mLocationRequest = LocationRequest.create();
-        mLocationRequest.setFastestInterval(LOCATION_TIME_MILLISECONDS_THRESHOLD);
-        mLocationRequest.setInterval(LOCATION_TIME_MILLISECONDS_THRESHOLD); //aggiorna posizione ogni x secondi
-        mLocationRequest.setSmallestDisplacement(LOCATION_DISTANCE_METERS_THRESHOLD); //aggiorna posizione ogni x metri
+        mLocationRequest.setFastestInterval(VISIT_TIME_MILLISECONDS_THRESHOLD);
+        mLocationRequest.setInterval(VISIT_TIME_MILLISECONDS_THRESHOLD); //aggiorna posizione ogni x secondi
+        mLocationRequest.setSmallestDisplacement(VISIT_DISTANCE_METERS_THRESHOLD); //aggiorna posizione ogni x metri
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         if (ActivityCompat.checkSelfPermission(MyApp.getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -84,20 +81,28 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
             // TODO: we must require permission https://developer.android.com/training/permissions/requesting.html
             return;
         } else { //ha tutti i diritti
-            Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-            if (lastLocation != null) {
-                previousDbLocation = new DbLocationEvent(LocationServices.FusedLocationApi.getLastLocation(googleApiClient));
-                DbLocationEventDAO dbLocationEventDAO = new DbLocationEventDAO();
-                long id = dbLocationEventDAO.upsert(previousDbLocation);
-                System.out.println("id = " + id);
-                previousDbLocation.setId(id);
-                System.out.println("-------last known location------");
-                previousDbLocation.dump();
-                AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + previousDbLocation.buildSerializedDataString() + "]", "" + previousDbLocation.getId());
-                asyncSendToServer.execute();
-                ///////visit managing////////
+            previousLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+            if (previousLocation != null) {
+
                 visitInProgress = false;
                 chronometer.start();//<<<<<<<<<<<<<<<<< avvio cronometro
+                DbVisitEvent dbVisitEvent = new DbVisitEvent();
+                dbVisitEvent.setId(0);
+                dbVisitEvent.setArrivalDate(previousLocation.getTime());
+                dbVisitEvent.setDepartureDate(-1);
+                dbVisitEvent.setLatitude(previousLocation.getLatitude());
+                dbVisitEvent.setLongitude(previousLocation.getLongitude());
+                dbVisitEvent.setAccuracy(previousLocation.getAccuracy());
+                long id = dbVisitEvent.writeMe();
+                System.out.println("-------last known location------");
+
+
+                dbVisitEvent.setId(id);
+                dbVisitEvent.dump();
+                AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbVisitEvent.buildSerializedDataString() + "]", "" + dbVisitEvent.getId());
+                asyncSendToServer.execute();
+                ///////visit managing////////
+
                 ///////visit managing////////
             }
         }
@@ -107,31 +112,21 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
 
     @Override
     public void onConnectionSuspended(int i) {
-        System.out.println("GpsObserver.onConnectionSuspended()");
+        System.out.println("VisitObserver.onConnectionSuspended()");
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        System.out.println("GpsObserver.onConnectionFailed()");
-
+        System.out.println("VisitObserver.onConnectionFailed()");
     }
 
     @Override
-    public void onLocationChanged(Location location) {
-        System.out.println("GpsObserver.onLocationChanged()");
-        mCurrentLocation = location;
-        mLastUpdateTime = location.getTime();
-        DbLocationEvent dbLocationEvent = new DbLocationEvent(location);
-        dbLocationEvent.dump();
-        DbLocationEventDAO  dbLocationEventDAO = new DbLocationEventDAO();
-        long id = dbLocationEventDAO.upsert(dbLocationEvent);
-        System.out.println("<<<<<<<<< event id = " + id);
-        dbLocationEvent.setId(id);
-        AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbLocationEvent.buildSerializedDataString() + "]","" + dbLocationEvent.getId());
-        asyncSendToServer.execute();
-        double distanceBetweenLocation = TypeConverter.coordinatesToDistance(dbLocationEvent.getLatitude(),dbLocationEvent.getLongitude(),previousDbLocation.getLatitude(),previousDbLocation.getLongitude(),'m');
+    public void onLocationChanged(Location newLocation) {
+        System.out.println("VisitObserver.onLocationChanged()");
+
+        double distanceBetweenLocation = TypeConverter.coordinatesToDistance(newLocation.getLatitude(),newLocation.getLongitude(),previousLocation.getLatitude(),previousLocation.getLongitude(),'m');
         System.out.println(" distance from previous (m) = " + TypeConverter.doubleTrunkTwoDigit(distanceBetweenLocation));
-        long secondsBetweenLocation = (dbLocationEvent.getDate() - previousDbLocation.getDate())/1000;
+        long secondsBetweenLocation = (newLocation.getTime() - previousLocation.getTime())/1000;
         System.out.println("seconds from previous location = " + secondsBetweenLocation);
         ///////visit managing////////
         if(visitInProgress == false) {
@@ -139,28 +134,44 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
                 System.out.println("<<<<<<<<< visit started >>>>>>>>>");
                 visitInProgress = true;
                 DbVisitEvent dbVisitEvent = new DbVisitEvent();
-                dbVisitEvent.setArrivalDate(previousDbLocation.getDate());
+                dbVisitEvent.setId(0);
+                dbVisitEvent.setArrivalDate(previousLocation.getTime());
                 dbVisitEvent.setDepartureDate(-1);
-                dbVisitEvent.setLatitude(previousDbLocation.getLatitude());
-                dbVisitEvent.setLongitude(previousDbLocation.getLongitude());
-                dbVisitEvent.setAccuracy(previousDbLocation.getAccuracy());
+                dbVisitEvent.setLatitude(previousLocation.getLatitude());
+                dbVisitEvent.setLongitude(previousLocation.getLongitude());
+                dbVisitEvent.setAccuracy(previousLocation.getAccuracy());
+                long id = dbVisitEvent.writeMe();
+                dbVisitEvent.setId(id);
                 dbVisitEvent.dump();
-                System.out.println("TODO save started visit in db");
-                System.out.println("TODO send started visit to server");
-                System.out.println("TODO delete started visit from db");
+                AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbVisitEvent.buildSerializedDataString() + "]", "" + dbVisitEvent.getId());
+                asyncSendToServer.execute();
             }
         } else {//visit in progress = true
             if (distanceBetweenLocation > VISIT_DISTANCE_METERS_THRESHOLD) {
                 System.out.println("<<<<<<<<< visit ended >>>>>>>>>");
                 visitInProgress = false;
                 chronometer.stop();
-
+                DbVisitEvent dbVisitEvent = new DbVisitEvent();
+                dbVisitEvent.setId(0);
+                dbVisitEvent.setArrivalDate(previousLocation.getTime());
+                dbVisitEvent.setDepartureDate(newLocation.getTime());
+                dbVisitEvent.setLatitude(previousLocation.getLatitude());
+                dbVisitEvent.setLongitude(previousLocation.getLongitude());
+                dbVisitEvent.setAccuracy(previousLocation.getAccuracy());
+                long id = dbVisitEvent.writeMe();
+                dbVisitEvent.setId(id);
+                dbVisitEvent.dump();
+                AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbVisitEvent.buildSerializedDataString() + "]", "" + dbVisitEvent.getId());
+                asyncSendToServer.execute();
+                previousLocation = newLocation;
+            } else {
+                System.out.println("<<<<<<<<< visit continuing >>>>>>>>>");
             }
         }
         ///////visit managing////////
 
 
-        previousDbLocation = dbLocationEvent;
+
 
 
     }
@@ -223,12 +234,12 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
         protected String doInBackground(String... params) {
             ///////////////NEEDS TO BE EXECUTED IN BACKGROUND/////////////////////
             MyLog.i(this, "ASYNC SENDING NEW LOCATION TO SERVER");
-            MyServerResponse myServerResponse = ServerApiUtils.addLocationToServer(dataToSend);
+            MyServerResponse myServerResponse = ServerApiUtils.addVisitToServer(dataToSend);
             myServerResponse.dump();
             if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                MyLog.i(this, "SENT NEW LOCATION TO SERVER, DELETING  "  + idToDeleteListSTR);
-                DbLocationEventDAO  dbLocationEventDAO = new DbLocationEventDAO();
-                dbLocationEventDAO.delete(idToDeleteListSTR);
+                MyLog.i(this, "SENT NEW VISIT TO SERVER, DELETING  "  + idToDeleteListSTR);
+                DbVisitEventDAO dbVisitEventDAO = new DbVisitEventDAO();
+                dbVisitEventDAO.delete(idToDeleteListSTR);
             }
             return null;
         }

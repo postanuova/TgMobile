@@ -29,6 +29,12 @@ public class ServerApiUtils {
     public final static String APPLICATION_SERVER_REQUEST_ADD_LOCATION = "/api.php";
 
 
+
+    public static MyServerResponse addVisitToServer(String dataToSend) {
+        MyLog.i(" ServerUtils.addVisitToServer"," using addLocationToServer data:" + dataToSend);
+        return addLocationToServer(dataToSend);
+    }
+
     public static MyServerResponse addLocationToServer(String serializedData) {
         MyServerResponse myServerResponse = new MyServerResponse();
         MyLog.i(" ServerUtils.addLocationToServer","addLocationToServer data:" + serializedData);
@@ -120,6 +126,7 @@ public class ServerApiUtils {
         }
         return myServerResponse;
     }
+
 
 
 }

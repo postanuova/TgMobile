@@ -14,7 +14,7 @@ import org.teenguard.child.utils.MyLog;
 public class SingletonDbHelper extends SQLiteOpenHelper {
     private static SingletonDbHelper singleInstance;
     public static final String CHILD_DB_NAME = "contactDB";
-    public static final int CHILD_DB_VERSION = 19;
+    public static final int CHILD_DB_VERSION = 20;
 
     private static final String  CREATE_TABLE_CONTACT=
             "CREATE TABLE contact (" +
@@ -57,13 +57,23 @@ public class SingletonDbHelper extends SQLiteOpenHelper {
                     "accuracy REAL," +
                     "trigger INTEGER" +
                     ");";
-
+    private static final String CREATE_TABLE_VISIT_EVENT =
+            "CREATE TABLE visit_event (" +
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "arrival_date INTEGER," +
+                    "departure_date INTEGER," +
+                    "latitude REAL," +
+                    "longitude REAL," +
+                    "accuracy REAL," +
+                    ");";
 
     private static final String DROP_TABLE_CONTACT = "DROP TABLE IF EXISTS contact;";
     private static final String DROP_TABLE_CONTACT_EVENT = "DROP TABLE IF EXISTS contact_event;";
     private static final String DROP_TABLE_MEDIA = "DROP TABLE IF EXISTS media;";
     private static final String DROP_TABLE_MEDIA_EVENT = "DROP TABLE IF EXISTS media_event;";
     private static final String DROP_TABLE_LOCATION_EVENT =  "DROP TABLE IF EXISTS location_event;";
+    private static final String DROP_TABLE_VISIT_EVENT =  "DROP TABLE IF EXISTS visit_event;";
+
 
     private SingletonDbHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -84,6 +94,8 @@ public class SingletonDbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_MEDIA);
         db.execSQL(CREATE_TABLE_MEDIA_EVENT);
         db.execSQL(CREATE_TABLE_LOCATION_EVENT);
+        db.execSQL(CREATE_TABLE_VISIT_EVENT);
+
         MyLog.i(this, "created db:"  + CHILD_DB_NAME + " version " + CHILD_DB_VERSION);
     }
 
@@ -96,6 +108,7 @@ public class SingletonDbHelper extends SQLiteOpenHelper {
         db.execSQL(DROP_TABLE_MEDIA);
         db.execSQL(DROP_TABLE_MEDIA_EVENT);
         db.execSQL(DROP_TABLE_LOCATION_EVENT);
+        db.execSQL(DROP_TABLE_VISIT_EVENT);
         onCreate(db);
     }
 
@@ -106,6 +119,7 @@ public class SingletonDbHelper extends SQLiteOpenHelper {
         db.execSQL(DROP_TABLE_MEDIA);
         db.execSQL(DROP_TABLE_MEDIA_EVENT);
         db.execSQL(DROP_TABLE_LOCATION_EVENT);
+        db.execSQL(DROP_TABLE_VISIT_EVENT);
         onCreate(db);
     }
 
