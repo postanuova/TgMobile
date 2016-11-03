@@ -1,5 +1,7 @@
 package org.teenguard.child.dbdatatype;
 
+import java.util.Date;
+
 /**
  * Created by chris on 02/11/16.
  */
@@ -8,11 +10,14 @@ public class DbVisitEvent {
     private long id;
     private long arrivalDate;
     private long departureDate;
-    private float latitude;
-    private float longitude;
-    private float accuracy;
+    private double latitude;
+    private double longitude;
+    private double accuracy;
 
-    public DbVisitEvent(long arrivalDate, long departureDate, float latitude, float longitude,float accuracy) {
+    public DbVisitEvent(){};
+    
+    
+    public DbVisitEvent(long arrivalDate, long departureDate, double latitude, double longitude,double accuracy) {
         this.arrivalDate = arrivalDate;
         this.departureDate = departureDate;
         this.latitude = latitude;
@@ -20,11 +25,12 @@ public class DbVisitEvent {
         this.accuracy = accuracy;
     }
 
+    
     public void dump() {
         System.out.println("--------- DB VISIT EVENT ---------");
         System.out.println("id = " + id);
-        System.out.println("arrivalDate = " + arrivalDate);
-        System.out.println("departureDate = " + departureDate);
+        System.out.println("arrivalDate = "  + new Date(arrivalDate));
+        System.out.println("departureDate = " + new Date(departureDate));
         System.out.println("latitude = " + latitude);
         System.out.println("longitude = " + longitude);
         System.out.println("accuracy = " + accuracy);
@@ -54,27 +60,27 @@ public class DbVisitEvent {
         this.departureDate = departureDate;
     }
 
-    public float getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(float latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public float getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(float longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
-    public float getAccuracy() {
+    public double getAccuracy() {
         return accuracy;
     }
 
-    public void setAccuracy(float accuracy) {
+    public void setAccuracy(double accuracy) {
         this.accuracy = accuracy;
     }
 }
