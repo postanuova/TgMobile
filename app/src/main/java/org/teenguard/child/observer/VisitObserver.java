@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -31,6 +32,7 @@ import org.teenguard.child.utils.ServerApiUtils;
 import org.teenguard.child.utils.TypeConverter;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by chris on 30/10/16.
@@ -39,19 +41,19 @@ import java.util.ArrayList;
 public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
 
 
-    public static int VISIT_DISTANCE_METERS_THRESHOLD = 300;
-    public static int VISIT_TIME_MILLISECONDS_THRESHOLD = 5*60*1000;
+    public static int VISIT_DISTANCE_METERS_THRESHOLD = 30;
+    public static int VISIT_TIME_MILLISECONDS_THRESHOLD = 1*1000;
     // TODO: 31/10/16 settare valori definitivi
-    // public static int DISTANCE_METERS_TRIGGER = 1000; definitivi
-    //   public static long TIME_MILLISECONDS_TRIGGER = 300000;
+    /*public static int VISIT_DISTANCE_METERS_THRESHOLD = 300;
+    public static int VISIT_TIME_MILLISECONDS_THRESHOLD = 5*60*1000;*/
     //visits: meno di 300mt di spostamento nei 5 minuti
 
     protected Chronometer chronometer;
-    protected boolean visitInProgress;
+    public boolean visitInProgress;
     protected Location previousLocation;
-
+    protected Location newLocation;
     private GoogleApiClient googleApiClient;
-
+    CheckChronometerThread checkChronometerThread;
     private LocationRequest mLocationRequest;
     // private DbLocationEventDAO dbLocationEventDAO = new DbLocationEventDAO();
 
@@ -63,6 +65,10 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
                 .build();
         Log.i(this.getClass().getName(),"connecting to GoogleApiClient");
         googleApiClient.connect();
+        chronometer = new Chronometer();
+       checkChronometerThread = new CheckChronometerThread(chronometer);
+
+
     }
 
     @Override
@@ -73,6 +79,7 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
         mLocationRequest.setFastestInterval(VISIT_TIME_MILLISECONDS_THRESHOLD);
         mLocationRequest.setInterval(VISIT_TIME_MILLISECONDS_THRESHOLD); //aggiorna posizione ogni x secondi
         mLocationRequest.setSmallestDisplacement(VISIT_DISTANCE_METERS_THRESHOLD); //aggiorna posizione ogni x metri
+
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         if (ActivityCompat.checkSelfPermission(MyApp.getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -86,6 +93,7 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
 
                 visitInProgress = false;
                 chronometer.start();//<<<<<<<<<<<<<<<<< avvio cronometro
+                checkChronometerThread.run();
                 DbVisitEvent dbVisitEvent = new DbVisitEvent();
                 dbVisitEvent.setId(0);
                 dbVisitEvent.setArrivalDate(previousLocation.getTime());
@@ -99,11 +107,10 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
 
                 dbVisitEvent.setId(id);
                 dbVisitEvent.dump();
-                AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbVisitEvent.buildSerializedDataString() + "]", "" + dbVisitEvent.getId());
-                asyncSendToServer.execute();
-                ///////visit managing////////
+                System.out.println("TODO:  03/11/16 riabilitare invio al server");
+                /*AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbVisitEvent.buildSerializedDataString() + "]", "" + dbVisitEvent.getId());
+                asyncSendToServer.execute();*/
 
-                ///////visit managing////////
             }
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);
@@ -121,35 +128,20 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
     }
 
     @Override
-    public void onLocationChanged(Location newLocation) {
+    public void onLocationChanged(Location location) {
+        this.newLocation = location;
+        System.out.println("------------------------------------------");
         System.out.println("VisitObserver.onLocationChanged()");
 
         double distanceBetweenLocation = TypeConverter.coordinatesToDistance(newLocation.getLatitude(),newLocation.getLongitude(),previousLocation.getLatitude(),previousLocation.getLongitude(),'m');
         System.out.println(" distance from previous (m) = " + TypeConverter.doubleTrunkTwoDigit(distanceBetweenLocation));
         long secondsBetweenLocation = (newLocation.getTime() - previousLocation.getTime())/1000;
         System.out.println("seconds from previous location = " + secondsBetweenLocation);
-        ///////visit managing////////
-        if(visitInProgress == false) {
-            if((distanceBetweenLocation < VISIT_DISTANCE_METERS_THRESHOLD) && (chronometer.getTime() > VISIT_TIME_MILLISECONDS_THRESHOLD)) {
-                System.out.println("<<<<<<<<< visit started >>>>>>>>>");
-                visitInProgress = true;
-                DbVisitEvent dbVisitEvent = new DbVisitEvent();
-                dbVisitEvent.setId(0);
-                dbVisitEvent.setArrivalDate(previousLocation.getTime());
-                dbVisitEvent.setDepartureDate(-1);
-                dbVisitEvent.setLatitude(previousLocation.getLatitude());
-                dbVisitEvent.setLongitude(previousLocation.getLongitude());
-                dbVisitEvent.setAccuracy(previousLocation.getAccuracy());
-                long id = dbVisitEvent.writeMe();
-                dbVisitEvent.setId(id);
-                dbVisitEvent.dump();
-                AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbVisitEvent.buildSerializedDataString() + "]", "" + dbVisitEvent.getId());
-                asyncSendToServer.execute();
-            }
-        } else {//visit in progress = true
-            if (distanceBetweenLocation > VISIT_DISTANCE_METERS_THRESHOLD) {
+        System.out.println(" visitInProgress = " + visitInProgress);
+          
+            if ((visitInProgress) && (distanceBetweenLocation > VISIT_DISTANCE_METERS_THRESHOLD)) {
                 System.out.println("<<<<<<<<< visit ended >>>>>>>>>");
-                visitInProgress = false;
+                
                 chronometer.stop();
                 DbVisitEvent dbVisitEvent = new DbVisitEvent();
                 dbVisitEvent.setId(0);
@@ -161,42 +153,18 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
                 long id = dbVisitEvent.writeMe();
                 dbVisitEvent.setId(id);
                 dbVisitEvent.dump();
-                AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbVisitEvent.buildSerializedDataString() + "]", "" + dbVisitEvent.getId());
-                asyncSendToServer.execute();
+                System.out.println("TODO: 03/11/16 riabilitare invio al server");
+                /*AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbVisitEvent.buildSerializedDataString() + "]", "" + dbVisitEvent.getId());
+                asyncSendToServer.execute();*/
                 previousLocation = newLocation;
-            } else {
+            }/* else {
                 System.out.println("<<<<<<<<< visit continuing >>>>>>>>>");
-            }
-        }
-        ///////visit managing////////
-
-
-
-
-
-    }
-
-
-
-    private class checkChronometerThread implements Runnable {
-        Chronometer chronometer;
-        public checkChronometerThread(Chronometer chronometer) {
-            this.chronometer = chronometer;
+            }*/
+        visitInProgress = false;
+        System.out.println("endo of locationUpdate: visitInProgress = " + visitInProgress);
         }
 
-        @Override
-        public void run() {
-            if((!visitInProgress)&&(chronometer.getMilliseconds() > VISIT_TIME_MILLISECONDS_THRESHOLD)) {
-                System.out.println("VISIT STARTED from " + chronometer.getMilliseconds() + " ms");
-                visitInProgress = true;
-            }
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+
 
 
     public void flushLocationTable() {
@@ -251,6 +219,47 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
         }
     }
     ///////////////////////////////
-
+    public class CheckChronometerThread implements Runnable {
+        Chronometer chronometer;
+        public CheckChronometerThread(Chronometer chronometer) {
+            this.chronometer = chronometer;
+        }
+        @Override
+        public void run() {
+            while (true) {
+                System.out.println("chronometer.getMilliseconds() = " + chronometer.getMilliseconds());
+                if(newLocation == null) System.out.println("new location is null");
+                if ((previousLocation !=null) && (!visitInProgress) && (previousLocation.getTime() > VISIT_TIME_MILLISECONDS_THRESHOLD)) {
+                    System.out.println("VISIT STARTED at " + new Date(previousLocation.getTime()));
+                    visitInProgress = true;
+                    System.out.println("visitInProgress = " + visitInProgress);
+                        System.out.println("<<<<<<<<< visit started >>>>>>>>>");
+                        visitInProgress = true;
+                        chronometer.start();
+                        DbVisitEvent dbVisitEvent = new DbVisitEvent();
+                        dbVisitEvent.setId(0);
+                        dbVisitEvent.setArrivalDate(previousLocation.getTime());
+                        dbVisitEvent.setDepartureDate(-1);
+                        dbVisitEvent.setLatitude(previousLocation.getLatitude());
+                        dbVisitEvent.setLongitude(previousLocation.getLongitude());
+                        dbVisitEvent.setAccuracy(previousLocation.getAccuracy());
+                        long id = dbVisitEvent.writeMe();
+                        dbVisitEvent.setId(id);
+                        dbVisitEvent.dump();
+                        System.out.println("TODO: 03/11/16 riabilitare invio al server");
+                /*AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbVisitEvent.buildSerializedDataString() + "]", "" + dbVisitEvent.getId());
+                asyncSendToServer.execute();*/
+                    }
+                SystemClock.sleep(5000);
+                /*try {
+                    SystemClock.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
+            }
+        }
+    }
 }
+
+
 

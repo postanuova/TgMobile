@@ -37,7 +37,7 @@ public class DeviceMonitoringService extends Service {
         //monitoring media changes
         startMonitoringMediaStoreChanges();
         //location tracking
-        startLocationTracking();
+        //startLocationTracking();
         //visit tracking
         startVisitTracking();
 

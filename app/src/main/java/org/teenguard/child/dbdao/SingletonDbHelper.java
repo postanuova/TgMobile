@@ -64,7 +64,7 @@ public class SingletonDbHelper extends SQLiteOpenHelper {
                     "departure_date INTEGER," +
                     "latitude REAL," +
                     "longitude REAL," +
-                    "accuracy REAL," +
+                    "accuracy REAL" +
                     ");";
 
     private static final String DROP_TABLE_CONTACT = "DROP TABLE IF EXISTS contact;";
