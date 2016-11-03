@@ -1,5 +1,9 @@
 package org.teenguard.child.observer;
 
+/**
+ * Created by chris on 03/11/16.
+ */
+
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -31,13 +35,13 @@ import java.util.ArrayList;
  * Created by chris on 30/10/16.
  */
 
-public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
+public class LocationObserver implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
 
     public static int LOCATION_DISTANCE_METERS_THRESHOLD = 10;
     public static long LOCATION_TIME_MILLISECONDS_THRESHOLD = 100;
     public static int VISIT_DISTANCE_METERS_THRESHOLD = 10;
     public static int VISIT_TIME_MILLISECONDS_THRESHOLD = 10000;
-    // TODO: 31/10/16 settare valori definitivi 
+    // TODO: 31/10/16 settare valori definitivi
     // public static int DISTANCE_METERS_TRIGGER = 1000; definitivi
     //   public static long TIME_MILLISECONDS_TRIGGER = 300000;
     //visits: meno di 300mt di spostamento nei 5 minuti
@@ -51,9 +55,9 @@ public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, 
 
     private long mLastUpdateTime;
     private LocationRequest mLocationRequest;
-   // private DbLocationEventDAO dbLocationEventDAO = new DbLocationEventDAO();
+    // private DbLocationEventDAO dbLocationEventDAO = new DbLocationEventDAO();
 
-    public GpsObserver() {
+    public LocationObserver() {
         googleApiClient = new GoogleApiClient.Builder(MyApp.getContext())
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
@@ -146,12 +150,12 @@ public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, 
                 System.out.println("TODO delete started visit from db");
             }
         } else {//visit in progress = true
-                if (distanceBetweenLocation > VISIT_DISTANCE_METERS_THRESHOLD) {
-                    System.out.println("<<<<<<<<< visit ended >>>>>>>>>");
-                    visitInProgress = false;
-                    chronometer.stop();
+            if (distanceBetweenLocation > VISIT_DISTANCE_METERS_THRESHOLD) {
+                System.out.println("<<<<<<<<< visit ended >>>>>>>>>");
+                visitInProgress = false;
+                chronometer.stop();
 
-                }
+            }
         }
         ///////visit managing////////
 
@@ -168,7 +172,7 @@ public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, 
         public checkChronometerThread(Chronometer chronometer) {
             this.chronometer = chronometer;
         }
-        
+
         @Override
         public void run() {
             if((!visitInProgress)&&(chronometer.getMilliseconds() > VISIT_TIME_MILLISECONDS_THRESHOLD)) {
@@ -186,7 +190,7 @@ public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, 
 
     public void flushLocationTable() {
         // TODO: 02/11/16 to be used and tested
-        DbLocationEventDAO  dbLocationEventDAO = new DbLocationEventDAO();
+        DbLocationEventDAO dbLocationEventDAO = new DbLocationEventDAO();
         ArrayList <DbLocationEvent> dbLocationEventAL = dbLocationEventDAO.getList();
         StringBuilder stringBuilder = new StringBuilder();
         StringBuilder idToDeleteListSB = new StringBuilder(); //la usero' per cancellare gli eventi una volta inviati
@@ -236,5 +240,6 @@ public class GpsObserver implements GoogleApiClient.OnConnectionFailedListener, 
         }
     }
     ///////////////////////////////
-    
+
 }
+

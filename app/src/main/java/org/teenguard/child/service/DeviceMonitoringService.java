@@ -8,13 +8,13 @@ import android.util.Log;
 import org.teenguard.child.datatype.DeviceContact;
 import org.teenguard.child.datatype.DeviceMedia;
 import org.teenguard.child.observer.ContactListObserver;
-import org.teenguard.child.observer.GpsObserver;
+import org.teenguard.child.observer.LocationObserver;
 import org.teenguard.child.observer.MediaStoreObserver;
 
 public class DeviceMonitoringService extends Service {
     ContactListObserver contactListObserver = new ContactListObserver(null);
     MediaStoreObserver mediaStoreObserver = new MediaStoreObserver(null);
-    GpsObserver gpsObserver;
+    LocationObserver gpsObserver;
 
     public DeviceMonitoringService() {
         Log.i("DeviceMonitoringService", "invoked constructor");
@@ -47,7 +47,7 @@ public class DeviceMonitoringService extends Service {
     }
 
     private void startMonitoringGPSChanges() {
-         gpsObserver = new GpsObserver();
+         gpsObserver = new LocationObserver();
     }
 
     private void startMonitoringContactsChanges() {
