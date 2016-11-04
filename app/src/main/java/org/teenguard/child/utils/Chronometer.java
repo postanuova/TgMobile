@@ -9,14 +9,35 @@ public final class Chronometer {
 
     private long begin, end;
 
+    public Chronometer() {
+        System.out.println("chronometer created");
+    }
+
     public void start() {
+        System.out.println("chronometer started");
         begin = System.currentTimeMillis();
         isActive = true;
     }
 
     public void stop() {
+        System.out.println("chronometer stopped");
         end = System.currentTimeMillis();
         isActive = false;
+    }
+
+    public void reset() {
+        System.out.println("chronometer reset");
+        begin=end=0;
+        isActive = false;
+    }
+
+    public long getElapsedMilliseconds() {
+        System.out.println("chronometer isActive=" + isActive);
+        if (isActive) {
+            return (System.currentTimeMillis() - begin);
+        } else {
+            return end - begin;
+        }
     }
 
     public long getTime() {

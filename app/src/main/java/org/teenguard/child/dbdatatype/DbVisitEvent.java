@@ -60,6 +60,10 @@ public class DbVisitEvent {
         return stringBuilder.toString();
     }
 
+    public long getDurationMilliseconds() {
+        return departureDate - arrivalDate;
+    }
+
     public long getId() {
         return id;
     }
