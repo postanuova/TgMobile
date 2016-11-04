@@ -69,6 +69,7 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
        checkChronometerThread = new CheckChronometerThread();
     }
 
+
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.i(this.getClass().getName()," <<<visitObserver onConnected");
@@ -118,6 +119,7 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
     @Override
     public void onConnectionSuspended(int i) {
         System.out.println("VisitObserver.onConnectionSuspended()");
+        googleApiClient.connect();
     }
 
     @Override
@@ -201,13 +203,12 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
                         dbVisitEvent.setAccuracy(previousLocation.getAccuracy());
                         long id = dbVisitEvent.writeMe();
                         dbVisitEvent.setId(id);
+
                         dbVisitEvent.dump();
-                       // System.out.println("TODO: 03/11/16 riabilitare invio al server di visit started");
                 AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbVisitEvent.buildSerializedDataString() + "]", "" + dbVisitEvent.getId());
                 asyncSendToServer.execute();
                     }
                 }
-                //SystemClock.sleep(5000);
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {

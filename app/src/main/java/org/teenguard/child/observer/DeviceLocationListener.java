@@ -32,7 +32,7 @@ import java.util.ArrayList;
  * Created by chris on 30/10/16.
  */
 
-public class LocationObserver implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, com.google.android.gms.location.LocationListener {
+public class DeviceLocationListener implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, com.google.android.gms.location.LocationListener {
 
     public static int LOCATION_DISTANCE_METERS_THRESHOLD = 10;
     public static long LOCATION_TIME_MILLISECONDS_THRESHOLD = 100;
@@ -45,7 +45,7 @@ public class LocationObserver implements GoogleApiClient.OnConnectionFailedListe
     private GoogleApiClient googleApiClient;
     private LocationRequest mLocationRequest;
 
-    public LocationObserver() {
+    public DeviceLocationListener() {
         googleApiClient = new GoogleApiClient.Builder(MyApp.getContext())
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)

@@ -8,15 +8,17 @@ import android.util.Log;
 import org.teenguard.child.datatype.DeviceContact;
 import org.teenguard.child.datatype.DeviceMedia;
 import org.teenguard.child.observer.ContactListObserver;
-import org.teenguard.child.observer.LocationObserver;
+import org.teenguard.child.observer.DeviceLocationListener;
+import org.teenguard.child.observer.GeofenceObserver;
 import org.teenguard.child.observer.MediaStoreObserver;
 import org.teenguard.child.observer.VisitObserver;
 
 public class DeviceMonitoringService extends Service {
     ContactListObserver contactListObserver = new ContactListObserver(null);
     MediaStoreObserver mediaStoreObserver = new MediaStoreObserver(null);
-    LocationObserver gpsObserver;
+    DeviceLocationListener deviceLocationListener;
     VisitObserver visitObserver;
+    GeofenceObserver geofenceObserver;
 
     public DeviceMonitoringService() {
         Log.i("DeviceMonitoringService", "invoked constructor");
@@ -33,14 +35,20 @@ public class DeviceMonitoringService extends Service {
         super.onCreate();
         Log.i(this.getClass().getName(), "invoked onCreate");
         //monitoring contact list changes
-        startMonitoringContactsChanges();
+        //startMonitoringContactsChanges();
         //monitoring media changes
-        startMonitoringMediaStoreChanges();
+        //startMonitoringMediaStoreChanges();
         //location tracking
         //startLocationTracking();
         //visit tracking
-        startVisitTracking();
+        //startVisitTracking();
+        //geofences observer;
+        startMonitoringGeofences();
 
+    }
+
+    private void startMonitoringGeofences() {
+         geofenceObserver = new GeofenceObserver();
     }
 
     private void startMonitoringMediaStoreChanges() {
@@ -51,10 +59,12 @@ public class DeviceMonitoringService extends Service {
     }
 
     private void startLocationTracking() {
-         gpsObserver = new LocationObserver();
+
+        deviceLocationListener = new DeviceLocationListener();
     }
 
     private void startVisitTracking() {
+
         visitObserver = new VisitObserver();
     }
 
@@ -69,7 +79,7 @@ public class DeviceMonitoringService extends Service {
         getContentResolver().unregisterContentObserver(contactListObserver);
         getContentResolver().unregisterContentObserver(mediaStoreObserver);
 /*
-        getContentResolver().unregisterContentObserver(gpsObserver);
+        getContentResolver().unregisterContentObserver(deviceLocationListener);
 */
 
     }
