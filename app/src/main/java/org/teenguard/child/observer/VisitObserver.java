@@ -2,6 +2,7 @@ package org.teenguard.child.observer;
 
 /**
  * Created by chris on 03/11/16.
+ * http://www.coderzheaven.com/2016/06/20/geofencing-in-android-a-simple-example/
  */
 
 import android.content.pm.PackageManager;

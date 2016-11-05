@@ -17,6 +17,7 @@ import org.teenguard.child.activity.MainActivity;
 
 /**
  * Created by chris on 04/11/16.
+ * registrarlo in manifest.xml <service android:name=".service.GeofenceTransitionsIntentService"/>
  */
 
 public class GeofenceTransitionsIntentService extends IntentService {
@@ -25,11 +26,12 @@ public class GeofenceTransitionsIntentService extends IntentService {
 
     public GeofenceTransitionsIntentService() {
         super("GeofenceTransitionsIntentService");
+        System.out.println("GeofenceTransitionsIntentService constructor");
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-
+        System.out.println("GeofenceTransitionsIntentService.onHandleIntent");
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
             Log.e(TAG, "Goefencing Error " + geofencingEvent.getErrorCode());
@@ -39,11 +41,11 @@ public class GeofenceTransitionsIntentService extends IntentService {
         // Get the transition type.
         int geofenceTransition = geofencingEvent.getGeofenceTransition();
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
-            showNotification("Entered", "Entered the Location");
+            System.out.println("ENTERED");
         } else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
-            showNotification("Exited", "Exited the Location");
+            System.out.println("EXITED");
         } else {
-            showNotification("Error", "Error");
+            System.out.println("ERROR");
         }
     }
 

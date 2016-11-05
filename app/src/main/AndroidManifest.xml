@@ -31,6 +31,8 @@
             android:enabled="true"
             android:exported="true" />
 
+        <service android:name=".service.GeofenceTransitionsIntentService"/>
+
         <receiver
             android:name=".observer.BootReceiver"
             android:enabled="true"
