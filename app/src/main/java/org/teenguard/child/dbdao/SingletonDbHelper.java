@@ -67,6 +67,25 @@ public class SingletonDbHelper extends SQLiteOpenHelper {
                     "accuracy REAL" +
                     ");";
 
+    private static final String CREATE_TABLE_GEOFENCE =
+            "CREATE TABLE geofence (" +
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "geofence_id TEXT," +
+                    "latitude REAL," +
+                    "longitude REAL," +
+                    "radius INTEGER," +
+                    "enter INTEGER," +
+                    "leave INTEGER"+
+                    ");";
+
+    private static final String CREATE_TABLE_GEOFENCE_EVENT =
+            "CREATE TABLE geofence_event (" +
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "geofence_id TEXT," +
+                    "date INTEGER," +
+                    "event INTEGER" +
+                    ");";
+
     private static final String DROP_TABLE_CONTACT = "DROP TABLE IF EXISTS contact;";
     private static final String DROP_TABLE_CONTACT_EVENT = "DROP TABLE IF EXISTS contact_event;";
     private static final String DROP_TABLE_MEDIA = "DROP TABLE IF EXISTS media;";

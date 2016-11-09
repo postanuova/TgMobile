@@ -10,7 +10,7 @@ import static org.teenguard.child.utils.TypeConverter.doubleTrunkTwoDigit;
  * Created by chris on 30/10/16.
  */
 
-public class DbLocationEvent {
+public class DbLocationEvent implements InterfaceDbDatatype {
     private long id;
     private long date;
     private double latitude;

@@ -1,0 +1,99 @@
+package org.teenguard.child.dbdatatype;
+
+/**
+ * Created by chris on 01/11/16.
+ */
+//http://92.222.83.28/child/beat.php
+    /*
+    { "data": { "geofences": [ { "id": "Lincontro", "latitude": 28.120483, "longitude": -16.7775494, "radius": 100, "enter": true, "leave": true }, { "id": "Ale", "latitude": 28.1250742, "longitude": -16.7779788, "radius": 100, "enter": true, "leave": true }, { "id": "SiamMall", "latitude": 28.0690565, "longitude": -16.7249978, "radius": 100, "enter": true, "leave": true }, { "id": "Michele", "latitude": 28.1251502, "longitude": -16.7394207, "radius": 100, "enter": true, "leave": true }, { "id": "ChiesaLosCristianos", "latitude": 28.0521532, "longitude": -16.7177612, "radius": 100, "enter": true, "leave": true } ] }, "t": 3600, "h": "6f4ef2a89f7a834a65c1d6bc4147a4a792504848" }
+     https://developer.android.com/training/location/geofencing.html#Troubleshooting
+     */
+public class DbGeofence implements InterfaceDbDatatype {
+    private long id;
+    private String geofenceId;
+    private double latitude;
+    private double longitude;
+    private int radius;
+    private boolean enter;
+    private boolean leave;
+
+    @Override
+    public void dump() {
+        System.out.println("--------- DB GEOFENCE DUMP -----------");
+        System.out.println("id = " + id);
+        System.out.println("geofenceId = " + geofenceId);
+        System.out.println("latitude = " + latitude);
+        System.out.println("longitude = " + longitude);
+        System.out.println("radius = " + radius);
+        System.out.println("enter = " + enter);
+        System.out.println("leave = " + leave);
+    }
+
+    @Override
+    public void deleteMe() {
+        throw new UnsupportedOperationException("writeMe not implemented");
+    }
+
+    @Override
+    public long writeMe() {
+        throw new UnsupportedOperationException("writeMe not implemented");
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
+    }
+
+    public boolean isEnter() {
+        return enter;
+    }
+
+    public void setEnter(boolean enter) {
+        this.enter = enter;
+    }
+
+    public boolean isLeave() {
+        return leave;
+    }
+
+    public void setLeave(boolean leave) {
+        this.leave = leave;
+    }
+
+    public String getGeofenceId() {
+        return geofenceId;
+    }
+
+    public void setGeofenceId(String geofenceId) {
+        this.geofenceId = geofenceId;
+    }
+}

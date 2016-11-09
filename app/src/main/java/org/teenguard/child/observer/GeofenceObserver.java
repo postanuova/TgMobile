@@ -21,6 +21,8 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import org.teenguard.child.dbdao.DbGeofenceDAO;
+import org.teenguard.child.dbdatatype.DbGeofence;
 import org.teenguard.child.service.GeofenceTransitionsIntentService;
 import org.teenguard.child.utils.MyApp;
 import org.teenguard.child.utils.TypeConverter;
@@ -42,7 +44,7 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
 
 
     public GeofenceObserver() {
-        System.out.println("<GeofenceObserver started>");
+        System.out.println("<GeofenceObserver  started>");
         googleApiClient = new GoogleApiClient.Builder(MyApp.getContext())
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
@@ -52,9 +54,15 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
         populateGeofenceAL();
     }
 
+    private ArrayList loadGeofenceFromDb() {
+        DbGeofenceDAO dbGeofenceDAO = new DbGeofenceDAO();
+        ArrayList <DbGeofence> dbGeofenceAL = dbGeofenceDAO.getList();
+        return dbGeofenceAL;
+    }
+
     private  void populateGeofenceAL() {
        Geofence geofence = new Geofence.Builder()
-               .setRequestId(" Lincontro")
+               .setRequestId("Lincontro")
                .setCircularRegion(28.1205434,-16.7750331,500)
                .setExpirationDuration(12 * 60 * 60 * 1000)
                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER|Geofence.GEOFENCE_TRANSITION_EXIT)

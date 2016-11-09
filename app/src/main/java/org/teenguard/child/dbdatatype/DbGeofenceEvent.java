@@ -1,12 +1,63 @@
 package org.teenguard.child.dbdatatype;
 
 /**
- * Created by chris on 01/11/16.
+ * Created by chris on 09/11/16.
  */
-//http://92.222.83.28/child/beat.php
-    /*
-    { "data": { "geofences": [ { "id": "Lincontro", "latitude": 28.120483, "longitude": -16.7775494, "radius": 100, "enter": true, "leave": true }, { "id": "Ale", "latitude": 28.1250742, "longitude": -16.7779788, "radius": 100, "enter": true, "leave": true }, { "id": "SiamMall", "latitude": 28.0690565, "longitude": -16.7249978, "radius": 100, "enter": true, "leave": true }, { "id": "Michele", "latitude": 28.1251502, "longitude": -16.7394207, "radius": 100, "enter": true, "leave": true }, { "id": "ChiesaLosCristianos", "latitude": 28.0521532, "longitude": -16.7177612, "radius": 100, "enter": true, "leave": true } ] }, "t": 3600, "h": "6f4ef2a89f7a834a65c1d6bc4147a4a792504848" }
-     */
-public class DbGeofenceEvent {
-    long id;
+
+public class DbGeofenceEvent implements InterfaceDbDatatype {
+    public static final int DB_GEOFENCE_EVENT_ENTER = 0;
+    public static final int DB_GEOFENCE_EVENT_LEAVE = 1;
+    private long id;
+    private String geofenceId;
+    private long date;
+    private int event;
+
+
+
+    @Override
+    public void dump() {
+
+    }
+
+    @Override
+    public void deleteMe() {
+        throw new UnsupportedOperationException("writeMe not implemented");
+    }
+
+    @Override
+    public long writeMe() {
+        throw new UnsupportedOperationException("writeMe not implemented");
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getGeofenceId() {
+        return geofenceId;
+    }
+
+    public void setGeofenceId(String geofenceId) {
+        this.geofenceId = geofenceId;
+    }
+
+    public long getDate() {
+        return date;
+    }
+
+    public void setDate(long date) {
+        this.date = date;
+    }
+
+    public int getEvent() {
+        return event;
+    }
+
+    public void setEvent(int event) {
+        this.event = event;
+    }
 }
