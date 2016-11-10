@@ -12,9 +12,9 @@ import java.util.ArrayList;
  * Created by chris on 18/10/16.
  */
 
-public class DbMediaEventDAO extends GenericDbDAO {
+public class DbMediaEventDAO extends GenericDbDAO implements InterfaceDbDAO {
     //contact table
-    public final static String MEDIA_EVENT_TABLE = "media_event";
+    public final static String TABLE = "media_event";
     public final static String MEDIA_EVENT_ID = "_id";
     public final static String MEDIA_EVENT_CS_ID = "cs_id"; //foreign key references contact._id
     public final static String MEDIA_EVENT_TYPE = "event_type";
@@ -37,14 +37,14 @@ public class DbMediaEventDAO extends GenericDbDAO {
             values.put(MEDIA_EVENT_SERIALIZED_DATA, serializedData);
             values.put(MEDIA_EVENT_PATH,path);
             values.put(MEDIA_EVENT_COMPRESSED_MEDIA_PATH, compressedMediaPath);
-            return db.insert(MEDIA_EVENT_TABLE, null, values);
+            return db.insert(TABLE, null, values);
         } else {
             values.put(MEDIA_EVENT_CS_ID, csId);
             values.put(MEDIA_EVENT_TYPE, eventType);
             values.put(MEDIA_EVENT_SERIALIZED_DATA, serializedData);
             values.put(MEDIA_EVENT_PATH,path);
             values.put(MEDIA_EVENT_COMPRESSED_MEDIA_PATH, compressedMediaPath);
-            return db.update(MEDIA_EVENT_TABLE, values, MEDIA_EVENT_ID + "=" + id, null);
+            return db.update(TABLE, values, MEDIA_EVENT_ID + "=" + id, null);
         }
     }
 
@@ -59,13 +59,13 @@ public class DbMediaEventDAO extends GenericDbDAO {
     }
 
     public void delete(DbMediaEvent dbMediaEvent) {
-        String deleteQuery = " DELETE FROM " + MEDIA_EVENT_TABLE + " WHERE " + MEDIA_EVENT_ID + "=" + dbMediaEvent.getId() + ";";
+        String deleteQuery = " DELETE FROM " + TABLE + " WHERE " + MEDIA_EVENT_ID + "=" + dbMediaEvent.getId() + ";";
         MyLog.i(this, "deleting mediaEvent = " + dbMediaEvent.getId() + " serialized data " + dbMediaEvent.getSerializedData());
         db.execSQL(deleteQuery);
     }
 
     public boolean emptyTable() {
-        db.execSQL("DELETE FROM " + MEDIA_EVENT_TABLE + ";");
+        db.execSQL("DELETE FROM " + TABLE + ";");
         return true;
     }
 
@@ -119,7 +119,7 @@ public class DbMediaEventDAO extends GenericDbDAO {
      * @return
      */
     public boolean delete(String idList) {
-        db.execSQL("DELETE FROM " + MEDIA_EVENT_TABLE + " WHERE _id IN(" + idList + ");");
+        db.execSQL("DELETE FROM " + TABLE + " WHERE _id IN(" + idList + ");");
         return true;
     }
 

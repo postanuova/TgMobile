@@ -12,11 +12,21 @@ public class DbGeofenceEvent implements InterfaceDbDatatype {
     private long date;
     private int event;
 
+    public DbGeofenceEvent(int id, String geofenceId, long date, int event) {
+        this.id = id;
+        this.geofenceId = geofenceId;
+        this.date = date;
+        this.event = event;
+    }
 
 
     @Override
     public void dump() {
-
+        System.out.println("--------- DB_GEOFENCE EVENT DUMP ---------------");
+        System.out.println("id = " + id);
+        System.out.println("geofenceId = " + geofenceId);
+        System.out.println("date = " + date);
+        System.out.println("event = " + event);
     }
 
     @Override

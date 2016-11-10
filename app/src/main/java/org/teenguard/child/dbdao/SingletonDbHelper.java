@@ -92,7 +92,8 @@ public class SingletonDbHelper extends SQLiteOpenHelper {
     private static final String DROP_TABLE_MEDIA_EVENT = "DROP TABLE IF EXISTS media_event;";
     private static final String DROP_TABLE_LOCATION_EVENT =  "DROP TABLE IF EXISTS location_event;";
     private static final String DROP_TABLE_VISIT_EVENT =  "DROP TABLE IF EXISTS visit_event;";
-
+    private static final String DROP_TABLE_GEOFENCE = " DROP TABLE IF EXISTS geofence;";
+    private static final String DROP_TABLE_GEOFENCE_EVENT = " DROP TABLE IF EXISTS geofence_event;";
 
     private SingletonDbHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -114,6 +115,8 @@ public class SingletonDbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_MEDIA_EVENT);
         db.execSQL(CREATE_TABLE_LOCATION_EVENT);
         db.execSQL(CREATE_TABLE_VISIT_EVENT);
+        db.execSQL(CREATE_TABLE_GEOFENCE);
+        db.execSQL(CREATE_TABLE_GEOFENCE_EVENT);
 
         MyLog.i(this, "created db:"  + CHILD_DB_NAME + " version " + CHILD_DB_VERSION);
     }
@@ -122,24 +125,20 @@ public class SingletonDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         MyLog.i(this, "Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data");
         //throw new UnsupportedOperationException("onUpgrade DB not yet implemented");
-        db.execSQL(DROP_TABLE_CONTACT);
-        db.execSQL(DROP_TABLE_CONTACT_EVENT);
-        db.execSQL(DROP_TABLE_MEDIA);
-        db.execSQL(DROP_TABLE_MEDIA_EVENT);
-        db.execSQL(DROP_TABLE_LOCATION_EVENT);
-        db.execSQL(DROP_TABLE_VISIT_EVENT);
+       dropAll(db);
         onCreate(db);
     }
 
-    public void resetDatabase(SQLiteDatabase db) {
-        MyLog.i(this, "destroyDatabase");
+    public void dropAll(SQLiteDatabase db) {
+        MyLog.i(this, "dropping all database");
         db.execSQL(DROP_TABLE_CONTACT);
         db.execSQL(DROP_TABLE_CONTACT_EVENT);
         db.execSQL(DROP_TABLE_MEDIA);
         db.execSQL(DROP_TABLE_MEDIA_EVENT);
         db.execSQL(DROP_TABLE_LOCATION_EVENT);
         db.execSQL(DROP_TABLE_VISIT_EVENT);
-        onCreate(db);
+        db.execSQL(DROP_TABLE_GEOFENCE);
+        db.execSQL(DROP_TABLE_GEOFENCE_EVENT);
     }
 
     public static void main(String args[]) {

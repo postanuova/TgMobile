@@ -32,4 +32,5 @@ public  class GenericDbDAO {
     public void close() {
         db.close();
     }
+
 }

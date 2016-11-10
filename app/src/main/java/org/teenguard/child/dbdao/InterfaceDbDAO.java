@@ -10,4 +10,8 @@ public interface InterfaceDbDAO {
 
     public ArrayList getList();
 
+    public ArrayList getList(String whereSql);
+
+    public boolean delete(String idList);
+
 }

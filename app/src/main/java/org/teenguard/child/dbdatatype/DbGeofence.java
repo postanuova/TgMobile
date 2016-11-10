@@ -14,8 +14,18 @@ public class DbGeofence implements InterfaceDbDatatype {
     private double latitude;
     private double longitude;
     private int radius;
-    private boolean enter;
-    private boolean leave;
+    private int enter;
+    private int leave;
+
+    public DbGeofence(int id, String geofenceId, double latitude, double longitude, int radius, int enter, int leave) {
+        this.id = id;
+        this.geofenceId = geofenceId;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.radius = radius;
+        this.enter = enter;
+        this.leave = leave;
+    }
 
     @Override
     public void dump() {
@@ -73,21 +83,6 @@ public class DbGeofence implements InterfaceDbDatatype {
         this.radius = radius;
     }
 
-    public boolean isEnter() {
-        return enter;
-    }
-
-    public void setEnter(boolean enter) {
-        this.enter = enter;
-    }
-
-    public boolean isLeave() {
-        return leave;
-    }
-
-    public void setLeave(boolean leave) {
-        this.leave = leave;
-    }
 
     public String getGeofenceId() {
         return geofenceId;
@@ -95,5 +90,21 @@ public class DbGeofence implements InterfaceDbDatatype {
 
     public void setGeofenceId(String geofenceId) {
         this.geofenceId = geofenceId;
+    }
+
+    public int getEnter() {
+        return enter;
+    }
+
+    public void setEnter(int enter) {
+        this.enter = enter;
+    }
+
+    public int getLeave() {
+        return leave;
+    }
+
+    public void setLeave(int leave) {
+        this.leave = leave;
     }
 }
