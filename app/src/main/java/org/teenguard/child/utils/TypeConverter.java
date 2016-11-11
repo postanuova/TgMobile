@@ -171,6 +171,14 @@ public class TypeConverter {
     }
 
 
+    public static int booleanToInt(boolean value) {
+       return (value == true) ? 1:0;
+    }
+
+    public static boolean intToBoolean(int value) {
+        return (value == 1) ? true:false;
+    }
+
  public  static  void main(String args[]) {
      System.out.println("coordinatesToDistance(28.0967195,-16.7385493,28.0953749,-16.7364082,'K') = " + coordinatesToDistance(28.0967195,-16.7385493,28.0953749,-16.7364082,'K'));
  }

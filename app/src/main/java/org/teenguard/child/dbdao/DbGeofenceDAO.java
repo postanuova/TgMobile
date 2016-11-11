@@ -31,7 +31,7 @@ public class DbGeofenceDAO extends GenericDbDAO implements InterfaceDbDAO {
     public final static String GEOFENCE_LEAVE = "leave";
 
 
-    private long upsert(DbGeofence object) {
+    public long upsert(DbGeofence object) {
         ContentValues values = new ContentValues();
 
         if (object.getId() == 0) {
@@ -97,7 +97,16 @@ public class DbGeofenceDAO extends GenericDbDAO implements InterfaceDbDAO {
     }
 
     public boolean delete(String idList) {
-        db.execSQL("DELETE FROM " + TABLE + " WHERE _id IN(" + idList + ");");
+        if(idList != null) {
+            db.execSQL("DELETE FROM " + TABLE + " WHERE _id IN(" + idList + ");");
+        } else {
+            db.execSQL("DELETE FROM " + TABLE + ";");
+        }
         return true;
     }
+
+    public boolean delete() {
+        return delete(null);
+    }
+
 }

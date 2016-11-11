@@ -14,7 +14,7 @@ import org.teenguard.child.utils.MyLog;
 public class SingletonDbHelper extends SQLiteOpenHelper {
     private static SingletonDbHelper singleInstance;
     public static final String CHILD_DB_NAME = "contactDB";
-    public static final int CHILD_DB_VERSION = 20;
+    public static final int CHILD_DB_VERSION = 22;
 
     private static final String  CREATE_TABLE_CONTACT=
             "CREATE TABLE contact (" +
@@ -70,7 +70,7 @@ public class SingletonDbHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_GEOFENCE =
             "CREATE TABLE geofence (" +
                     "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "geofence_id TEXT," +
+                    "geofence_id TEXT UNIQUE," +
                     "latitude REAL," +
                     "longitude REAL," +
                     "radius INTEGER," +

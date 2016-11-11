@@ -123,4 +123,10 @@ public class DbMediaEventDAO extends GenericDbDAO implements InterfaceDbDAO {
         return true;
     }
 
+    @Override
+    public boolean delete() {
+        db.execSQL("DELETE FROM " + TABLE);
+        return true;
+    }
+
 }

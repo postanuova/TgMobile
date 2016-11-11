@@ -1,5 +1,8 @@
 package org.teenguard.child.dbdatatype;
 
+import org.teenguard.child.dbdao.DbGeofenceDAO;
+import org.teenguard.child.utils.TypeConverter;
+
 /**
  * Created by chris on 01/11/16.
  */
@@ -27,6 +30,16 @@ public class DbGeofence implements InterfaceDbDatatype {
         this.leave = leave;
     }
 
+    public DbGeofence(int id, String geofenceId, double latitude, double longitude, int radius, boolean enter, boolean leave) {
+        this.id = id;
+        this.geofenceId = geofenceId;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.radius = radius;
+        this.enter = TypeConverter.booleanToInt(enter);
+        this.leave = TypeConverter.booleanToInt(leave);
+    }
+
     @Override
     public void dump() {
         System.out.println("--------- DB GEOFENCE DUMP -----------");
@@ -41,12 +54,14 @@ public class DbGeofence implements InterfaceDbDatatype {
 
     @Override
     public void deleteMe() {
-        throw new UnsupportedOperationException("writeMe not implemented");
+        DbGeofenceDAO objectDAO = new DbGeofenceDAO();
+        objectDAO.delete(""+this.getId());
     }
 
     @Override
     public long writeMe() {
-        throw new UnsupportedOperationException("writeMe not implemented");
+        DbGeofenceDAO objectDAO = new DbGeofenceDAO();
+        return objectDAO.upsert(this);
     }
 
     public long getId() {

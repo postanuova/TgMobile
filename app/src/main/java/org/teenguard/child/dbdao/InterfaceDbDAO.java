@@ -14,4 +14,6 @@ public interface InterfaceDbDAO {
 
     public boolean delete(String idList);
 
+    public boolean delete();
+
 }

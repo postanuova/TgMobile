@@ -1,5 +1,7 @@
 package org.teenguard.child.dbdatatype;
 
+import org.teenguard.child.dbdao.DbGeofenceEventDAO;
+
 /**
  * Created by chris on 09/11/16.
  */
@@ -19,10 +21,9 @@ public class DbGeofenceEvent implements InterfaceDbDatatype {
         this.event = event;
     }
 
-
     @Override
     public void dump() {
-        System.out.println("--------- DB_GEOFENCE EVENT DUMP ---------------");
+        System.out.println("---------- DB GEOFENCE EVENT DUMP ----------");
         System.out.println("id = " + id);
         System.out.println("geofenceId = " + geofenceId);
         System.out.println("date = " + date);
@@ -31,13 +32,16 @@ public class DbGeofenceEvent implements InterfaceDbDatatype {
 
     @Override
     public void deleteMe() {
-        throw new UnsupportedOperationException("writeMe not implemented");
+        DbGeofenceEventDAO objectDAO = new DbGeofenceEventDAO();
+        objectDAO.delete(""+this.getId());
     }
 
     @Override
     public long writeMe() {
-        throw new UnsupportedOperationException("writeMe not implemented");
+        DbGeofenceEventDAO objectDAO = new DbGeofenceEventDAO();
+        return objectDAO.upsert(this);
     }
+
 
     public long getId() {
         return id;

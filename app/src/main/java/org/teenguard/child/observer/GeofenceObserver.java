@@ -37,8 +37,9 @@ import java.util.Date;
  */
 
 public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener,ResultCallback<Status> {
+    private DbGeofenceDAO dbGeofenceDAO = new DbGeofenceDAO();
     private GoogleApiClient googleApiClient;
-    protected ArrayList<Geofence> geofenceAL = new ArrayList<Geofence>();
+    protected ArrayList<Geofence> geofenceAL = new ArrayList<Geofence>(); //will contain (Android) Geofences
     private LocationRequest mLocationRequest;
     //{ "data": { "geofences": [ { "id": "Lincontro", "latitude": 28.120483, "longitude": -16.7775494, "radius": 100, "enter": true, "leave": true }, { "id": "Ale", "latitude": 28.1250742, "longitude": -16.7779788, "radius": 100, "enter": true, "leave": true }, { "id": "SiamMall", "latitude": 28.0690565, "longitude": -16.7249978, "radius": 100, "enter": true, "leave": true }, { "id": "Michele", "latitude": 28.1251502, "longitude": -16.7394207, "radius": 100, "enter": true, "leave": true }, { "id": "ChiesaLosCristianos", "latitude": 28.0521532, "longitude": -16.7177612, "radius": 100, "enter": true, "leave": true } ] }, "t": 3600, "h": "6f4ef2a89f7a834a65c1d6bc4147a4a792504848" }
 
@@ -51,20 +52,62 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
                 .addOnConnectionFailedListener(this)
                 .build();
         googleApiClient.connect();
+        writeNewGeofencesOnDb(null);
+        boolean newGeofencesFromServer = false;
+        if(newGeofencesFromServer) {
+            dbGeofenceDAO.delete();
+        }
+       //TODO: 10/11/16 aggiunta di nuove,overwrite di quelle che già esistono...e cancellazione di quelle che non ci sono più???
+        https://www.raywenderlich.com/103540/geofences-googleapiclient
+        //http://stackoverflow.com/questions/16631962/android-how-to-retrieve-list-of-registered-geofences
         populateGeofenceAL();
     }
 
-    private ArrayList loadGeofenceFromDb() {
-        DbGeofenceDAO dbGeofenceDAO = new DbGeofenceDAO();
-        ArrayList <DbGeofence> dbGeofenceAL = dbGeofenceDAO.getList();
-        return dbGeofenceAL;
+
+    /**
+     * this method will parse json from server and will insert geofences into db
+     * @param jsonStringContainingGeofences
+     */
+    private void writeNewGeofencesOnDb(String jsonStringContainingGeofences) {
+        //{ "id": "SiamMall", "latitude": 28.0690565, "longitude": -16.7249978, "radius": 100, "enter": true, "leave": true }, { "id": "Michele", "latitude": 28.1251502, "longitude": -16.7394207, "radius": 100, "enter": true, "leave": true }, { "id": "ChiesaLosCristianos", "latitude": 28.0521532, "longitude": -16.7177612, "radius": 100, "enter": true, "leave": true } ] }, "t": 3600, "h": "6f4ef2a89f7a834a65c1d6bc4147a4a792504848" }
+        DbGeofence dbGeofence;
+
+        dbGeofence = new DbGeofence(0,"Lincontro",28.120483,-16.7775494,100,1,1);
+        dbGeofence.writeMe();
+
+        dbGeofence = new DbGeofence(0,"SiamMall",28.0690565,-16.7249978,100,true,true);
+        dbGeofence.writeMe();
+
+        dbGeofence = new DbGeofence(0,"Michele",28.1251502,-16.7394207,100,true, true);
+        dbGeofence.writeMe();
     }
+
+    /**
+     * load geofences from db
+     */
+   /* private void populateGeofenceAL() {
+        System.out.println("populate geofenceAL");
+        DbGeofenceDAO dbGeofenceDAO = new DbGeofenceDAO();
+        ArrayList <DbGeofence> dbGeofenceAL = dbGeofenceDAO.getList();  //will contain dbGeofences
+        Geofence geofence;
+        for (DbGeofence dbGeofence: dbGeofenceAL) {
+            geofence = new Geofence.Builder()
+                    .setRequestId(dbGeofence.getGeofenceId())
+                    .setCircularRegion(dbGeofence.getLatitude(),dbGeofence.getLongitude(),dbGeofence.getRadius())
+                    .setExpirationDuration(10*1000*1000)
+                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER|Geofence.GEOFENCE_TRANSITION_EXIT)
+                    .build();
+             geofenceAL.add(geofence);
+        }
+        System.out.println("populateGeofenceAL geofenceAL.size() = " + geofenceAL.size());
+    }*/
 
     private  void populateGeofenceAL() {
        Geofence geofence = new Geofence.Builder()
                .setRequestId("Lincontro")
+               //.setCircularRegion(28.1205434,-16.7750331,500)
                .setCircularRegion(28.1205434,-16.7750331,500)
-               .setExpirationDuration(12 * 60 * 60 * 1000)
+               .setExpirationDuration(Geofence.NEVER_EXPIRE)
                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER|Geofence.GEOFENCE_TRANSITION_EXIT)
                .build();
         geofenceAL.add(geofence);
@@ -87,10 +130,22 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
             // TODO: we must require permission https://developer.android.com/training/permissions/requesting.html
             return;
         } else { //ha tutti i diritti
+            //costruisco l'oggetto geofencingRequest che conterrà la lista delle geofences
+            GeofencingRequest.Builder geofencingRequestBuilder = new GeofencingRequest.Builder();
+            geofencingRequestBuilder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+            geofencingRequestBuilder.addGeofences(geofenceAL);
+            GeofencingRequest geofencingRequest = geofencingRequestBuilder.build();
+            System.out.println("geofencingRequest.getGeofences().size() = " + geofencingRequest.getGeofences().size());;
+            //////////
+            //costruisco il pending Intent
+            Intent intent = new Intent(MyApp.getContext(),GeofenceTransitionsIntentService.class);
+            // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling addgeoFences()
+            PendingIntent pendingIntent = PendingIntent.getService(MyApp.getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            /////////////7
             LocationServices.GeofencingApi.addGeofences(
                     googleApiClient,
-                    getGeofencingRequest(),
-                    getGeofencePendingIntent()).setResultCallback(this);//chiama onResult
+                    geofencingRequest,
+                    pendingIntent).setResultCallback(this);//chiama onResult
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);
         Log.i(this.getClass().getName(),">>>completed onConnected");
@@ -98,13 +153,16 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
 
         public void onResult(Status status) {
             if (status.isSuccess()) {
-                System.out.println("geofences added");
+                System.out.println(" geofences succesfully added ");
             } else {
-                System.out.println("geofences adding error");
+                System.out.println("geofences adding error: status code " + status.getStatusCode() + " status message " + status.getStatusMessage());
+                System.out.println("hint: enable GPS and Enable Google position access into Settings/location service");
             }
         }
 
-    private GeofencingRequest getGeofencingRequest() {
+    //adding geofences to GeofencingRequest
+    @NonNull
+/*    private GeofencingRequest getGeofencingRequest() {
         System.out.println("getGeofencingRequest");
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
         builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
@@ -116,8 +174,8 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
         System.out.println("getGeofencePendingIntent");
         Intent intent = new Intent(MyApp.getContext(),GeofenceTransitionsIntentService.class);
         // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling addgeoFences()
-        return PendingIntent.getService(MyApp.getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-    }
+        return getService(MyApp.getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }*/
 
     @Override
     public void onConnectionSuspended(int i) {
