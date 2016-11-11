@@ -11,6 +11,7 @@ import java.net.URL;
 
 /**
  * Created by chris on 21/10/16.
+ * http://92.222.83.28/logapi.txt
  */
 
 public class ServerApiUtils {
@@ -18,21 +19,21 @@ public class ServerApiUtils {
     public final static String APPLICATION_SERVER_IP_ADDRESS = "92.222.83.28";
     public final static String APPLICATION_SERVER_MIMETYPE_JSON = "application/json";
 
-    public final static String APPLICATION_SERVER_REQUEST_ADD_CONTACTS_URL = "/api.php";
-    public final static String APPLICATION_SERVER_REQUEST_REMOVE_CONTACTS_URL = "/api.php";
-    public final static String APPLICATION_SERVER_REQUEST_UPDATE_CONTACTS_URL = "/api.php";
+    public final static String APPLICATION_SERVER_REQUEST_ADD_CONTACTS_URL = "/api2.php";
+    public final static String APPLICATION_SERVER_REQUEST_REMOVE_CONTACTS_URL = "/api2.php";
+    public final static String APPLICATION_SERVER_REQUEST_UPDATE_CONTACTS_URL = "/api2.php";
 
-    public final static String APPLICATION_SERVER_REQUEST_ADD_MEDIA_METADATA_URL = "/api.php";
-    public final static String APPLICATION_SERVER_REQUEST_REMOVE_MEDIA_URL = "/api.php";
-    public final static String APPLICATION_SERVER_REQUEST_ADD_MEDIA_METADATA_AND_MEDIA_DATA_URL = "/api.php";
+    public final static String APPLICATION_SERVER_REQUEST_ADD_MEDIA_METADATA_URL = "/api2.php";
+    public final static String APPLICATION_SERVER_REQUEST_REMOVE_MEDIA_URL = "/api2.php";
+    public final static String APPLICATION_SERVER_REQUEST_ADD_MEDIA_METADATA_AND_MEDIA_DATA_URL = "/api2.php";
 
-    public final static String APPLICATION_SERVER_REQUEST_ADD_LOCATION = "/api.php";
+    public final static String APPLICATION_SERVER_REQUEST_ADD_LOCATION = "/api2.php";
 
-    public final static String APPLICATION_SERVER_REQUEST_ADD_GEOFENCE_EVENT = "/api.php";
+    public final static String APPLICATION_SERVER_REQUEST_ADD_GEOFENCE_EVENT = "/api2.php";
 
 
     public static MyServerResponse addVisitToServer(String dataToSend) {
-        MyLog.i(" ServerUtils.addVisitToServer"," using addLocationToServer data:" + dataToSend);
+        MyLog.i("ServerUtils.addVisitToServer"," using addLocationToServer data:" + dataToSend);
         return addLocationToServer(dataToSend);
     }
 

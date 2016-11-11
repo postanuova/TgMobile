@@ -46,7 +46,7 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
 
 
     public GeofenceObserver() {
-        System.out.println("<GeofenceObserver  started>");
+        System.out.println("<GeofenceObserver started>");
         googleApiClient = new GoogleApiClient.Builder(MyApp.getContext())
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
