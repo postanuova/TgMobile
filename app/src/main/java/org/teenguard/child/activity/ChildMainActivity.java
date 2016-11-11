@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import org.teenguard.child.R;
 import org.teenguard.child.dbdao.DbContactDAO;
 import org.teenguard.child.dbdao.DbContactEventDAO;
+import org.teenguard.child.dbdao.DbGeofenceDAO;
 import org.teenguard.child.dbdao.DbLocationEventDAO;
 import org.teenguard.child.dbdao.DbMediaDAO;
 import org.teenguard.child.dbdao.DbMediaEventDAO;
@@ -59,6 +60,13 @@ public class ChildMainActivity extends AppCompatActivity {
                 Log.i(this.getClass().getName(),"cleaning location table");
                 DbLocationEventDAO dbLocationEventDAO = new DbLocationEventDAO();
                 dbLocationEventDAO.emptyTable();
+                return true;
+            }
+
+            case R.id.item_geofences_cleaner: {
+                Log.i(this.getClass().getName(),"cleaning geofences table");
+                DbGeofenceDAO dbGeofenceDAO = new DbGeofenceDAO();
+                dbGeofenceDAO.delete();
                 return true;
             }
 

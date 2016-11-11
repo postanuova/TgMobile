@@ -80,7 +80,7 @@ public class DbGeofenceDAO extends GenericDbDAO implements InterfaceDbDAO {
                     object = new DbGeofence(id, geofenceId, latitude,longitude,radius,enter,leave);
                     objectAL.add(object);
                 }
-                MyLog.i(this,"dbMediaEventAL.size " + objectAL.size());
+                MyLog.i(this,"dbGeofenceAL.size " + objectAL.size());
             } finally {
                 if (!cursor.isClosed()) {
                     cursor.close();

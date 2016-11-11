@@ -34,6 +34,7 @@ import java.util.Date;
 /**
  * Created by chris on 04/11/16.
  * http://io2015codelabs.appspot.com/codelabs/geofences#3
+ * https://code.tutsplus.com/tutorials/how-to-work-with-geofences-on-android--cms-26639
  */
 
 public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener,ResultCallback<Status> {
@@ -72,20 +73,19 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
         //{ "id": "SiamMall", "latitude": 28.0690565, "longitude": -16.7249978, "radius": 100, "enter": true, "leave": true }, { "id": "Michele", "latitude": 28.1251502, "longitude": -16.7394207, "radius": 100, "enter": true, "leave": true }, { "id": "ChiesaLosCristianos", "latitude": 28.0521532, "longitude": -16.7177612, "radius": 100, "enter": true, "leave": true } ] }, "t": 3600, "h": "6f4ef2a89f7a834a65c1d6bc4147a4a792504848" }
         DbGeofence dbGeofence;
 
-        dbGeofence = new DbGeofence(0,"Lincontro",28.120483,-16.7775494,100,1,1);
+        dbGeofence = new DbGeofence(0,"Lincontro",28.120483,-16.7775494,500,1,1);
+        dbGeofence.writeMe();
+        dbGeofence = new DbGeofence(0,"SiamMall",28.0690565,-16.7249978,500,true,true);
         dbGeofence.writeMe();
 
-        dbGeofence = new DbGeofence(0,"SiamMall",28.0690565,-16.7249978,100,true,true);
-        dbGeofence.writeMe();
-
-        dbGeofence = new DbGeofence(0,"Michele",28.1251502,-16.7394207,100,true, true);
+        dbGeofence = new DbGeofence(0,"Michele",28.1251502,-16.7394207,500,true, true);
         dbGeofence.writeMe();
     }
 
     /**
      * load geofences from db
      */
-   /* private void populateGeofenceAL() {
+    private void populateGeofenceAL() {
         System.out.println("populate geofenceAL");
         DbGeofenceDAO dbGeofenceDAO = new DbGeofenceDAO();
         ArrayList <DbGeofence> dbGeofenceAL = dbGeofenceDAO.getList();  //will contain dbGeofences
@@ -100,19 +100,19 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
              geofenceAL.add(geofence);
         }
         System.out.println("populateGeofenceAL geofenceAL.size() = " + geofenceAL.size());
-    }*/
+    }
 
-    private  void populateGeofenceAL() {
+   /* private  void populateGeofenceAL() {
        Geofence geofence = new Geofence.Builder()
                .setRequestId("Lincontro")
                //.setCircularRegion(28.1205434,-16.7750331,500)
-               .setCircularRegion(28.1205434,-16.7750331,500)
+               .setCircularRegion(28.12,-16.778,100)
                .setExpirationDuration(Geofence.NEVER_EXPIRE)
                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER|Geofence.GEOFENCE_TRANSITION_EXIT)
                .build();
         geofenceAL.add(geofence);
 
-       }
+       }*/
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -135,12 +135,12 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
             geofencingRequestBuilder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
             geofencingRequestBuilder.addGeofences(geofenceAL);
             GeofencingRequest geofencingRequest = geofencingRequestBuilder.build();
-            System.out.println("geofencingRequest.getGeofences().size() = " + geofencingRequest.getGeofences().size());;
+            System.out.println(" geofencingRequest.getGeofences().size() = " + geofencingRequest.getGeofences().size());;
             //////////
             //costruisco il pending Intent
             Intent intent = new Intent(MyApp.getContext(),GeofenceTransitionsIntentService.class);
-            // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling addgeoFences()
-            PendingIntent pendingIntent = PendingIntent.getService(MyApp.getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            PendingIntent pendingIntent = PendingIntent.getService(MyApp.getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);// We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling addgeoFences()
             /////////////7
             LocationServices.GeofencingApi.addGeofences(
                     googleApiClient,
@@ -192,9 +192,14 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
         System.out.println("location CHANGED = " + new Date(location.getTime()));
         System.out.println("location.getLatitude() = " + location.getLatitude());
         System.out.println("location.getLongitude() = " + location.getLongitude());
+        System.out.println("location.getAccuracy() = " + location.getAccuracy());
         System.out.println("distance from L'incontro = " +
                 TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.1205434,-16.7750331,'m'));
+        System.out.println("distance from Michele = " +
+                TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.1251502,-16.7394207,'m'));
     }
+
+
 
     //// TODO: 05/11/16 json parsing 
     // TODO: 05/11/16 db structure 

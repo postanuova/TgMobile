@@ -2,6 +2,11 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:title="geofences"
+        app:showAsAction="always"
+        android:id="@+id/item_geofences_cleaner"
+        android:icon="@android:drawable/btn_star_big_on" />
+    <item
         android:title="item_location_cleaner"
         app:showAsAction="always"
         android:id="@+id/item_location_cleaner"
