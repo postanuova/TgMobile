@@ -53,10 +53,11 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
                 .addOnConnectionFailedListener(this)
                 .build();
         googleApiClient.connect();
-        writeNewGeofencesOnDb(null);
-        boolean newGeofencesFromServer = false;
+
+        boolean newGeofencesFromServer = true;
         if(newGeofencesFromServer) {
             dbGeofenceDAO.delete();
+            writeNewGeofencesOnDb(null);
         }
        //TODO: 10/11/16 aggiunta di nuove,overwrite di quelle che già esistono...e cancellazione di quelle che non ci sono più???
         https://www.raywenderlich.com/103540/geofences-googleapiclient
@@ -79,6 +80,9 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
         dbGeofence.writeMe();
 
         dbGeofence = new DbGeofence(0,"Michele",28.1251502,-16.7394207,500,true, true);
+        dbGeofence.writeMe();
+
+        dbGeofence = new DbGeofence(0,"Chris",28.0589617,  -16.7299850,500,true,true);
         dbGeofence.writeMe();
     }
 
@@ -124,24 +128,25 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
         .setSmallestDisplacement(5);
 
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
         if (ActivityCompat.checkSelfPermission(MyApp.getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(MyApp.getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.i(this.getClass().getName(),"need to request the missing permissions: not yet implemented");
             // TODO: we must require permission https://developer.android.com/training/permissions/requesting.html
             return;
-        } else { //ha tutti i diritti
+        } else {
+            //ha tutti i diritti
+            System.out.println("all rights enabled: initializing geofences monitoring");
             //costruisco l'oggetto geofencingRequest che conterrà la lista delle geofences
             GeofencingRequest.Builder geofencingRequestBuilder = new GeofencingRequest.Builder();
             geofencingRequestBuilder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
             geofencingRequestBuilder.addGeofences(geofenceAL);
             GeofencingRequest geofencingRequest = geofencingRequestBuilder.build();
-            System.out.println(" geofencingRequest.getGeofences().size() = " + geofencingRequest.getGeofences().size());;
-            //////////
+            System.out.println(" geofencingRequest.getGeofences().size() = " + geofencingRequest.getGeofences().size());
             //costruisco il pending Intent
             Intent intent = new Intent(MyApp.getContext(),GeofenceTransitionsIntentService.class);
-
             PendingIntent pendingIntent = PendingIntent.getService(MyApp.getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);// We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling addgeoFences()
-            /////////////7
+
             LocationServices.GeofencingApi.addGeofences(
                     googleApiClient,
                     geofencingRequest,
@@ -151,6 +156,11 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
         Log.i(this.getClass().getName(),">>>completed onConnected");
     }
 
+
+    /**
+     * invocato dall'aggiunta di geofences del metodo onConnected
+     * @param status
+     */
         public void onResult(Status status) {
             if (status.isSuccess()) {
                 System.out.println(" geofences succesfully added ");
@@ -160,22 +170,6 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
             }
         }
 
-    //adding geofences to GeofencingRequest
-    @NonNull
-/*    private GeofencingRequest getGeofencingRequest() {
-        System.out.println("getGeofencingRequest");
-        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
-        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
-        builder.addGeofences(geofenceAL);
-        return builder.build();
-    }
-
-    private PendingIntent getGeofencePendingIntent() {
-        System.out.println("getGeofencePendingIntent");
-        Intent intent = new Intent(MyApp.getContext(),GeofenceTransitionsIntentService.class);
-        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling addgeoFences()
-        return getService(MyApp.getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-    }*/
 
     @Override
     public void onConnectionSuspended(int i) {
@@ -197,13 +191,14 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
                 TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.1205434,-16.7750331,'m'));
         System.out.println("distance from Michele = " +
                 TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.1251502,-16.7394207,'m'));
+        System.out.println("distance from Chris =  " +
+                TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.0589617,-16.7299850,'m'));
     }
 
 
 
-    //// TODO: 05/11/16 json parsing 
-    // TODO: 05/11/16 db structure 
-    
+    // TODO: 05/11/16 json parsing
+    // TODO: 05/11/16 db structure
     // TODO: 05/11/16 flush 
 }
 

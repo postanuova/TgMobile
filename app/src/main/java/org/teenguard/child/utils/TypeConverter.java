@@ -43,6 +43,8 @@ public class TypeConverter {
     }*/
 
 
+
+
     public static String computeHash(String input) {
         MessageDigest digest = null;
         try {

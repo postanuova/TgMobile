@@ -14,6 +14,10 @@ import com.google.android.gms.location.GeofencingEvent;
 
 import org.teenguard.child.R;
 import org.teenguard.child.activity.MainActivity;
+import org.teenguard.child.dbdatatype.DbGeofenceEvent;
+import org.teenguard.child.utils.CalendarUtils;
+
+import java.util.List;
 
 /**
  * Created by chris on 04/11/16.
@@ -36,6 +40,23 @@ public class GeofenceTransitionsIntentService extends IntentService {
         if (geofencingEvent.hasError()) {
             Log.e(TAG, "Goefencing Error " + geofencingEvent.getErrorCode());
             return;
+        }
+        List<Geofence> triggeringGeofencesAL = geofencingEvent.getTriggeringGeofences();
+        for (Geofence triggeringGeofence: triggeringGeofencesAL) {
+            System.out.println("geofence.getRequestId() = " + triggeringGeofence.getRequestId());
+            System.out.println("geofence.toString() = " + triggeringGeofence.toString());
+            //building dbGeofenceEvent
+
+            DbGeofenceEvent dbGeofenceEvent = new DbGeofenceEvent(0,triggeringGeofence.getRequestId(), CalendarUtils.nowUTCMillis(),DbGeofenceEvent.DB_GEOFENCE_EVENT_ENTER);
+
+            int geofenceTransition = geofencingEvent.getGeofenceTransition();
+            if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) dbGeofenceEvent.setEvent(DbGeofenceEvent.DB_GEOFENCE_EVENT_LEAVE);
+            long id = dbGeofenceEvent.writeMe();
+            dbGeofenceEvent.setId(id);
+            dbGeofenceEvent.dump();
+            //sending dbGeofenceEvent
+            // TODO: 11/11/16 flush dbGeofence event
+
         }
 
         // Get the transition type.
