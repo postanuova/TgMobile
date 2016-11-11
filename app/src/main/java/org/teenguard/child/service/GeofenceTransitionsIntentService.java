@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -14,8 +15,12 @@ import com.google.android.gms.location.GeofencingEvent;
 
 import org.teenguard.child.R;
 import org.teenguard.child.activity.MainActivity;
+import org.teenguard.child.datatype.MyServerResponse;
+import org.teenguard.child.dbdao.DbGeofenceEventDAO;
 import org.teenguard.child.dbdatatype.DbGeofenceEvent;
 import org.teenguard.child.utils.CalendarUtils;
+import org.teenguard.child.utils.MyLog;
+import org.teenguard.child.utils.ServerApiUtils;
 
 import java.util.List;
 
@@ -55,6 +60,9 @@ public class GeofenceTransitionsIntentService extends IntentService {
             dbGeofenceEvent.setId(id);
             dbGeofenceEvent.dump();
             //sending dbGeofenceEvent
+            AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbGeofenceEvent.getSerializedData() + "]",String.valueOf(dbGeofenceEvent.getId()));
+            asyncSendToServer.doInBackground();
+            System.out.println("REMEBER TO RE-ENABLE DB DELETION");
             // TODO: 11/11/16 flush dbGeofence event
 
         }
@@ -93,4 +101,37 @@ public class GeofenceTransitionsIntentService extends IntentService {
                 .build();
         notificationManager.notify(0, notification);
     }
+
+    //////////////////////////////////
+    private class AsyncSendToServer extends AsyncTask<String, String, String> {
+        //http://www.journaldev.com/9708/android-asynctask-example-tutorial
+        String dataToSend;
+        String idToDeleteListSTR;
+
+        public AsyncSendToServer(String dataToSend, String idToDeleteListSTR) {
+            this.dataToSend = dataToSend;
+            this.idToDeleteListSTR = idToDeleteListSTR;
+        }
+        @Override
+        protected String doInBackground(String... params) {
+            ///////////////NEEDS TO BE EXECUTED IN BACKGROUND/////////////////////
+            MyLog.i(this, "ASYNC SENDING GEOFENCE EVENT TO SERVER");
+            MyServerResponse myServerResponse = ServerApiUtils.addGeofenceEventToServer(dataToSend);
+            myServerResponse.dump();
+            if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+                MyLog.i(this, "SENT NEW GEOFENCE EVENT TO SERVER, DELETING  "  + idToDeleteListSTR);
+                DbGeofenceEventDAO dbGeofenceEventDAO = new DbGeofenceEventDAO();
+                //dbGeofenceEventDAO.delete(idToDeleteListSTR);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            System.out.println("completed async execution");
+        }
+    }
+    ///////////////////////////////
+
 }

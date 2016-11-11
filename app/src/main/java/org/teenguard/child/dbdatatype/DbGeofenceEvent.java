@@ -1,6 +1,7 @@
 package org.teenguard.child.dbdatatype;
 
 import org.teenguard.child.dbdao.DbGeofenceEventDAO;
+import org.teenguard.child.utils.JSon;
 
 /**
  * Created by chris on 09/11/16.
@@ -19,6 +20,19 @@ public class DbGeofenceEvent implements InterfaceDbDatatype {
         this.geofenceId = geofenceId;
         this.date = date;
         this.event = event;
+    }
+
+    /**
+     *
+     * @return data to send to the server
+     */
+    public String getSerializedData() {
+        JSon json = new JSon();
+        json.add("id",id);
+        json.add("geofence_id",geofenceId);
+        json.add("date",date);
+        json.add("event",event);
+        return json.getJSonString();
     }
 
     @Override

@@ -28,11 +28,25 @@ public class ServerApiUtils {
 
     public final static String APPLICATION_SERVER_REQUEST_ADD_LOCATION = "/api.php";
 
+    public final static String APPLICATION_SERVER_REQUEST_ADD_GEOFENCE_EVENT = "/api.php";
 
 
     public static MyServerResponse addVisitToServer(String dataToSend) {
         MyLog.i(" ServerUtils.addVisitToServer"," using addLocationToServer data:" + dataToSend);
         return addLocationToServer(dataToSend);
+    }
+
+
+    public static MyServerResponse addGeofenceEventToServer(String serializedData) {
+        MyServerResponse myServerResponse = new MyServerResponse();
+        MyLog.i(" ServerUtils.addGeofenceEventToServer","addGeofenceEventToServer data:" + serializedData);
+        try{
+            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_ADD_GEOFENCE_EVENT);
+            myServerResponse = MyConnectionUtils.doAndroidRequest("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,serializedData);
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        }
+        return myServerResponse;
     }
 
     public static MyServerResponse addLocationToServer(String serializedData) {

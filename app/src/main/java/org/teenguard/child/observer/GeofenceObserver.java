@@ -187,18 +187,15 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
         System.out.println("location.getLatitude() = " + location.getLatitude());
         System.out.println("location.getLongitude() = " + location.getLongitude());
         System.out.println("location.getAccuracy() = " + location.getAccuracy());
-        System.out.println("distance from L'incontro = " +
-                TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.1205434,-16.7750331,'m'));
-        System.out.println("distance from Michele = " +
-                TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.1251502,-16.7394207,'m'));
-        System.out.println("distance from Chris =  " +
-                TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.0589617,-16.7299850,'m'));
+
+        System.out.println("distance from L'incontro = " + TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.1205434,-16.7750331,'m'));
+        System.out.println("distance from Michele = " + TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.1251502,-16.7394207,'m'));
+        System.out.println("distance from Chris =  " + TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.0589617,-16.7299850,'m'));
     }
 
 
 
-    // TODO: 05/11/16 json parsing
-    // TODO: 05/11/16 db structure
+    // TODO: 05/11/16 json parsing of incoming geofences
     // TODO: 05/11/16 flush 
 }
 
