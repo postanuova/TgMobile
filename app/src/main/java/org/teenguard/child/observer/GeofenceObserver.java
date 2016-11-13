@@ -24,11 +24,11 @@ import com.google.android.gms.location.LocationServices;
 import org.teenguard.child.dbdao.DbGeofenceDAO;
 import org.teenguard.child.dbdatatype.DbGeofence;
 import org.teenguard.child.service.GeofenceTransitionsIntentService;
+import org.teenguard.child.utils.CalendarUtils;
 import org.teenguard.child.utils.MyApp;
 import org.teenguard.child.utils.TypeConverter;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 
 /**
@@ -183,7 +183,8 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
 
     @Override
     public void onLocationChanged(Location location) {
-        System.out.println("location CHANGED = " + new Date(location.getTime()));
+        System.out.println("location CHANGED = " + location.getTime());
+        System.out.println("server time format = " + CalendarUtils.serverTimeFormat(location.getTime()));
         System.out.println("location.getLatitude() = " + location.getLatitude());
         System.out.println("location.getLongitude() = " + location.getLongitude());
         System.out.println("location.getAccuracy() = " + location.getAccuracy());
@@ -192,6 +193,7 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
         System.out.println("distance from Michele = " + TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.1251502,-16.7394207,'m'));
         System.out.println("distance from Chris =  " + TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.0589617,-16.7299850,'m'));
     }
+
 
 
 

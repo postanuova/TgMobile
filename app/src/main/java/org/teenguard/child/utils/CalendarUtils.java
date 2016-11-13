@@ -2,6 +2,7 @@ package org.teenguard.child.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -15,16 +16,29 @@ public class CalendarUtils {
         return System.currentTimeMillis();
     }
 
-    public static void getTimezone() {
+    public static String getDeviceTimezone() {
         //http://stackoverflow.com/questions/15068113/how-to-get-the-timezone-offset-in-gmtlike-gmt700-from-android-device
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"), Locale.getDefault());
         String   timeZone = new SimpleDateFormat("Z").format(calendar.getTime());
-        String offset = timeZone.substring(0, 3) + ":"+ timeZone.substring(3, 5);
+        String offset = timeZone.substring(0, 3) + timeZone.substring(3, 5);
 
         System.out.println("offset = " + offset);
+        return offset;
     }
 
     public static void main(String args[]) {
-        getTimezone();
+        getDeviceTimezone();
+    }
+
+    /**
+     *
+     * @return YYYYMMDDHHMMSS+ZZZZ
+     */
+    public static String serverTimeFormat(long utcMillis) {
+        String dateTimeSTR;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddkkmmss");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        dateTimeSTR = sdf.format(new Date(utcMillis)) + getDeviceTimezone();
+        return dateTimeSTR;
     }
 }
