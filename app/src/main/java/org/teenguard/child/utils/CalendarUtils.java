@@ -35,10 +35,13 @@ public class CalendarUtils {
      * @return YYYYMMDDHHMMSS+ZZZZ
      */
     public static String serverTimeFormat(long utcMillis) {
+        if(utcMillis ==-1 ) utcMillis = nowUTCMillis();
         String dateTimeSTR;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddkkmmss");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         dateTimeSTR = sdf.format(new Date(utcMillis)) + getDeviceTimezone();
         return dateTimeSTR;
     }
+
+
 }

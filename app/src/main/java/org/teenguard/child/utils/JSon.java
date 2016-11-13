@@ -18,22 +18,22 @@ public class JSon {
 
     /** aggiunge un elemento int all'oggetto JSON */
     public void add(String param, int value) {
-        jSonString += composePair(param, Integer.toString(value)) + ",";
+        jSonString += composeNumericPair(param, Integer.toString(value)) + ",";
     }
 
     /** aggiunge un elemento double all'oggetto JSON */
     public void add(String param, double value) {
-        jSonString += composePair(param, Double.toString(value)) + ",";
+        jSonString += composeNumericPair(param, Double.toString(value)) + ",";
     }
 
     /** aggiunge un elemento long all'oggetto JSON */
     public void add(String param, long value) {
-        jSonString += composePair(param, Long.toString(value)) + ",";
+        jSonString += composeNumericPair(param, Long.toString(value)) + ",";
     }
 
     /** aggiunge un elemento float all'oggetto JSON */
     public void add(String param, float value) {
-        jSonString += composePair(param, Float.toString(value)) + ",";
+        jSonString += composeNumericPair(param, Float.toString(value)) + ",";
     }
 
    /* *//** aggiunge un elemento Calendar yyyy/mm/dd all'oggetto JSON *//*
@@ -58,6 +58,11 @@ public class JSon {
     private String composePair(String param, String value) {
         return "\"" + param + "\":\"" + value + "\"";
     //return param + ":\"" + value + "\"";
+    }
+
+    private String composeNumericPair(String param, String value) {
+        return "\"" + param + "\":" + value;
+        //return param + ":\"" + value + "\"";
     }
 
     /**

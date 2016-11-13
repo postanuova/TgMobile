@@ -1,6 +1,7 @@
 package org.teenguard.child.dbdatatype;
 
 import org.teenguard.child.dbdao.DbGeofenceEventDAO;
+import org.teenguard.child.utils.CalendarUtils;
 import org.teenguard.child.utils.JSon;
 
 /**
@@ -30,7 +31,7 @@ public class DbGeofenceEvent implements InterfaceDbDatatype {
         JSon json = new JSon();
         json.add("id",id);
         json.add("geofence_id",geofenceId);
-        json.add("date",date);
+        json.add("date", CalendarUtils.serverTimeFormat(date));
         json.add("event",event);
         return json.getJSonString();
     }
