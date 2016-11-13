@@ -103,12 +103,12 @@ public class GeofenceTransitionsIntentService extends IntentService {
     }
 
     //////////////////////////////////
-    private class AsyncSendToServer extends AsyncTask<String, String, String> {
+    public class AsyncSendToServer extends AsyncTask<String, String, String> {
         //http://www.journaldev.com/9708/android-asynctask-example-tutorial
         String dataToSend;
         String idToDeleteListSTR;
 
-        public AsyncSendToServer(String dataToSend, String idToDeleteListSTR) {
+        public  AsyncSendToServer(String dataToSend, String idToDeleteListSTR) {
             this.dataToSend = dataToSend;
             this.idToDeleteListSTR = idToDeleteListSTR;
         }

@@ -137,8 +137,6 @@ public class DeviceLocationListener implements GoogleApiClient.OnConnectionFaile
         if(idToDeleteListSTR.endsWith(",")) idToDeleteListSTR = idToDeleteListSTR.substring(0,idToDeleteListSTR.length()-1);
         AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + bulkLocationEventSTR + "]",idToDeleteListSTR);
         asyncSendToServer.execute();
-
-
     }
 
     //////////////////////////////////

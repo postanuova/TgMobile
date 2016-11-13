@@ -25,7 +25,7 @@ public class DbGeofenceEvent implements InterfaceDbDatatype {
 
     /**
      *
-     * @return data to send to the server
+     * @return json object to send to the server
      */
     public String getSerializedData() {
         JSon json = new JSon();

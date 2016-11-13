@@ -22,7 +22,9 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import org.teenguard.child.dbdao.DbGeofenceDAO;
+import org.teenguard.child.dbdao.DbGeofenceEventDAO;
 import org.teenguard.child.dbdatatype.DbGeofence;
+import org.teenguard.child.dbdatatype.DbGeofenceEvent;
 import org.teenguard.child.service.GeofenceTransitionsIntentService;
 import org.teenguard.child.utils.CalendarUtils;
 import org.teenguard.child.utils.MyApp;
@@ -71,7 +73,8 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
      * @param jsonStringContainingGeofences
      */
     private void writeNewGeofencesOnDb(String jsonStringContainingGeofences) {
-        //{ "id": "SiamMall", "latitude": 28.0690565, "longitude": -16.7249978, "radius": 100, "enter": true, "leave": true }, { "id": "Michele", "latitude": 28.1251502, "longitude": -16.7394207, "radius": 100, "enter": true, "leave": true }, { "id": "ChiesaLosCristianos", "latitude": 28.0521532, "longitude": -16.7177612, "radius": 100, "enter": true, "leave": true } ] }, "t": 3600, "h": "6f4ef2a89f7a834a65c1d6bc4147a4a792504848" }
+        //String jsonSTR = { "id": "SiamMall", "latitude": 28.0690565, "longitude": -16.7249978, "radius": 100, "enter": true, "leave": true }, { "id": "Michele", "latitude": 28.1251502, "longitude": -16.7394207, "radius": 100, "enter": true, "leave": true }, { "id": "ChiesaLosCristianos", "latitude": 28.0521532, "longitude": -16.7177612, "radius": 100, "enter": true, "leave": true } ] }, "t": 3600, "h": "6f4ef2a89f7a834a65c1d6bc4147a4a792504848" }
+     //   String jsonAR = "[" + { "]";
         DbGeofence dbGeofence;
 
         dbGeofence = new DbGeofence(0,"Lincontro",28.120483,-16.7775494,500,1,1);
@@ -198,6 +201,25 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
 
 
     // TODO: 05/11/16 json parsing of incoming geofences
-    // TODO: 05/11/16 flush 
+
+
+    public void flushGeofenceTable() {
+        // TODO: 13/11/16 to be used and tested
+        DbGeofenceEventDAO dbGeofenceEventDAO = new DbGeofenceEventDAO();
+        ArrayList <DbGeofenceEvent> dbGeofenceEventAL = dbGeofenceEventDAO.getList();
+        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder idToDeleteListSB = new StringBuilder(); //la usero' per cancellare gli eventi una volta inviati
+        for (DbGeofenceEvent dbGeofenceEvent:dbGeofenceEventAL) {
+            stringBuilder.append(dbGeofenceEvent.getSerializedData());
+            stringBuilder.append(",");
+            idToDeleteListSB.append(dbGeofenceEvent.getId());
+        }
+        String bulkGeofenceEventSTR = stringBuilder.toString();
+        if(bulkGeofenceEventSTR.endsWith(",")) bulkGeofenceEventSTR = bulkGeofenceEventSTR.substring(0,bulkGeofenceEventSTR.length()-1);
+        String idToDeleteListSTR = stringBuilder.toString();
+        if(idToDeleteListSTR.endsWith(",")) idToDeleteListSTR = idToDeleteListSTR.substring(0,idToDeleteListSTR.length()-1);
+        GeofenceTransitionsIntentService.AsyncSendToServer asyncSendToServer = new GeofenceTransitionsIntentService().new AsyncSendToServer("[" + bulkGeofenceEventSTR + "]",idToDeleteListSTR);
+        asyncSendToServer.execute();
+    }
 }
 
