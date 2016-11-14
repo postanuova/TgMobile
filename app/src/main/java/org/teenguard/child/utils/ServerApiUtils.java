@@ -21,6 +21,7 @@ public class ServerApiUtils {
     public final static String APPLICATION_SERVER_PROTOCOL = "http://";
     public final static String APPLICATION_SERVER_IP_ADDRESS = "92.222.83.28";
     public final static String APPLICATION_SERVER_MIMETYPE_JSON = "application/json";
+    public final static String APPLICATION_SERVER_MIMETYPE_TEXT_HTML = "text/html";
 
     public final static String APPLICATION_SERVER_REQUEST_ADD_CONTACTS_URL = "/api2.php";
     public final static String APPLICATION_SERVER_REQUEST_REMOVE_CONTACTS_URL = "/api2.php";
@@ -153,8 +154,7 @@ public class ServerApiUtils {
         try{
             URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_GET_BEAT);
            // URL url = new URL("http://www.innovacem.com/public/glace/leggiFoto.php");
-            myServerResponse = MyConnectionUtils.doAndroidRequest("GET",url,"text/html" ,"");
-            myServerResponse.dump();
+            myServerResponse = MyConnectionUtils.doAndroidRequest("GET",url,APPLICATION_SERVER_MIMETYPE_TEXT_HTML ,"");
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         }

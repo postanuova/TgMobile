@@ -96,7 +96,7 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
                 //TODO: 10/11/16 aggiunta di nuove,overwrite di quelle che già esistono...e cancellazione di quelle che non ci sono più???
                 https://www.raywenderlich.com/103540/geofences-googleapiclient
                 //http://stackoverflow.com/questions/16631962/android-how-to-retrieve-list-of-registered-geofences
-                System.out.println("remove all registered geofences not implemented");
+                System.out.println(" remove all registered geofences not implemented");
 
                 //parse geofences json from server and write geofences on db
                 ArrayList<BeatResponseJsonWrapper.Geofences> serverGeofencesAL = beatResponseJsonWrapper.data.geofences;
@@ -114,6 +114,7 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
             }
             //reloadGeofencesFrom db into device
             populateDeviceGeofenceAL();
+            registerGeofences();
             return null;
         }
 
@@ -242,6 +243,37 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
 
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
+        /*if (ActivityCompat.checkSelfPermission(MyApp.getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(MyApp.getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.i(this.getClass().getName(),"need to request the missing permissions: not yet implemented");
+            // TODO: we must require permission https://developer.android.com/training/permissions/requesting.html
+            return;
+        } else {
+            //ha tutti i diritti
+            System.out.println("all rights enabled: initializing geofences monitoring");
+            //costruisco l'oggetto geofencingRequest che conterrà la lista delle geofences
+            GeofencingRequest.Builder geofencingRequestBuilder = new GeofencingRequest.Builder();
+            geofencingRequestBuilder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+            geofencingRequestBuilder.addGeofences(deviceGeofenceAL);
+            GeofencingRequest geofencingRequest = geofencingRequestBuilder.build();
+            System.out.println(" geofencingRequest.getGeofences().size() = " + geofencingRequest.getGeofences().size());
+            //costruisco il pending Intent
+            Intent intent = new Intent(MyApp.getContext(),GeofenceTransitionsIntentService.class);
+            PendingIntent pendingIntent = PendingIntent.getService(MyApp.getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);// We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling addgeoFences()
+
+            LocationServices.GeofencingApi.addGeofences(
+                    googleApiClient,
+                    geofencingRequest,
+                    pendingIntent).setResultCallback(this);//chiama onResult
+        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);*/
+        registerGeofences();
+        Log.i(this.getClass().getName(),">>>completed onConnected");
+    }
+
+    private void registerGeofences() {
+
+        Log.i(this.getClass().getName(),"registerGeofences");
         if (ActivityCompat.checkSelfPermission(MyApp.getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(MyApp.getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.i(this.getClass().getName(),"need to request the missing permissions: not yet implemented");
@@ -266,7 +298,6 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
                     pendingIntent).setResultCallback(this);//chiama onResult
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);
-        Log.i(this.getClass().getName(),">>>completed onConnected");
     }
 
 
