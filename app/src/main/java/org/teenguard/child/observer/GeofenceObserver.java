@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -31,6 +32,7 @@ import org.teenguard.child.dbdatatype.DbGeofenceEvent;
 import org.teenguard.child.service.GeofenceTransitionsIntentService;
 import org.teenguard.child.utils.CalendarUtils;
 import org.teenguard.child.utils.MyApp;
+import org.teenguard.child.utils.MyLog;
 import org.teenguard.child.utils.ServerApiUtils;
 import org.teenguard.child.utils.TypeConverter;
 
@@ -46,7 +48,7 @@ import java.util.ArrayList;
 public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener,ResultCallback<Status> {
     private DbGeofenceDAO dbGeofenceDAO = new DbGeofenceDAO();
     private GoogleApiClient googleApiClient;
-    protected ArrayList<Geofence> geofenceAL = new ArrayList<Geofence>(); //will contain (Android) Geofences
+    protected ArrayList<Geofence> deviceGeofenceAL = new ArrayList<Geofence>(); //will contain (Android) device Geofences
     private LocationRequest mLocationRequest;
     //{ "data": { "geofences": [ { "id": "Lincontro", "latitude": 28.120483, "longitude": -16.7775494, "radius": 100, "enter": true, "leave": true }, { "id": "Ale", "latitude": 28.1250742, "longitude": -16.7779788, "radius": 100, "enter": true, "leave": true }, { "id": "SiamMall", "latitude": 28.0690565, "longitude": -16.7249978, "radius": 100, "enter": true, "leave": true }, { "id": "Michele", "latitude": 28.1251502, "longitude": -16.7394207, "radius": 100, "enter": true, "leave": true }, { "id": "ChiesaLosCristianos", "latitude": 28.0521532, "longitude": -16.7177612, "radius": 100, "enter": true, "leave": true } ] }, "t": 3600, "h": "6f4ef2a89f7a834a65c1d6bc4147a4a792504848" }
 
@@ -59,12 +61,72 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
                 .addOnConnectionFailedListener(this)
                 .build();
         googleApiClient.connect();
-manageGeofences();
-
+        populateDeviceGeofenceAL(); //inizialmente carico nel device le geofences preesistenti sul db
+        String shaGeofencesSTR = "shaString";
+        // TODO: 14/11/16 leggere shaString precedente
+        AsyncGetGeofencesFromServer asyncGetGeofencesFromServer = new AsyncGetGeofencesFromServer(shaGeofencesSTR);
+        asyncGetGeofencesFromServer.execute();
     }
 
 
-    public void manageGeofences() {
+    ///////////////////
+    //////////////////////////////////
+    public class AsyncGetGeofencesFromServer extends AsyncTask<String, String, String> {
+        //http://www.journaldev.com/9708/android-asynctask-example-tutorial
+        String dataToSend;
+        public  AsyncGetGeofencesFromServer(String dataToSend) {
+            this.dataToSend = dataToSend;
+        }
+        @Override
+        protected String doInBackground(String... params) {
+            ///////////////NEEDS TO BE EXECUTED IN BACKGROUND/////////////////////
+            MyLog.i(this, "ASYNC GETTING GEOFENCES FROM SERVER");
+            MyServerResponse myServerResponse = ServerApiUtils.getBeatFromServer();
+            myServerResponse.dump();
+            if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+                MyLog.i(this, "RECEIVED NEW GEOFENCE FROM SERVER");
+                String jsonServerResponse = myServerResponse.getResponseBody();
+                Gson gson = new Gson();
+                BeatResponseJsonWrapper beatResponseJsonWrapper = gson.fromJson(jsonServerResponse,BeatResponseJsonWrapper.class);
+                System.out.println(" NEW geofences number " + beatResponseJsonWrapper.data.geofences.size());
+                //delete geofences from db
+                System.out.println("delete old geofences from db");
+                dbGeofenceDAO.delete();
+                //remove all active geofences
+                //TODO: 10/11/16 aggiunta di nuove,overwrite di quelle che già esistono...e cancellazione di quelle che non ci sono più???
+                https://www.raywenderlich.com/103540/geofences-googleapiclient
+                //http://stackoverflow.com/questions/16631962/android-how-to-retrieve-list-of-registered-geofences
+                System.out.println("remove all registered geofences not implemented");
+
+                //parse geofences json from server and write geofences on db
+                ArrayList<BeatResponseJsonWrapper.Geofences> serverGeofencesAL = beatResponseJsonWrapper.data.geofences;
+                for (BeatResponseJsonWrapper.Geofences serverGeofence:serverGeofencesAL ) {
+                    DbGeofence dbGeofence = new DbGeofence();
+                    dbGeofence.setId(0);
+                    dbGeofence.setGeofenceId(serverGeofence.id);
+                    dbGeofence.setLatitude(serverGeofence.latitude);
+                    dbGeofence.setLongitude(serverGeofence.longitude);
+                    dbGeofence.setRadius(serverGeofence.radius);
+                    dbGeofence.setEnter(TypeConverter.booleanToInt(serverGeofence.enter));
+                    dbGeofence.setLeave(TypeConverter.booleanToInt(serverGeofence.leave));
+                    dbGeofence.writeMe();
+                }
+            }
+            //reloadGeofencesFrom db into device
+            populateDeviceGeofenceAL();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            System.out.println("completed AsyncGetGeofencesFromServer execution");
+        }
+    }
+    ///////////////////////////////
+    ///////////////////
+//----------DEPRECATED, NOT ASYNC------------------
+    /*public void manageGeofences() {
         //check if new data are present on server
         // TODO: 14/11/16 check if new data are present on server
         boolean newGeofencesFromServer = true;
@@ -101,7 +163,7 @@ manageGeofences();
 
         //read dbGeofences and populate geofencesAL
         populateGeofenceAL();
-    }
+    }*/
 
 
 
@@ -148,8 +210,10 @@ manageGeofences();
     /**
      * load geofences from db
      */
-    private void populateGeofenceAL() {
-        System.out.println("populate geofenceAL");
+    private void populateDeviceGeofenceAL() {
+        //reset della lista
+        deviceGeofenceAL.clear();
+        System.out.println("populate deviceGeofenceAL");
         DbGeofenceDAO dbGeofenceDAO = new DbGeofenceDAO();
         ArrayList <DbGeofence> dbGeofenceAL = dbGeofenceDAO.getList();  //will contain dbGeofences
         Geofence geofence;
@@ -160,9 +224,9 @@ manageGeofences();
                     .setExpirationDuration(10*1000*1000)
                     .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER|Geofence.GEOFENCE_TRANSITION_EXIT)
                     .build();
-             geofenceAL.add(geofence);
+             deviceGeofenceAL.add(geofence);
         }
-        System.out.println("populateGeofenceAL geofenceAL.size() = " + geofenceAL.size());
+        System.out.println("populateGeofenceAL deviceGeofenceAL.size() = " + deviceGeofenceAL.size());
     }
 
 
@@ -189,7 +253,7 @@ manageGeofences();
             //costruisco l'oggetto geofencingRequest che conterrà la lista delle geofences
             GeofencingRequest.Builder geofencingRequestBuilder = new GeofencingRequest.Builder();
             geofencingRequestBuilder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
-            geofencingRequestBuilder.addGeofences(geofenceAL);
+            geofencingRequestBuilder.addGeofences(deviceGeofenceAL);
             GeofencingRequest geofencingRequest = geofencingRequestBuilder.build();
             System.out.println(" geofencingRequest.getGeofences().size() = " + geofencingRequest.getGeofences().size());
             //costruisco il pending Intent
