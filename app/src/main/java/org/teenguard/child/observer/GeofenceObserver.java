@@ -20,6 +20,7 @@ import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.gson.Gson;
 
 import org.teenguard.child.dbdao.DbGeofenceDAO;
 import org.teenguard.child.dbdao.DbGeofenceEventDAO;
@@ -55,16 +56,44 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
                 .addOnConnectionFailedListener(this)
                 .build();
         googleApiClient.connect();
+manageGeofences();
 
+    }
+
+
+    public void manageGeofences() {
         boolean newGeofencesFromServer = true;
         if(newGeofencesFromServer) {
+            //delete geofences from db
             dbGeofenceDAO.delete();
+            //remove all active geofences
+            System.out.println("remove all registered geofences not implemented");
+            //read geofence json from server
+            //parse geofences json from server and write geofences on db
             writeNewGeofencesOnDb(null);
         }
-       //TODO: 10/11/16 aggiunta di nuove,overwrite di quelle che già esistono...e cancellazione di quelle che non ci sono più???
+        //TODO: 10/11/16 aggiunta di nuove,overwrite di quelle che già esistono...e cancellazione di quelle che non ci sono più???
         https://www.raywenderlich.com/103540/geofences-googleapiclient
         //http://stackoverflow.com/questions/16631962/android-how-to-retrieve-list-of-registered-geofences
+        //read dbGeofences and populate geofencesAL
         populateGeofenceAL();
+    }
+
+    public static void parseGeofenceJsonAR() {
+        class MyWrapper {
+            String id;
+            double latitude;
+            double longitude;
+            int radius;
+            boolean enter;
+            boolean leave;
+        }
+        String jsonAR = "[{ 'id': 'SiamMall', 'latitude': 28.0690565, 'longitude': -16.7249978, 'radius': 100, 'enter': true, 'leave': true }, { 'id': 'Michele', 'latitude': 28.1251502, 'longitude': -16.7394207, 'radius': 100, 'enter': true, 'leave': true }, { 'id': 'ChiesaLosCristianos', 'latitude': 28.0521532, 'longitude': -16.7177612, 'radius': 100, 'enter': true, 'leave': true } ]";
+        Gson gson = new Gson();
+
+
+        MyWrapper[] arr = gson.fromJson(jsonAR, MyWrapper[].class);
+        System.out.println("arr.length = " + arr.length);
     }
 
 
@@ -186,15 +215,15 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
 
     @Override
     public void onLocationChanged(Location location) {
-        System.out.println("location CHANGED = " + location.getTime());
+        System.out.println("GEOFENCE OBSERVER location CHANGED = " + location.getTime());
         System.out.println("server time format = " + CalendarUtils.serverTimeFormat(location.getTime()));
         System.out.println("location.getLatitude() = " + location.getLatitude());
         System.out.println("location.getLongitude() = " + location.getLongitude());
         System.out.println("location.getAccuracy() = " + location.getAccuracy());
 
-        System.out.println("distance from L'incontro = " + TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.1205434,-16.7750331,'m'));
-        System.out.println("distance from Michele = " + TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.1251502,-16.7394207,'m'));
-        System.out.println("distance from Chris =  " + TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.0589617,-16.7299850,'m'));
+        System.out.println("DEBUG: distance from L'incontro = " + TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.1205434,-16.7750331,'m'));
+        System.out.println("DEBUG:distance from Michele = " + TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.1251502,-16.7394207,'m'));
+        System.out.println("DEBUG:distance from Chris =  " + TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.0589617,-16.7299850,'m'));
     }
 
 
@@ -221,5 +250,10 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
         GeofenceTransitionsIntentService.AsyncSendToServer asyncSendToServer = new GeofenceTransitionsIntentService().new AsyncSendToServer("[" + bulkGeofenceEventSTR + "]",idToDeleteListSTR);
         asyncSendToServer.execute();
     }
+
+    public static void main(String args[]){
+        parseGeofenceJsonAR();
+    }
+
 }
 
