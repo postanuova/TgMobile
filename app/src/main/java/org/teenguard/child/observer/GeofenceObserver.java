@@ -22,6 +22,8 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
 
+import org.teenguard.child.datatype.BeatResponseJsonWrapper;
+import org.teenguard.child.datatype.MyServerResponse;
 import org.teenguard.child.dbdao.DbGeofenceDAO;
 import org.teenguard.child.dbdao.DbGeofenceEventDAO;
 import org.teenguard.child.dbdatatype.DbGeofence;
@@ -29,6 +31,7 @@ import org.teenguard.child.dbdatatype.DbGeofenceEvent;
 import org.teenguard.child.service.GeofenceTransitionsIntentService;
 import org.teenguard.child.utils.CalendarUtils;
 import org.teenguard.child.utils.MyApp;
+import org.teenguard.child.utils.ServerApiUtils;
 import org.teenguard.child.utils.TypeConverter;
 
 import java.util.ArrayList;
@@ -62,24 +65,48 @@ manageGeofences();
 
 
     public void manageGeofences() {
+        //check if new data are present on server
+        // TODO: 14/11/16 check if new data are present on server
         boolean newGeofencesFromServer = true;
         if(newGeofencesFromServer) {
+            //read geofence json from server
+            System.out.println("reading beat data from server");
+            MyServerResponse myServerResponse = ServerApiUtils.getBeatFromServer();
+            String jsonServerResponse = myServerResponse.getResponseBody();
+            Gson gson = new Gson();
+            BeatResponseJsonWrapper beatResponseJsonWrapper = gson.fromJson(jsonServerResponse,BeatResponseJsonWrapper.class);
+            System.out.println(" geofences number " + beatResponseJsonWrapper.data.geofences.size());
             //delete geofences from db
             dbGeofenceDAO.delete();
             //remove all active geofences
+            //TODO: 10/11/16 aggiunta di nuove,overwrite di quelle che già esistono...e cancellazione di quelle che non ci sono più???
+            https://www.raywenderlich.com/103540/geofences-googleapiclient
+            //http://stackoverflow.com/questions/16631962/android-how-to-retrieve-list-of-registered-geofences
             System.out.println("remove all registered geofences not implemented");
-            //read geofence json from server
+
             //parse geofences json from server and write geofences on db
-            writeNewGeofencesOnDb(null);
+            ArrayList<BeatResponseJsonWrapper.Geofences> serverGeofencesAL = beatResponseJsonWrapper.data.geofences;
+            for (BeatResponseJsonWrapper.Geofences serverGeofence:serverGeofencesAL ) {
+                DbGeofence dbGeofence = new DbGeofence();
+                dbGeofence.setId(0);
+                dbGeofence.setGeofenceId(serverGeofence.id);
+                dbGeofence.setLatitude(serverGeofence.latitude);
+                dbGeofence.setLongitude(serverGeofence.longitude);
+                dbGeofence.setRadius(serverGeofence.radius);
+                dbGeofence.setEnter(TypeConverter.booleanToInt(serverGeofence.enter));
+                dbGeofence.setLeave(TypeConverter.booleanToInt(serverGeofence.leave));
+                dbGeofence.writeMe();
+            }
         }
-        //TODO: 10/11/16 aggiunta di nuove,overwrite di quelle che già esistono...e cancellazione di quelle che non ci sono più???
-        https://www.raywenderlich.com/103540/geofences-googleapiclient
-        //http://stackoverflow.com/questions/16631962/android-how-to-retrieve-list-of-registered-geofences
+
         //read dbGeofences and populate geofencesAL
         populateGeofenceAL();
     }
 
-    public static void parseGeofenceJsonAR() {
+
+
+    //--------DEPRECATED ------------
+  /*  public static void parseGeofenceJsonAR() {
         class MyWrapper {
             String id;
             double latitude;
@@ -94,14 +121,14 @@ manageGeofences();
 
         MyWrapper[] arr = gson.fromJson(jsonAR, MyWrapper[].class);
         System.out.println("arr.length = " + arr.length);
-    }
+    }*/
 
 
-    /**
+    /**------DEPRECATED---------
      * this method will parse json from server and will insert geofences into db
      * @param jsonStringContainingGeofences
      */
-    private void writeNewGeofencesOnDb(String jsonStringContainingGeofences) {
+    /*private void writeNewGeofencesOnDb(String jsonStringContainingGeofences) {
         //String jsonSTR = { "id": "SiamMall", "latitude": 28.0690565, "longitude": -16.7249978, "radius": 100, "enter": true, "leave": true }, { "id": "Michele", "latitude": 28.1251502, "longitude": -16.7394207, "radius": 100, "enter": true, "leave": true }, { "id": "ChiesaLosCristianos", "latitude": 28.0521532, "longitude": -16.7177612, "radius": 100, "enter": true, "leave": true } ] }, "t": 3600, "h": "6f4ef2a89f7a834a65c1d6bc4147a4a792504848" }
      //   String jsonAR = "[" + { "]";
         DbGeofence dbGeofence;
@@ -116,7 +143,7 @@ manageGeofences();
 
         dbGeofence = new DbGeofence(0,"Chris",28.0589617,  -16.7299850,500,true,true);
         dbGeofence.writeMe();
-    }
+    }*/
 
     /**
      * load geofences from db
@@ -138,17 +165,7 @@ manageGeofences();
         System.out.println("populateGeofenceAL geofenceAL.size() = " + geofenceAL.size());
     }
 
-   /* private  void populateGeofenceAL() {
-       Geofence geofence = new Geofence.Builder()
-               .setRequestId("Lincontro")
-               //.setCircularRegion(28.1205434,-16.7750331,500)
-               .setCircularRegion(28.12,-16.778,100)
-               .setExpirationDuration(Geofence.NEVER_EXPIRE)
-               .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER|Geofence.GEOFENCE_TRANSITION_EXIT)
-               .build();
-        geofenceAL.add(geofence);
 
-       }*/
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -251,9 +268,9 @@ manageGeofences();
         asyncSendToServer.execute();
     }
 
-    public static void main(String args[]){
+   /* public static void main(String args[]){
         parseGeofenceJsonAR();
-    }
+    }*/
 
 }
 

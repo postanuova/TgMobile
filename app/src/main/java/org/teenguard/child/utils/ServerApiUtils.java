@@ -2,7 +2,10 @@ package org.teenguard.child.utils;
 
 import android.graphics.Bitmap;
 
+import com.google.gson.Gson;
+
 import org.json.JSONObject;
+import org.teenguard.child.datatype.BeatResponseJsonWrapper;
 import org.teenguard.child.datatype.MyServerResponse;
 
 import java.net.MalformedURLException;
@@ -161,8 +164,18 @@ public class ServerApiUtils {
 
 
 
-public static void main (String args[]) {
-    getBeatFromServer();
-}
+    public static void main (String args[]) {
+
+        MyServerResponse myServerResponse = getBeatFromServer();
+        String jsonResponse = myServerResponse.getResponseBody();
+        //jsonResponse ="{data:{a:1}}";
+        System.out.println("jsonResponse = " + jsonResponse);
+        System.out.println("start parsing");
+        Gson gson = new Gson();
+        BeatResponseJsonWrapper beatResponseJsonWrapper = gson.fromJson(jsonResponse,BeatResponseJsonWrapper.class);
+        System.out.println(beatResponseJsonWrapper.data.geofences.size());
+    }
+
+
 
 }

@@ -30,6 +30,8 @@ public class DbGeofence implements InterfaceDbDatatype {
         this.leave = leave;
     }
 
+    public DbGeofence() {};
+
     public DbGeofence(int id, String geofenceId, double latitude, double longitude, int radius, boolean enter, boolean leave) {
         this.id = id;
         this.geofenceId = geofenceId;
