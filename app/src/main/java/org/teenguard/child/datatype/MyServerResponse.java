@@ -9,11 +9,12 @@ package org.teenguard.child.datatype;
  */
 public class MyServerResponse {
     private static int responseCounter = 0;
-    private  int responseNumber;
-    private int responseCode;
     private String requestMethod = "unknown";
     private String requestUrl ="unknown";
     private String requestBody = "unknown";
+    private  int responseNumber;
+    private int responseCode;
+    private String responseMessage = "unknown";
     private String responseBody = "unknown";
     private String responseErrorBody = "unknown";
 
@@ -23,18 +24,20 @@ public class MyServerResponse {
         this.requestMethod = "unknown";
         this.responseBody = null;
         this.responseErrorBody = null;
+        this.responseMessage = null;
     }
 
     public void dump() {
         System.out.println("----------- MyServerResponse (" + responseNumber + ") ------------");
         System.out.println("requestMethod = " + requestMethod);
         System.out.println("requestUrl = " + getRequestUrl());
-        System.out.println("requestBody = " + getRequestBody());
-        System.out.println("requestMethod = " + requestMethod);
+        System.out.println("requestBody = <" + getRequestBody()+">");
         System.out.println("responseNumber = " + responseNumber);
         System.out.println("responseCode = " + responseCode);
-        System.out.println("responseBody = " + responseBody);
-        System.out.println("responseError = " + responseErrorBody);
+        System.out.println("responseMessage = <" + responseMessage+">");
+        if(responseBody != null) System.out.println("responseBody length = " + responseBody.length());
+        System.out.println("responseBody = <" + responseBody +">");
+        System.out.println("responseError = <" + responseErrorBody+">");
         System.out.println("---------------------------------------------");
     }
 
@@ -88,5 +91,13 @@ public class MyServerResponse {
 
     public void setRequestBody(String requestBody) {
         this.requestBody = requestBody;
+    }
+
+    public void setResponseMessage(String responseMessage) {
+        this.responseMessage = responseMessage;
+    }
+
+    public String getResponseMessage() {
+        return responseMessage;
     }
 }

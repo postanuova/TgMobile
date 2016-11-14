@@ -123,7 +123,7 @@ public class TypeConverter {
         try {
             while((line = rd.readLine()) != null) {
                 response.append(line);
-                response.append('\r');
+                response.append('\n');
             }
         rd.close();
         } catch (IOException e) {

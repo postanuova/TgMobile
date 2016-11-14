@@ -46,20 +46,21 @@ public class MyConnectionUtils {
                 wr.close();
             }
 
-            if(requestMethod.equalsIgnoreCase("GET")) {
+            /*if(requestMethod.equalsIgnoreCase("GET")) {
                 connection.setDoOutput(true);
                 DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
                 wr.writeBytes(bodyData);
                 wr.flush();
                 wr.close();
-            }
+            }*/
 
             //Get Response
             System.out.println("connection.getResponseCode() = " + connection.getResponseCode());
-            myServerResponse.setResponseCode(connection.getResponseCode());
             myServerResponse.setRequestMethod(requestMethod);
             myServerResponse.setRequestUrl(url.toString());
             myServerResponse.setRequestBody(bodyData);
+            myServerResponse.setResponseCode(connection.getResponseCode());
+            myServerResponse.setResponseMessage(connection.getResponseMessage());
             if(connection.getInputStream() != null) myServerResponse.setResponseBody(TypeConverter.inputStreamToString(connection.getInputStream()));
             if(connection.getErrorStream() != null) myServerResponse.setResponseError(TypeConverter.inputStreamToString(connection.getErrorStream()));
         } catch (Exception e) {

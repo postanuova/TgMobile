@@ -32,6 +32,7 @@ public class ServerApiUtils {
     public final static String APPLICATION_SERVER_REQUEST_ADD_GEOFENCE_EVENT = "/api2.php";
 
     public final static String APPLICATION_SERVER_REQUEST_GET_BEAT = "/child/beat.php";
+    //public final static String APPLICATION_SERVER_REQUEST_GET_BEAT = "http://www.google.com/search?q=mkyong";
 
     public static MyServerResponse addVisitToServer(String dataToSend) {
         MyLog.i("ServerUtils.addVisitToServer"," using addLocationToServer data:" + dataToSend);
@@ -145,16 +146,20 @@ public class ServerApiUtils {
 
     public static MyServerResponse getBeatFromServer() {
         MyServerResponse myServerResponse = new MyServerResponse();
-        //MyLog.i("ServerUtils"," getBeatFromServer");
+        System.out.println("getBeatFromServer");
         try{
             URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_GET_BEAT);
-            myServerResponse = MyConnectionUtils.doAndroidRequest("GET",url,APPLICATION_SERVER_MIMETYPE_JSON,"");
+           // URL url = new URL("http://www.innovacem.com/public/glace/leggiFoto.php");
+            myServerResponse = MyConnectionUtils.doAndroidRequest("GET",url,"text/html" ,"");
             myServerResponse.dump();
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         }
         return myServerResponse;
     }
+
+
+
 
 public static void main (String args[]) {
     getBeatFromServer();
