@@ -181,7 +181,7 @@ public class ServerApiUtils {
 
     public static void main (String args[]) {
 
-        MyServerResponse myServerResponse = getBeatFromServer("e4215e61696d8d130d2e110636df7568f3947c6b");
+        MyServerResponse myServerResponse = getBeatFromServer(" e4215e61696d8d130d2e110636df7568f3947c6b");
         myServerResponse.dump();
         String jsonResponse = myServerResponse.getResponseBody();
         //jsonResponse ="{data:{a:1}}";
