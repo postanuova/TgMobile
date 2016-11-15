@@ -150,7 +150,7 @@ public class ServerApiUtils {
 
     public static MyServerResponse getBeatFromServer() {
         MyServerResponse myServerResponse = new MyServerResponse();
-        System.out.println("getBeatFromServer");
+        System.out.println("ServerApiUtils.getBeatFromServer");
         try{
             URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_GET_BEAT);
            // URL url = new URL("http://www.innovacem.com/public/glace/leggiFoto.php");

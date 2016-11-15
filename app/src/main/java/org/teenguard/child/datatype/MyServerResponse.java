@@ -27,6 +27,17 @@ public class MyServerResponse {
         this.responseMessage = null;
     }
 
+    public void shortDump() {
+        System.out.println("----------- MyServerResponse SHORT (" + responseNumber + ") ------------");
+        System.out.println("requestMethod = " + requestMethod);
+        System.out.println("requestUrl = " + getRequestUrl());
+        System.out.println("requestBody = <" + getRequestBody()+">");
+        System.out.println("responseNumber = " + responseNumber);
+        System.out.println("responseCode = " + responseCode);
+        System.out.println("responseMessage = <" + responseMessage+">");
+        System.out.println("---------------------------------------------");
+    }
+
     public void dump() {
         System.out.println("----------- MyServerResponse (" + responseNumber + ") ------------");
         System.out.println("requestMethod = " + requestMethod);

@@ -32,6 +32,7 @@ import org.teenguard.child.dbdatatype.DbGeofenceEvent;
 import org.teenguard.child.service.GeofenceTransitionsIntentService;
 import org.teenguard.child.utils.CalendarUtils;
 import org.teenguard.child.utils.MyApp;
+import org.teenguard.child.utils.MyConnectionUtils;
 import org.teenguard.child.utils.MyLog;
 import org.teenguard.child.utils.ServerApiUtils;
 import org.teenguard.child.utils.TypeConverter;
@@ -57,23 +58,74 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
 
 
     public GeofenceObserver() {
-        System.out.println("<GeofenceObserver started>");
+        System.out.println("< GeofenceObserver started>");
         googleApiClient = new GoogleApiClient.Builder(MyApp.getContext())
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
         googleApiClient.connect();
-        populateDeviceGeofenceAL(); //inizialmente carico nel device le geofences preesistenti sul db
+        System.out.println("waiting for googleApiClient.connect()");
+        ////lo sposto in on connected
+        /*populateDeviceGeofenceAL(); //inizialmente carico nel device le geofences preesistenti sul db
         registerGeofences();
 
         AsyncGetGeofencesFromServer asyncGetGeofencesFromServer = new AsyncGetGeofencesFromServer(shaFingerPrint);
         asyncGetGeofencesFromServer.execute();
         SendBeatToServerThread sendBeatToServerThread = new SendBeatToServerThread();
-        sendBeatToServerThread.run();
+        sendBeatToServerThread.run();*/
     }
 
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        System.out.println("GEOFENCE observer googpleApiClient connected");
+        /////////////
+        System.out.println("onConnected: calling populateDeviceGeofenceAL for initial populating");
+        populateDeviceGeofenceAL(); //inizialmente carico nel device le geofences preesistenti sul db
+        if(!MyConnectionUtils.isAirplaneModeOn()) {
+            registerGeofences();
+            AsyncGetGeofencesFromServer asyncGetGeofencesFromServer = new AsyncGetGeofencesFromServer(shaFingerPrint);
+            asyncGetGeofencesFromServer.execute(); //will load and eventually register geofences on post execution
+            SendBeatToServerThread sendBeatToServerThread = new SendBeatToServerThread();
+            //sendBeatToServerThread.run();
+            ////////////
+            mLocationRequest = LocationRequest.create()
+                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                    .setInterval(5 * 1000)        // 10 seconds, in milliseconds
+                    .setFastestInterval(1 * 1000) // 1 second, in milliseconds
+                    .setSmallestDisplacement(5);
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            if(mLocationRequest == null) System.out.println("GeofenceObserver.onConnected mLocationRequest == null");
+            //registerGeofences();
+            Log.i(this.getClass().getName(), ">>>completed onConnected");
+        } else {
+            System.out.println("GeofenceObserver.onConnected: DEVICE IS IN AIRPLANE MODE");
+        }
+    }
 
+    /**
+     * load geofences from db
+     */
+    private void populateDeviceGeofenceAL() {
+        //reset della lista
+        deviceGeofenceAL.clear();
+        System.out.println("populate deviceGeofenceAL");
+        DbGeofenceDAO dbGeofenceDAO = new DbGeofenceDAO();
+        ArrayList <DbGeofence> dbGeofenceAL = dbGeofenceDAO.getList();  //will contain dbGeofences
+        Geofence geofence;
+        for (DbGeofence dbGeofence: dbGeofenceAL) {
+            geofence = new Geofence.Builder()
+                    .setRequestId(dbGeofence.getGeofenceId())
+                    .setCircularRegion(dbGeofence.getLatitude(),dbGeofence.getLongitude(),dbGeofence.getRadius())
+                    .setExpirationDuration(10*1000*1000)
+                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER|Geofence.GEOFENCE_TRANSITION_EXIT)
+                    .build();
+            deviceGeofenceAL.add(geofence);
+        }
+        System.out.println("populateGeofenceAL deviceGeofenceAL.size() = " + deviceGeofenceAL.size());
+    }
+
+    //testing sha fingerprint sending
     private class SendBeatToServerThread extends Thread {
        /* int checkInterval; //is the t-parameter of beat response
         String shaFingerPrint; //is the h-parameter of beat response*/
@@ -82,7 +134,9 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
             this.shaFingerPrint = shaFingerPrint;*/
         }
         public void run() {
+            System.out.println(" SendBeatToServerThread STARTED");
             while (true) {
+                System.out.println("send beat cycle");
                 try {
                     Thread.sleep(checkInterval);
                     // TODO: 14/11/16 moltiplicare *1000 check interval 
@@ -91,9 +145,14 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
                 }
                 //////////
                 // TODO: 14/11/16 leggere shaString precedente
-                AsyncGetGeofencesFromServer asyncGetGeofencesFromServer = new AsyncGetGeofencesFromServer(shaFingerPrint);
-                asyncGetGeofencesFromServer.execute();
-                ////////////
+                if(!MyConnectionUtils.isAirplaneModeOn()) {
+                    AsyncGetGeofencesFromServer asyncGetGeofencesFromServer = new AsyncGetGeofencesFromServer(shaFingerPrint);
+                    asyncGetGeofencesFromServer.execute();
+                    ////////////
+                } else {
+                    System.out.println("GeofenceObserver.SendBeatToServerThread: DEVICE IS IN AIRPLANE MODE");
+                }
+
             }
         }
     }
@@ -108,7 +167,7 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
         protected String doInBackground(String... params) {
             MyLog.i(this, "ASYNC GETTING GEOFENCES FROM SERVER");
             MyServerResponse myServerResponse = ServerApiUtils.getBeatFromServer();
-            myServerResponse.dump();
+            myServerResponse.shortDump();
             if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
                 MyLog.i(this, "RECEIVED NEW GEOFENCE FROM SERVER");
                 String jsonServerResponse = myServerResponse.getResponseBody();
@@ -139,76 +198,45 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
                     dbGeofence.setLeave(TypeConverter.booleanToInt(serverGeofence.leave));
                     dbGeofence.writeMe();
                 }
-                //reloadGeofencesFrom db into device
-                populateDeviceGeofenceAL();
-                registerGeofences();
+
             }
             if (myServerResponse.getResponseCode() == 304) {
                 System.out.println("304 NO NEW CONTENT FROM SERVER");
             }
+            //completata l'esecuzione,invoca il onPostExecute
             return null;
         }
 
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            //reloadGeofencesFrom db into device
+            populateDeviceGeofenceAL();
+            registerGeofences();
             System.out.println("completed AsyncGetGeofencesFromServer execution");
         }
     }
-    /**
-     * load geofences from db
-     */
-    private void populateDeviceGeofenceAL() {
-        //reset della lista
-        deviceGeofenceAL.clear();
-        System.out.println("populate deviceGeofenceAL");
-        DbGeofenceDAO dbGeofenceDAO = new DbGeofenceDAO();
-        ArrayList <DbGeofence> dbGeofenceAL = dbGeofenceDAO.getList();  //will contain dbGeofences
-        Geofence geofence;
-        for (DbGeofence dbGeofence: dbGeofenceAL) {
-            geofence = new Geofence.Builder()
-                    .setRequestId(dbGeofence.getGeofenceId())
-                    .setCircularRegion(dbGeofence.getLatitude(),dbGeofence.getLongitude(),dbGeofence.getRadius())
-                    .setExpirationDuration(10*1000*1000)
-                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER|Geofence.GEOFENCE_TRANSITION_EXIT)
-                    .build();
-             deviceGeofenceAL.add(geofence);
-        }
-        System.out.println("populateGeofenceAL deviceGeofenceAL.size() = " + deviceGeofenceAL.size());
-    }
 
 
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        System.out.println("GEOFENCE observer connected");
-        mLocationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(5 * 1000)        // 10 seconds, in milliseconds
-                .setFastestInterval(1 * 1000) // 1 second, in milliseconds
-        .setSmallestDisplacement(5);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        registerGeofences();
-        Log.i(this.getClass().getName(),">>>completed onConnected");
-    }
+
 
     private void registerGeofences() {
-
-        Log.i(this.getClass().getName(),"registerGeofences");
+        Log.i(this.getClass().getName(),"<< registerGeofences >>");
         if (ActivityCompat.checkSelfPermission(MyApp.getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(MyApp.getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.i(this.getClass().getName(),"need to request the missing permissions: not yet implemented");
+            Log.i(this.getClass().getName(),"registerGeofences :need to request the missing permissions: not yet implemented");
             // TODO: we must require permission https://developer.android.com/training/permissions/requesting.html
             return;
         } else {
             //ha tutti i diritti
-            System.out.println("all rights enabled: initializing geofences monitoring");
+            System.out.println("registerGeofences: all rights enabled: initializing geofencingRequest");
             //costruisco l'oggetto geofencingRequest che conterrà la lista delle geofences
             GeofencingRequest.Builder geofencingRequestBuilder = new GeofencingRequest.Builder();
             geofencingRequestBuilder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
             geofencingRequestBuilder.addGeofences(deviceGeofenceAL);
             GeofencingRequest geofencingRequest = geofencingRequestBuilder.build();
-            System.out.println(" geofencingRequest.getGeofences().size() = " + geofencingRequest.getGeofences().size());
+            System.out.println("registerGeofences geofencingRequest.getGeofences().size() = " + geofencingRequest.getGeofences().size());
             //costruisco il pending Intent
             Intent intent = new Intent(MyApp.getContext(),GeofenceTransitionsIntentService.class);
             PendingIntent pendingIntent = PendingIntent.getService(MyApp.getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);// We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling addgeoFences()
@@ -218,7 +246,16 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
                     geofencingRequest,
                     pendingIntent).setResultCallback(this);//chiama onResult
         }
-        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);
+        if(googleApiClient == null) System.out.println("registerGeofences.googleApiClient is null");
+        if(mLocationRequest == null) System.out.println("registerGeofences.mLocationRequest is null");
+        if(this == null) System.out.println("this is null");
+        if(mLocationRequest != null && googleApiClient != null) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);
+        }
+        else {
+            System.out.println("<<<<<<<GEOFENCING NOT WORKING (BECAUSE DEVICE IS IN AIRPLANE MODE ??)>>>>>>>>>>>>");
+            // TODO: 15/11/16 se il telefono è in modalità aereo si generano tantissime eccezioni
+        }
     }
 
 
@@ -238,11 +275,13 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
 
     @Override
     public void onConnectionSuspended(int i) {
+        System.out.println("GeofenceObserver.onConnectionSuspended");
         googleApiClient.connect();
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        System.out.println("GeofenceObserver.onConnectionFailed");
 
     }
 
