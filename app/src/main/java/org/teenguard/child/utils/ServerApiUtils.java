@@ -35,6 +35,7 @@ public class ServerApiUtils {
 
     public final static String APPLICATION_SERVER_REQUEST_ADD_GEOFENCE_EVENT = "/api2.php";
 
+    public final static String APPLICATION_SERVER_REQUEST_POST_BEAT = "/child/beat.php";
     public final static String APPLICATION_SERVER_REQUEST_GET_BEAT = "/child/beat.php";
     //public final static String APPLICATION_SERVER_REQUEST_GET_BEAT = "http://www.google.com/search?q=mkyong";
 
@@ -148,11 +149,25 @@ public class ServerApiUtils {
         return myServerResponse;
     }
 
-    public static MyServerResponse getBeatFromServer() {
+
+    public static MyServerResponse postBeatToServer(String shaFingerPrint) {
+        MyServerResponse myServerResponse = new MyServerResponse();
+        System.out.println("ServerApiUtils.postBeatToServer shaFingerPrint h=" + shaFingerPrint);
+        try{
+            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_POST_BEAT);
+            // URL url = new URL("http://www.innovacem.com/public/glace/leggiFoto.php");
+            myServerResponse = MyConnectionUtils.doAndroidRequest("POST",url,APPLICATION_SERVER_MIMETYPE_TEXT_HTML+"?h=" + shaFingerPrint,"");
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        }
+        return myServerResponse;
+    }
+
+    public static MyServerResponse getBeatFromServer(String shaFingerprint) {
         MyServerResponse myServerResponse = new MyServerResponse();
         System.out.println("ServerApiUtils.getBeatFromServer");
         try{
-            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_GET_BEAT);
+            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_GET_BEAT + "?h=" + shaFingerprint);
            // URL url = new URL("http://www.innovacem.com/public/glace/leggiFoto.php");
             myServerResponse = MyConnectionUtils.doAndroidRequest("GET",url,APPLICATION_SERVER_MIMETYPE_TEXT_HTML ,"");
         } catch (MalformedURLException ex) {
@@ -166,7 +181,8 @@ public class ServerApiUtils {
 
     public static void main (String args[]) {
 
-        MyServerResponse myServerResponse = getBeatFromServer();
+        MyServerResponse myServerResponse = getBeatFromServer("e4215e61696d8d130d2e110636df7568f3947c6b");
+        myServerResponse.dump();
         String jsonResponse = myServerResponse.getResponseBody();
         //jsonResponse ="{data:{a:1}}";
         System.out.println("jsonResponse = " + jsonResponse);

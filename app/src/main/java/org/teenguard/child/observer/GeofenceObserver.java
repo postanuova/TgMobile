@@ -38,6 +38,8 @@ import org.teenguard.child.utils.ServerApiUtils;
 import org.teenguard.child.utils.TypeConverter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 
 /**
@@ -49,7 +51,7 @@ import java.util.ArrayList;
 
 public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener,ResultCallback<Status> {
     int checkInterval; //is the t-parameter of beat response
-    String shaFingerPrint; //is the h-parameter of beat response
+    String shaFingerPrint ="dummyBeat"; //is the h-parameter of beat response
     private DbGeofenceDAO dbGeofenceDAO = new DbGeofenceDAO();
     private GoogleApiClient googleApiClient;
     protected ArrayList<Geofence> deviceGeofenceAL = new ArrayList<Geofence>(); //will contain (Android) device Geofences
@@ -66,14 +68,6 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
                 .build();
         googleApiClient.connect();
         System.out.println("waiting for googleApiClient.connect()");
-        ////lo sposto in on connected
-        /*populateDeviceGeofenceAL(); //inizialmente carico nel device le geofences preesistenti sul db
-        registerGeofences();
-
-        AsyncGetGeofencesFromServer asyncGetGeofencesFromServer = new AsyncGetGeofencesFromServer(shaFingerPrint);
-        asyncGetGeofencesFromServer.execute();
-        SendBeatToServerThread sendBeatToServerThread = new SendBeatToServerThread();
-        sendBeatToServerThread.run();*/
     }
 
     @Override
@@ -86,8 +80,6 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
             registerGeofences();
             AsyncGetGeofencesFromServer asyncGetGeofencesFromServer = new AsyncGetGeofencesFromServer(shaFingerPrint);
             asyncGetGeofencesFromServer.execute(); //will load and eventually register geofences on post execution
-            SendBeatToServerThread sendBeatToServerThread = new SendBeatToServerThread();
-            //sendBeatToServerThread.run();
             ////////////
             mLocationRequest = LocationRequest.create()
                     .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
@@ -101,6 +93,8 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
         } else {
             System.out.println("GeofenceObserver.onConnected: DEVICE IS IN AIRPLANE MODE");
         }
+        SendBeatToServerThread sendBeatToServerThread = new SendBeatToServerThread();
+        sendBeatToServerThread.run();
     }
 
     /**
@@ -127,25 +121,28 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
 
     //testing sha fingerprint sending
     private class SendBeatToServerThread extends Thread {
-       /* int checkInterval; //is the t-parameter of beat response
-        String shaFingerPrint; //is the h-parameter of beat response*/
-        public SendBeatToServerThread(){
-            /*this.checkInterval = checkInterval;
-            this.shaFingerPrint = shaFingerPrint;*/
-        }
+
         public void run() {
             System.out.println(" SendBeatToServerThread STARTED");
             while (true) {
-                System.out.println("send beat cycle");
+                System.out.println("SendBeatToServerThread.run: cycle " + new Date(Calendar.getInstance().getTimeInMillis()));
                 try {
-                    Thread.sleep(checkInterval);
-                    // TODO: 14/11/16 moltiplicare *1000 check interval 
+                    if(checkInterval > 5000) {
+                        Thread.sleep(checkInterval);
+                        // TODO: 14/11/16 moltiplicare *1000 check interval
+                    }
+                    else {
+                        Thread.sleep(5000);//per sicurezza
+                    }
+                    System.out.println("sleeping for 5000");
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 //////////
                 // TODO: 14/11/16 leggere shaString precedente
                 if(!MyConnectionUtils.isAirplaneModeOn()) {
+                    System.out.println("SendBeatToServerThread.run: sending beat");
                     AsyncGetGeofencesFromServer asyncGetGeofencesFromServer = new AsyncGetGeofencesFromServer(shaFingerPrint);
                     asyncGetGeofencesFromServer.execute();
                     ////////////
@@ -165,42 +162,44 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
         }
         @Override
         protected String doInBackground(String... params) {
-            MyLog.i(this, "ASYNC GETTING GEOFENCES FROM SERVER");
-            MyServerResponse myServerResponse = ServerApiUtils.getBeatFromServer();
-            myServerResponse.shortDump();
-            if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                MyLog.i(this, "RECEIVED NEW GEOFENCE FROM SERVER");
-                String jsonServerResponse = myServerResponse.getResponseBody();
-                Gson gson = new Gson();
-                BeatResponseJsonWrapper beatResponseJsonWrapper = gson.fromJson(jsonServerResponse,BeatResponseJsonWrapper.class);
-                 checkInterval = beatResponseJsonWrapper.t;
-                 shaFingerPrint= beatResponseJsonWrapper.h; //is the h-parameter of beat response
-                System.out.println(" NEW geofences number " + beatResponseJsonWrapper.data.geofences.size());
-                //delete geofences from db
-                System.out.println("delete old geofences from db");
-                dbGeofenceDAO.delete();
-                //remove all active geofences
-                //TODO: 10/11/16 aggiunta di nuove,overwrite di quelle che già esistono...e cancellazione di quelle che non ci sono più???
-                https://www.raywenderlich.com/103540/geofences-googleapiclient
-                //http://stackoverflow.com/questions/16631962/android-how-to-retrieve-list-of-registered-geofences
-                System.out.println(" remove all registered geofences not implemented");
+                MyServerResponse  myServerGetResponse = ServerApiUtils.getBeatFromServer(shaFingerPrint);
+                myServerGetResponse.shortDump();
+                if (myServerGetResponse.getResponseCode() == 200) {
+                    MyLog.i(this, "RECEIVED NEW CONTENT FROM SERVER");
+                    String jsonServerResponse = myServerGetResponse.getResponseBody();
+                    Gson gson = new Gson();
+                    BeatResponseJsonWrapper beatResponseJsonWrapper = gson.fromJson(jsonServerResponse, BeatResponseJsonWrapper.class);
 
-                //parse geofences json from server and write geofences on db
-                ArrayList<BeatResponseJsonWrapper.Geofences> serverGeofencesAL = beatResponseJsonWrapper.data.geofences;
-                for (BeatResponseJsonWrapper.Geofences serverGeofence:serverGeofencesAL ) {
-                    DbGeofence dbGeofence = new DbGeofence();
-                    dbGeofence.setId(0);
-                    dbGeofence.setGeofenceId(serverGeofence.id);
-                    dbGeofence.setLatitude(serverGeofence.latitude);
-                    dbGeofence.setLongitude(serverGeofence.longitude);
-                    dbGeofence.setRadius(serverGeofence.radius);
-                    dbGeofence.setEnter(TypeConverter.booleanToInt(serverGeofence.enter));
-                    dbGeofence.setLeave(TypeConverter.booleanToInt(serverGeofence.leave));
-                    dbGeofence.writeMe();
+                    checkInterval = beatResponseJsonWrapper.t;
+                    System.out.println("checkInterval t = " + checkInterval);
+                    shaFingerPrint = beatResponseJsonWrapper.h; //is the h-parameter of beat response
+                    System.out.println("shaFingerPrint h = " + shaFingerPrint);
+                    System.out.println(" NEW geofences number " + beatResponseJsonWrapper.data.geofences.size());
+                    //delete geofences from db
+                    System.out.println("delete old geofences from db");
+                    dbGeofenceDAO.delete();
+                    //remove all active geofences
+                    //TODO: 10/11/16 aggiunta di nuove,overwrite di quelle che già esistono...e cancellazione di quelle che non ci sono più???
+//www.raywenderlich.com/103540/geofences-googleapiclient
+                    //http://stackoverflow.com/questions/16631962/android-how-to-retrieve-list-of-registered-geofences
+                    System.out.println(" remove all registered geofences not implemented");
+
+                    //parse geofences json from server and write geofences on db
+                    ArrayList<BeatResponseJsonWrapper.Geofences> serverGeofencesAL = beatResponseJsonWrapper.data.geofences;
+                    for (BeatResponseJsonWrapper.Geofences serverGeofence : serverGeofencesAL) {
+                        DbGeofence dbGeofence = new DbGeofence();
+                        dbGeofence.setId(0);
+                        dbGeofence.setGeofenceId(serverGeofence.id);
+                        dbGeofence.setLatitude(serverGeofence.latitude);
+                        dbGeofence.setLongitude(serverGeofence.longitude);
+                        dbGeofence.setRadius(serverGeofence.radius);
+                        dbGeofence.setEnter(TypeConverter.booleanToInt(serverGeofence.enter));
+                        dbGeofence.setLeave(TypeConverter.booleanToInt(serverGeofence.leave));
+                        dbGeofence.writeMe();
+                    }
+
                 }
-
-            }
-            if (myServerResponse.getResponseCode() == 304) {
+            if (myServerGetResponse.getResponseCode() == 304) {
                 System.out.println("304 NO NEW CONTENT FROM SERVER");
             }
             //completata l'esecuzione,invoca il onPostExecute
