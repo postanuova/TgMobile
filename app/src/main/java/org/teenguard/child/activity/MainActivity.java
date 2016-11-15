@@ -40,24 +40,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             }
-            case R.id.item_localization: {
-               Log.i(this.getClass().getName(),"selected localization on main menu");
-                Intent intent= new Intent(this,LocalizationActivity.class);
-                startActivity(intent);
-                return true;
-            }
-            case R.id.item_contacts: {
-               Log.i(this.getClass().getName(),"selected contacts on main menu");
-                Intent intent= new Intent(this,ContactsActivity.class);
-                startActivity(intent);
-                return true;
-            }
-            case R.id.item_contacts_loader: {
-               Log.i(this.getClass().getName(),"selected loader contacts on main menu");
-                Intent intent= new Intent(this,ContactsLoaderActivity.class);
-                startActivity(intent);
-                return true;
-            }
 
             default:
                 return super.onContextItemSelected(item);
