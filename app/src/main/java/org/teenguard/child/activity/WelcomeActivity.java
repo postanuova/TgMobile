@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import org.teenguard.child.R;
 
-public class  WelcomeActivity extends AppCompatActivity {
+public class WelcomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
