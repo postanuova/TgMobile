@@ -1,5 +1,7 @@
 package org.teenguard.child.activity;
 //libphonenumber libreria per validazione e nazioni dei numeri telefonici
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -70,12 +72,13 @@ public class ChildMainActivity extends AppCompatActivity {
                 return true;
             }
 
-            /*case R.id.item_send_db_contact_event: {
-                Log.i(this.getClass().getName(),"sending db contact event ");
-                String data = "{\"id\":\"227\",\"date\":\"1476971135466\",\"first_name\":\"Aaaaaab\",\"last_name\":\"\",\"phone_numbers\":[\"147\"]}";
-                MyConnectionUtils.doAndroidPost(data);
+            case R.id.item_welcome: {
+                Log.i(this.getClass().getName(),"welcome screen");
+                Intent intent = new Intent(this, WelcomeActivity.class);
+                startActivity(intent);
+
                 return true;
-            }*/
+            }
 
 
             //item_send_db_contact_event{"id":"227","date":"1476971135466","first_name":"Aaaaaab","last_name":"","phone_numbers":["147"]}
