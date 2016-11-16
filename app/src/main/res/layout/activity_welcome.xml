@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_welcome"
     android:layout_width="match_parent"
@@ -10,15 +11,47 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="org.teenguard.child.activity.WelcomeActivity">
 
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        app:srcCompat="@mipmap/ic_welcome_mobile"
+        android:layout_marginTop="33dp"
+        android:id="@+id/imageView"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true" />
+
     <TextView
         android:text="@string/str_welcome"
-        android:textSize="32dp"
+        android:textSize="30sp"
+        android:gravity="center"
         android:textColor="@color/light_blue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="78dp"
         android:id="@+id/textView"
-        tools:text="@string/welcome" />
+        tools:text="@string/welcome"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:text="@string/str_accept_terms"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:id="@+id/textView3" />
+
+    <TextView
+        android:text="@string/str_hardest_job"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:id="@+id/textView2"
+        tools:text="@string/str_hardest_job"
+        android:layout_below="@+id/imageView"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
