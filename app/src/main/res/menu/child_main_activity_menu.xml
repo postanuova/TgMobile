@@ -5,7 +5,7 @@
         android:title="welcome"
         app:showAsAction="always"
         android:id="@+id/item_welcome"
-        android:icon="@mipmap/pear_blue" />
+        android:icon="@mipmap/ic_logo_screen_zero" />
     <item
         android:title="geofences"
         app:showAsAction="always"

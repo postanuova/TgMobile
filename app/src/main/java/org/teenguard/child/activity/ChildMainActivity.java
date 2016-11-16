@@ -74,7 +74,7 @@ public class ChildMainActivity extends AppCompatActivity {
 
             case R.id.item_welcome: {
                 Log.i(this.getClass().getName(),"welcome screen");
-                Intent intent = new Intent(this, WelcomeActivity.class);
+                Intent intent = new Intent(this, WelcomeActivityConstraint.class);
                 startActivity(intent);
 
                 return true;

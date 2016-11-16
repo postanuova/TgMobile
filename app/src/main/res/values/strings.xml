@@ -8,4 +8,9 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="welcome">Welcome to TeenGuard</string>
+    <string name="str_welcome">Welcome to TeenGuard</string>
+    <string name="str_hardest_job">We are glad to help you in one of th human's hardest job</string>
+    <string name="str_accept_terms">Going forward, you accept our Terms of Service, our Privacy Policy and our Acceptable Use Policy.</string>
+    <string name="str_accept_and_continue">Accept &amp; Continue</string>
 </resources>

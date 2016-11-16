@@ -8,7 +8,17 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="org.teenguard.child.activity.WelcomeActivity"
-    android:background="@mipmap/bg_background_screen_zero"
-    >
+    tools:context="org.teenguard.child.activity.WelcomeActivity">
+
+    <TextView
+        android:text="@string/str_welcome"
+        android:textSize="32dp"
+        android:textColor="@color/light_blue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="78dp"
+        android:id="@+id/textView"
+        tools:text="@string/welcome" />
 </RelativeLayout>
