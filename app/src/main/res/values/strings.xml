@@ -8,6 +8,8 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="str_back">Back</string>
+    <string name="str_next">Next</string>
     <!-- WELCOME ACTIVITY -->
     <string name="str_welcome">Welcome to TeenGuard</string>
     <string name="str_hardest_job">We are glad to help you in one of the human&#180;s hardest job</string>
@@ -17,4 +19,6 @@
     <string name="str_used_by">This device will be used by</string>
     <string name="str_parent">Parent</string>
     <string name="str_child">Child</string>
+    <!-- INSERT PHONE NUMBER ACTIVITY -->
+    <string name="title_phone_number">Phone Number</string>
 </resources>
