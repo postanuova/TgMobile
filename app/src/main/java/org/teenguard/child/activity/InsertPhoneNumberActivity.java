@@ -21,29 +21,32 @@ import org.teenguard.child.R;
 public class InsertPhoneNumberActivity extends AppCompatActivity {
     //libphone number
     TextView tvIsValidPhone;
-    EditText edtPhone;
-    EditText edtCountryCode;
+    EditText edtPhoneNumber;
+    TextView tvCountryCode;
+    String phoneNumberSTR;
+    String countryCodeSTR;
     Button btnValidate;
-
+    CountryPicker picker;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert_phone_number);
         //set title
-        setTitle(R.string.title_phone_number);
+        setTitle(R.string.phone_number_title);
         //enable back button
         //getActionBar().setHomeButtonEnabled(true);
         //getActionBar().setDisplayHomeAsUpEnabled(true);
         tvIsValidPhone = (TextView) findViewById(R.id.tvIsValidPhone);
-        edtCountryCode = (EditText) findViewById(R.id.edtCountryCode);
-        edtPhone = (EditText) findViewById(R.id.edtPhoneNumber);
+        tvCountryCode = (TextView) findViewById(R.id.tvCountryCode);
+        edtPhoneNumber = (EditText) findViewById(R.id.edtPhoneNumber);
         btnValidate = (Button) findViewById(R.id.btnValidate);
 
-        //country code
-        edtCountryCode.setOnClickListener(new View.OnClickListener() {
+        //country code picker
+        tvCountryCode.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 System.out.println("parentImageView clicked");
-                CountryPicker picker = CountryPicker.newInstance("Select Country");
+                String contryCodeHint = getString(R.string.country_code_hint);
+                picker = CountryPicker.newInstance(contryCodeHint);
                 picker.show(getSupportFragmentManager(), "COUNTRY_PICKER");
                 picker.setListener(new CountryPickerListener() {
                     @Override
@@ -51,29 +54,36 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
                         System.out.println("name = " + name);
                         System.out.println("code = " + code);
                         System.out.println("dialCode = " + dialCode);
+                        tvCountryCode.setText(name + " (" + dialCode + ")");
+                        countryCodeSTR = dialCode.replace("+","");
+                        System.out.println("countryCodeSTR = " + countryCodeSTR);
+                        picker.dismiss();
                     }
                 });
             }
         });
+
         //validation button
         btnValidate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String countryCode = edtCountryCode.getText().toString().trim();
-                String phoneNumber = edtPhone.getText().toString().trim();
-                if (countryCode.length() > 0 && phoneNumber.length() > 0) {
-                    if (isValidPhoneNumber(phoneNumber)) {
-                        boolean status = validateUsing_libphonenumber(countryCode, phoneNumber);
-                        if (status) {
-                            tvIsValidPhone.setText("Valid Phone Number (libphonenumber)");
+                tvIsValidPhone.setText("");
+                phoneNumberSTR = edtPhoneNumber.getText().toString().trim();
+                if (countryCodeSTR != null && countryCodeSTR.length() > 0 && phoneNumberSTR != null && phoneNumberSTR.length() > 0 && phoneNumberSTR.length() <15) {
+                    countryCodeSTR = countryCodeSTR.trim();
+                    if (isValidPhoneNumber(phoneNumberSTR)) {
+                        boolean status = validateUsing_libphonenumber(countryCodeSTR, phoneNumberSTR);
+                        /*if (status) {
+                            tvIsValidPhone.setText(getString(R.string.phone_number_valid));
                         } else {
-                            tvIsValidPhone.setText("Invalid Phone Number (libphonenumber)");
-                        }
+                            tvIsValidPhone.setText(getString(R.string.phone_number_invalid));
+                        }*/
                     } else {
-                        tvIsValidPhone.setText("Invalid Phone Number (isValidPhoneNumber)");
+                        tvIsValidPhone.setText(getString(R.string.phone_number_invalid));
                     }
                 } else {
-                    Toast.makeText(getApplicationContext(), "Country Code and Phone Number is required", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), getString(R.string.phone_number_required), Toast.LENGTH_SHORT).show();
+                    tvIsValidPhone.setText(getString(R.string.phone_number_required));
                 }
             }
         });
@@ -102,10 +112,12 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
         boolean isValid = phoneNumberUtil.isValidNumber(phoneNumber);
         if (isValid) {
             String internationalFormat = phoneNumberUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
-            Toast.makeText(this, "Phone Number is Valid " + internationalFormat, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.phone_number_valid) + internationalFormat, Toast.LENGTH_LONG).show();
+            tvIsValidPhone.setText(getString(R.string.phone_number_valid));
             return true;
         } else {
-            Toast.makeText(this, "Phone Number is Invalid " + phoneNumber, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.phone_number_invalid) + phoneNumber, Toast.LENGTH_LONG).show();
+            tvIsValidPhone.setText(getString(R.string.phone_number_invalid));
             return false;
         }
     }

@@ -20,8 +20,19 @@
     <string name="str_parent">Parent</string>
     <string name="str_child">Child</string>
     <!-- INSERT PHONE NUMBER ACTIVITY -->
-    <string name="title_phone_number">Phone Number</string>
-    <string name="country_code">Country Code</string>
-    <string name="phone_number">Phone Number</string>
+    <string name="phone_number_title">Phone Number</string>
+    <string name="country_code_hint">Country Code</string>
+    <string name="phone_number_hint">Phone Number</string>
     <string name="next">Next</string>
+    <string name="phone_number_valid">Valid Phone Number</string>
+    <string name="phone_number_invalid">Valid Phone Number</string>
+    <string name="phone_number_required">Country Code and Phone Number are required</string>
+    <string name="country_code_required">Country Code is required</string>
+    <string name="country_code_select">Select Country Code</string>
+
+    <!-- INSERT SMS ACTIVITY -->
+    <string name="have_sent_sms">We have sent an SMS with a code to the number</string>
+    <string name="enter_activation_code">To complete your phone number verification, please enter the 6-digit activation code</string>
+    <string name="wrong_sms_code">To complete your phone number verification, please enter the 6-digit activation code</string>
+    <string name="resend_sms_code">Sms not received? Click to resend SMS</string>
 </resources>
