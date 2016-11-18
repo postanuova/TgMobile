@@ -18,6 +18,7 @@ import com.mukesh.countrypicker.fragments.CountryPicker;
 import com.mukesh.countrypicker.interfaces.CountryPickerListener;
 
 import org.teenguard.child.R;
+import org.teenguard.child.datatype.MyServerResponse;
 import org.teenguard.child.utils.MyApp;
 
 public class InsertPhoneNumberActivity extends AppCompatActivity {
@@ -59,9 +60,9 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
                         System.out.println("name = " + name);
                         System.out.println("code = " + code);
                         System.out.println("dialCode = " + dialCode);
-                        tvSelectCountryCode.setText(name);
-                        tvCountryCode.setText(dialCode);
-                        countryCodeSTR = dialCode.replace("+","");
+                        tvSelectCountryCode.setText(name); //show country name
+                        tvCountryCode.setText(dialCode);  //show dial code with +
+                        countryCodeSTR = dialCode.replace("+",""); //country code without +
                         System.out.println("countryCodeSTR = " + countryCodeSTR);
                         picker.dismiss();
                     }
@@ -78,19 +79,23 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
                 if (countryCodeSTR != null && countryCodeSTR.length() > 0 && phoneNumberSTR != null && phoneNumberSTR.length() > 0 && phoneNumberSTR.length() <15) {
                     countryCodeSTR = countryCodeSTR.trim();
                     if (isValidPhoneNumber(phoneNumberSTR)) {
-                        boolean status = validateUsing_libphonenumber(countryCodeSTR, phoneNumberSTR);
-                        /*if (status) {
-                            tvIsValidPhone.setText(getString(R.string.phone_number_valid));
-                        } else {
+                        boolean isValidatedFromLibPhoneNumber = validateUsing_libphonenumber(countryCodeSTR, phoneNumberSTR);
+                        System.out.println("validateUsing_libphonenumber returned = " + isValidatedFromLibPhoneNumber);
+                        if (isValidatedFromLibPhoneNumber) {
+                            System.out.println("!isValidPhoneNumber");
+                            // TODO: 18/11/16  send number not implemented
+                            System.out.println("send number to server not implemented");
+                            MyServerResponse myServerResponse = new MyServerResponse();
+                            myServerResponse.dump();
+                            gotoNextActivity();
+                        } else {//not validated from LibPhoneNumber
                             tvIsValidPhone.setText(getString(R.string.phone_number_invalid));
-                        }*/
-                    } else {
-                        tvIsValidPhone.setText(getString(R.string.phone_number_invalid));
-                        gotoNextActivity();
+                        }
+                    } else {//country code or phone number not inserted (!isValidPhoneNumber)
+                        System.out.println("!isValidPhoneNumber");
+                        //Toast.makeText(getApplicationContext(), getString(R.string.phone_number_required), Toast.LENGTH_SHORT).show();
+                        tvIsValidPhone.setText(getString(R.string.phone_number_required));
                     }
-                } else {
-                    //Toast.makeText(getApplicationContext(), getString(R.string.phone_number_required), Toast.LENGTH_SHORT).show();
-                    tvIsValidPhone.setText(getString(R.string.phone_number_required));
                 }
             }
         });
@@ -100,6 +105,8 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
 
     private void gotoNextActivity() {
         Intent intent = new Intent(MyApp.getContext(), InsertSmsCodeActivity.class);
+        intent.putExtra("countryCode",tvCountryCode.getText()); //quello con il +
+        intent.putExtra("phoneNumber",phoneNumberSTR);
         startActivity(intent);
     }
 
@@ -124,6 +131,7 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
         }
 
         boolean isValid = phoneNumberUtil.isValidNumber(phoneNumber);
+        System.out.println("isValid = " + isValid);
         if (isValid) {
             String internationalFormat = phoneNumberUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
             Toast.makeText(this, getString(R.string.phone_number_valid) + internationalFormat, Toast.LENGTH_LONG).show();
