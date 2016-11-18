@@ -10,4 +10,57 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="org.teenguard.child.activity.InsertSmsCodeActivity">
 
+    <TextView
+        android:id="@+id/tvSentSms"
+        android:text="@string/have_sent_sms"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+         />
+
+    <TextView
+        android:id="@+id/tvPhoneNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvSentSms"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        tools:text="phone number" />
+
+    <TextView
+        android:id="@+id/tvEnterActivatationCode"
+        android:text="@string/enter_activation_code"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvPhoneNumber"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        tools:text="@string/enter_activation_code" />
+
+    <EditText
+        android:id="@+id/editSmsCode"
+        android:hint="_ _ _ _ _ _"
+        android:maxLength="6"
+        android:gravity="center"
+        android:background="@android:color/transparent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:layout_below="@+id/tvEnterActivatationCode"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="29dp"
+        tools:text="editSmsCode" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editSmsCode"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="69dp"
+        android:id="@+id/tvStatusMessage"
+        tools:text="tvStatusMessage" />
 </RelativeLayout>

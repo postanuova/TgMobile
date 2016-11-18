@@ -74,7 +74,9 @@ public class ChildMainActivity extends AppCompatActivity {
 
             case R.id.item_welcome: {
                 Log.i(this.getClass().getName(),"welcome screen");
-                Intent intent = new Intent(this, WelcomeActivity.class);
+                Intent intent = new Intent(this, InsertSmsCodeActivity.class);
+                intent.putExtra("countryCode","+39"); //quello con il +
+                intent.putExtra("phoneNumber","3281233727");
                 startActivity(intent);
 
                 return true;
