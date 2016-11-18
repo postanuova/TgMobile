@@ -20,35 +20,6 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true" />
 
-    <TextView
-        android:id="@+id/tvCountryCode"
-        android:textSize="20dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/edtPhoneNumber"
-        android:layout_alignParentStart="true"
-         />
-
-    <TextView
-        android:id="@+id/tvIsValidPhone"
-        android:text=""
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/tvSelectCountryCode" />
-
-
-
-    <EditText
-        android:id="@+id/edtPhoneNumber"
-        android:textSize="20dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="phone"
-        android:hint="@string/phone_number_hint"
-        android:layout_below="@+id/tvSelectCountryCode"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="48dp" />
 
     <Button
         android:id="@+id/btnValidate"
@@ -59,6 +30,38 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="28dp" />
+
+    <TextView
+        android:id="@+id/tvCountryCode"
+        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_below="@+id/tvSelectCountryCode"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="27dp" />
+
+    <EditText
+        android:id="@+id/edtPhoneNumber"
+        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:hint="@string/phone_number_hint"
+        android:layout_alignBaseline="@+id/tvCountryCode"
+        android:layout_alignBottom="@+id/tvCountryCode"
+        android:layout_toEndOf="@+id/tvCountryCode"
+        android:layout_marginStart="10dp" />
+
+    <TextView
+        android:id="@+id/tvIsValidPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="valid invalid"
+        android:layout_below="@+id/edtPhoneNumber"
+        android:layout_alignEnd="@+id/edtPhoneNumber"
+        android:layout_marginEnd="48dp"
+        android:layout_marginTop="28dp" />
 
 
 </RelativeLayout>

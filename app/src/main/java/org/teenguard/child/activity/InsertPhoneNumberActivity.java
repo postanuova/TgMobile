@@ -1,5 +1,6 @@
 package org.teenguard.child.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -17,6 +18,7 @@ import com.mukesh.countrypicker.fragments.CountryPicker;
 import com.mukesh.countrypicker.interfaces.CountryPickerListener;
 
 import org.teenguard.child.R;
+import org.teenguard.child.utils.MyApp;
 
 public class InsertPhoneNumberActivity extends AppCompatActivity {
     //libphone number
@@ -39,7 +41,7 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
         //getActionBar().setDisplayHomeAsUpEnabled(true);
         //binding
         tvIsValidPhone = (TextView) findViewById(R.id.tvIsValidPhone);
-        tvCountryCode = (TextView) findViewById(R.id.tvSelectCountryCode);
+        tvCountryCode = (TextView) findViewById(R.id.tvCountryCode);
         edtPhoneNumber = (EditText) findViewById(R.id.edtPhoneNumber);
         btnValidate = (Button) findViewById(R.id.btnValidate);
         tvSelectCountryCode = (TextView) findViewById(R.id.tvSelectCountryCode);
@@ -57,7 +59,8 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
                         System.out.println("name = " + name);
                         System.out.println("code = " + code);
                         System.out.println("dialCode = " + dialCode);
-                        tvCountryCode.setText(name + " (" + dialCode + ")");
+                        tvSelectCountryCode.setText(name);
+                        tvCountryCode.setText(dialCode);
                         countryCodeSTR = dialCode.replace("+","");
                         System.out.println("countryCodeSTR = " + countryCodeSTR);
                         picker.dismiss();
@@ -83,6 +86,7 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
                         }*/
                     } else {
                         tvIsValidPhone.setText(getString(R.string.phone_number_invalid));
+                        gotoNextActivity();
                     }
                 } else {
                     //Toast.makeText(getApplicationContext(), getString(R.string.phone_number_required), Toast.LENGTH_SHORT).show();
@@ -93,6 +97,13 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
 
 
     }
+
+    private void gotoNextActivity() {
+        Intent intent = new Intent(MyApp.getContext(), InsertSmsCodeActivity.class);
+        startActivity(intent);
+    }
+
+    ///////////////////////VALIDATION METHOD'S ///////////////////////
 
     private boolean isValidPhoneNumber(CharSequence phoneNumber) {
         if (!TextUtils.isEmpty(phoneNumber)) {

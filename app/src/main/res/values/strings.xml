@@ -20,9 +20,9 @@
     <string name="str_parent">Parent</string>
     <string name="str_child">Child</string>
     <!-- INSERT PHONE NUMBER ACTIVITY -->
-    <string name="phone_number_title">Phone Number</string>
-    <string name="country_code_hint">Country Code</string>
-    <string name="phone_number_hint">Phone Number</string>
+    <string name="phone_number_title">Register Phone Number</string>
+    <string name="country_code_hint">Parent\'s Country Code</string>
+    <string name="phone_number_hint">Parent\'s Phone Number</string>
     <string name="next">Next</string>
     <string name="phone_number_valid">Valid Phone Number</string>
     <string name="phone_number_invalid">Valid Phone Number</string>
