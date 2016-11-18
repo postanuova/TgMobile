@@ -12,17 +12,37 @@
     tools:context="org.teenguard.child.activity.WelcomeActivity">
 
     <ImageView
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
         app:srcCompat="@mipmap/ic_welcome_mobile"
-        android:layout_marginTop="30dp"
         android:id="@+id/imageView"
         android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true" />
 
     <TextView
+        android:text="@string/str_accept_terms"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView3"
+        android:layout_below="@+id/textView2"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="21dp" />
+
+    <Button
+        android:text="@string/str_accept_and_continue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_accept"
+        tools:text="@string/str_accept_and_continue"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_below="@+id/textView3"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
         android:text="@string/str_welcome"
-        android:textSize="30sp"
+        android:textSize="20sp"
         android:gravity="center"
         android:textColor="@color/light_blue"
         android:layout_width="wrap_content"
@@ -33,36 +53,14 @@
         android:layout_centerHorizontal="true" />
 
     <TextView
-        android:text="@string/str_accept_terms"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView2"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        android:id="@+id/textView3" />
-
-    <TextView
         android:text="@string/str_hardest_job"
         android:textSize="20sp"
         android:gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
         android:id="@+id/textView2"
         tools:text="@string/str_hardest_job"
         android:layout_below="@+id/imageView"
-        android:layout_alignParentStart="true" />
-
-    <Button
-        android:text="@string/str_accept_and_continue"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="22dp"
-        android:id="@+id/button_accept"
-        tools:text="@string/str_accept_and_continue"
-        style="?android:attr/borderlessButtonStyle"
-        android:layout_below="@+id/textView3"
-        android:layout_alignStart="@+id/imageView"/>
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="26dp" />
 </RelativeLayout>

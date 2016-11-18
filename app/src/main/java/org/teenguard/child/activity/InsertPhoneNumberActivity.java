@@ -23,6 +23,7 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
     TextView tvIsValidPhone;
     EditText edtPhoneNumber;
     TextView tvCountryCode;
+    TextView tvSelectCountryCode;
     String phoneNumberSTR;
     String countryCodeSTR;
     Button btnValidate;
@@ -36,15 +37,17 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
         //enable back button
         //getActionBar().setHomeButtonEnabled(true);
         //getActionBar().setDisplayHomeAsUpEnabled(true);
+        //binding
         tvIsValidPhone = (TextView) findViewById(R.id.tvIsValidPhone);
-        tvCountryCode = (TextView) findViewById(R.id.tvCountryCode);
+        tvCountryCode = (TextView) findViewById(R.id.tvSelectCountryCode);
         edtPhoneNumber = (EditText) findViewById(R.id.edtPhoneNumber);
         btnValidate = (Button) findViewById(R.id.btnValidate);
+        tvSelectCountryCode = (TextView) findViewById(R.id.tvSelectCountryCode);
 
         //country code picker
-        tvCountryCode.setOnClickListener(new View.OnClickListener() {
+        tvSelectCountryCode.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                System.out.println("parentImageView clicked");
+                System.out.println("tvSelectCountryCode clicked");
                 String contryCodeHint = getString(R.string.country_code_hint);
                 picker = CountryPicker.newInstance(contryCodeHint);
                 picker.show(getSupportFragmentManager(), "COUNTRY_PICKER");

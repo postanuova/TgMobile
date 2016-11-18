@@ -28,7 +28,7 @@
     <string name="phone_number_invalid">Valid Phone Number</string>
     <string name="phone_number_required">Country Code and Phone Number are required</string>
     <string name="country_code_required">Country Code is required</string>
-    <string name="country_code_select">Select Country Code</string>
+    <string name="country_code_select"> > Country Code</string>
 
     <!-- INSERT SMS ACTIVITY -->
     <string name="have_sent_sms">We have sent an SMS with a code to the number</string>

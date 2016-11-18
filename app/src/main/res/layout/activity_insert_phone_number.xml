@@ -12,15 +12,32 @@
     tools:context="org.teenguard.child.activity.InsertPhoneNumberActivity">
 
     <TextView
-        android:id="@+id/tvCountryCode"
+        android:id="@+id/tvSelectCountryCode"
         android:textSize="20dp"
         android:text="@string/country_code_select"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_alignBaseline="@+id/edtPhoneNumber"
-        android:layout_alignBottom="@+id/edtPhoneNumber"
+        android:layout_alignParentTop="true"
         android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/tvCountryCode"
+        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/edtPhoneNumber"
+        android:layout_alignParentStart="true"
+         />
+
+    <TextView
+        android:id="@+id/tvIsValidPhone"
+        android:text=""
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/tvSelectCountryCode" />
+
+
 
     <EditText
         android:id="@+id/edtPhoneNumber"
@@ -29,33 +46,19 @@
         android:layout_height="wrap_content"
         android:inputType="phone"
         android:hint="@string/phone_number_hint"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/tvCountryCode"
-        android:layout_marginStart="13dp" />
-
-    <TextView
-        android:text=""
-        android:id="@+id/tvIsValidPhone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="11dp"
-        android:layout_below="@+id/edtPhoneNumber"
-        android:layout_alignEnd="@+id/edtPhoneNumber"
-        android:layout_marginEnd="32dp" />
+        android:layout_below="@+id/tvSelectCountryCode"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="48dp" />
 
     <Button
         android:id="@+id/btnValidate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/str_next"
-        android:layout_marginTop="66dp"
-        android:layout_below="@+id/tvIsValidPhone"
-        android:layout_alignEnd="@+id/edtPhoneNumber"
-        style="?android:attr/borderlessButtonStyle"/>
-
-
-
-
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="28dp" />
 
 
 </RelativeLayout>
