@@ -1,7 +1,10 @@
 package org.teenguard.child.activity;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Patterns;
@@ -19,7 +22,9 @@ import com.mukesh.countrypicker.interfaces.CountryPickerListener;
 
 import org.teenguard.child.R;
 import org.teenguard.child.datatype.MyServerResponse;
+import org.teenguard.child.utils.JSon;
 import org.teenguard.child.utils.MyApp;
+import org.teenguard.child.utils.ServerApiUtils;
 
 public class InsertPhoneNumberActivity extends AppCompatActivity {
     //libphone number
@@ -82,12 +87,12 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
                         boolean isValidatedFromLibPhoneNumber = validateUsing_libphonenumber(countryCodeSTR, phoneNumberSTR);
                         System.out.println("validateUsing_libphonenumber returned = " + isValidatedFromLibPhoneNumber);
                         if (isValidatedFromLibPhoneNumber) {
-                            System.out.println("!isValidPhoneNumber");
-                            // TODO: 18/11/16  send number not implemented
-                            System.out.println("send number to server not implemented");
-                            MyServerResponse myServerResponse = new MyServerResponse();
-                            myServerResponse.dump();
-                            gotoNextActivity();
+                            System.out.println("isValidPhoneNumber");
+                            JSon json = new JSon();
+                            json.add("phone_number",countryCodeSTR + phoneNumberSTR);
+                            System.out.println("json.getJSonString() = " + json.getJSonString());
+                            AsyncSendToServer asyncSendToServer = new AsyncSendToServer(json.getJSonString());
+                            asyncSendToServer.execute();
                         } else {//not validated from LibPhoneNumber
                             tvIsValidPhone.setText(getString(R.string.phone_number_invalid));
                         }
@@ -103,10 +108,67 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
 
     }
 
+
+    //////////////////////////////////
+    private class AsyncSendToServer extends AsyncTask<String, String, String> {
+        String dataToSend;
+
+        public AsyncSendToServer(String dataToSend) {
+            this.dataToSend = dataToSend;
+        }
+        @Override
+        protected String doInBackground(String... params) {
+            MyServerResponse myServerResponse = ServerApiUtils.announceChildToServer(dataToSend);
+            myServerResponse.dump();
+            if(myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+                //Toast.makeText(MyApp.getContext(),"going to sms", Toast.LENGTH_LONG).show();
+                gotoNextActivity();
+                return null;
+            }
+            if(myServerResponse.getResponseCode() == 429) {
+                asyncToast(getString(R.string.too_many_request));
+                //Toast.makeText(MyApp.getContext(),getString(R.string.too_many_request), Toast.LENGTH_LONG).show();
+                //tvIsValidPhone.setText(getString(R.string.too_many_request));
+                gotoHomeActivity();
+                return null;
+            }
+            asyncToast(getString(R.string.error_occurred));
+            gotoHomeActivity();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            System.out.println("completed async execution");
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+        }
+    }
+
+    private void asyncToast(final String message) {
+        //Let this be the code in your n'th level thread from main UI thread
+        Handler h = new Handler(Looper.getMainLooper());
+        h.post(new Runnable() {
+            public void run() {
+                Toast.makeText(MyApp.getContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
     private void gotoNextActivity() {
         Intent intent = new Intent(MyApp.getContext(), InsertSmsCodeActivity.class);
         intent.putExtra("countryCode",tvCountryCode.getText()); //quello con il +
         intent.putExtra("phoneNumber",phoneNumberSTR);
+        startActivity(intent);
+    }
+
+    private void gotoHomeActivity() {
+        Intent intent = new Intent(MyApp.getContext(), WelcomeActivity.class);
         startActivity(intent);
     }
 
@@ -134,7 +196,7 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
         System.out.println("isValid = " + isValid);
         if (isValid) {
             String internationalFormat = phoneNumberUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
-            Toast.makeText(this, getString(R.string.phone_number_valid) + internationalFormat, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.phone_number_valid), Toast.LENGTH_LONG).show();
             tvIsValidPhone.setText(getString(R.string.phone_number_valid));
             return true;
         } else {

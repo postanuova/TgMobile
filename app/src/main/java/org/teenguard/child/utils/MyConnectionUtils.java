@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.teenguard.child.datatype.MyServerResponse;
 
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -65,16 +66,28 @@ public class MyConnectionUtils {
                 }*/
 
                 //Get Response
-                System.out.println("connection.getResponseCode() = " + connection.getResponseCode());
-                myServerResponse.setRequestMethod(requestMethod);
-                myServerResponse.setRequestUrl(url.toString());
-                myServerResponse.setRequestBody(bodyData);
-                myServerResponse.setResponseCode(connection.getResponseCode());
-                myServerResponse.setResponseMessage(connection.getResponseMessage());
-                if (connection.getInputStream() != null)
-                    myServerResponse.setResponseBody(TypeConverter.inputStreamToString(connection.getInputStream()));
-                if (connection.getErrorStream() != null)
-                    myServerResponse.setResponseError(TypeConverter.inputStreamToString(connection.getErrorStream()));
+                try {
+                    // Will throw IOException if server responds with 401.
+                    myServerResponse.setResponseCode(connection.getResponseCode());
+                    System.out.println("connection.getResponseCode() = " + connection.getResponseCode());
+                    myServerResponse.setRequestMethod(requestMethod);
+                    myServerResponse.setRequestUrl(url.toString());
+                    myServerResponse.setRequestBody(bodyData);
+
+                    myServerResponse.setResponseMessage(connection.getResponseMessage());
+                    if (connection.getInputStream() != null) {
+                        myServerResponse.setResponseBody(TypeConverter.inputStreamToString(connection.getInputStream()));
+                    }
+                    if (connection.getErrorStream() != null) {
+                        myServerResponse.setResponseError(TypeConverter.inputStreamToString(connection.getErrorStream()));
+                    }
+                } catch (IOException e) {
+                    // Will return 401, because now connection has the correct internal state.
+                    e.printStackTrace();
+                    myServerResponse.setResponseCode(connection.getResponseCode());
+                    System.out.println("doAndroidRequest : server connection failed:is 401 ");
+                }
+
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("doAndroidRequest : server connection failed:is device offline? ");

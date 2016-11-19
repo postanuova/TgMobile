@@ -36,14 +36,43 @@ public class ServerApiUtils {
     public final static String APPLICATION_SERVER_REQUEST_ADD_GEOFENCE_EVENT = "/api2.php";
 
     public final static String APPLICATION_SERVER_REQUEST_POST_BEAT = "/child/beat.php";
+    // TODO: 18/11/16 o post o get è inutilizzata??
     public final static String APPLICATION_SERVER_REQUEST_GET_BEAT = "/child/beat.php";
     //public final static String APPLICATION_SERVER_REQUEST_GET_BEAT = "http://www.google.com/search?q=mkyong";
+
+    public final static String APPLICATION_SERVER_REQUEST_POST_ANNOUNCE = "/login/announce.php";
+    public final static String APPLICATION_SERVER_REQUEST_POST_REGISTER = "/login/register.php";
 
     public static MyServerResponse addVisitToServer(String dataToSend) {
         MyLog.i("ServerUtils.addVisitToServer"," using addLocationToServer data:" + dataToSend);
         return addLocationToServer(dataToSend);
     }
 
+    public static MyServerResponse announceChildToServer(String data) {
+        //data {“phone_number”: “393400000000”}
+        MyServerResponse myServerResponse = new MyServerResponse();
+        MyLog.i("ServerUtils.announceChildToServer","announceChildToServer data:" + data);
+        try{
+            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_POST_ANNOUNCE);
+            myServerResponse = MyConnectionUtils.doAndroidRequest("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,data);
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        }
+        return myServerResponse;
+    }
+
+    public static MyServerResponse registerChildToServer(String data) {
+        //data {“phone_number”: “393400000000”, “code”: “000000”}
+        MyServerResponse myServerResponse = new MyServerResponse();
+        MyLog.i("ServerUtils.registerChildToServer","registerChildToServer data:" + data);
+        try{
+            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_POST_REGISTER);
+            myServerResponse = MyConnectionUtils.doAndroidRequest("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,data);
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        }
+        return myServerResponse;
+    }
 
     public static MyServerResponse addGeofenceEventToServer(String serializedData) {
         MyServerResponse myServerResponse = new MyServerResponse();

@@ -29,10 +29,12 @@
     <string name="phone_number_required">Country Code and Phone Number are required</string>
     <string name="country_code_required">Country Code is required</string>
     <string name="country_code_select"> > Country Code</string>
+    <string name="too_many_request">Too many request: try later</string>
 
     <!-- INSERT SMS ACTIVITY -->
     <string name="have_sent_sms">We have sent an SMS with a code to the number</string>
     <string name="enter_activation_code">To complete your phone number verification, please enter the 6-digit activation code</string>
     <string name="wrong_sms_code">Inserted wrong sms code, please enter the 6-digit activation code</string>
     <string name="resend_sms_code">Sms not received? Click to resend SMS</string>
+    <string name="error_occurred">An error occurred: try later</string>
 </resources>
