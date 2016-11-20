@@ -70,22 +70,15 @@ public class MyConnectionUtils {
                 //Get Response
                 try {
                     // Will throw IOException if server responds with 401.
-                    ///////////
                     if(connection.getHeaderFields() != null) {
                         Map<String, List<String>> headerMap = connection.getHeaderFields();
-                        ////
                         for (Map.Entry<String, List<String>> entry : headerMap.entrySet()) {
                             if (entry.getKey() != null) {
                                 List<String> currHeaderValues = entry.getValue();
                                 myServerResponse.getHeaderEntryHM().put(entry.getKey(), currHeaderValues.get(0));
                             }
                         }
-                        ////
                     }
-                    ///////////
-
-                    String xSessid = connection.getHeaderField("X-SESSID");
-                    System.out.println("xSessid = " + xSessid);
                     myServerResponse.setResponseCode(connection.getResponseCode());
                     System.out.println("connection.getResponseCode() = " + connection.getResponseCode());
                     myServerResponse.setRequestMethod(requestMethod);

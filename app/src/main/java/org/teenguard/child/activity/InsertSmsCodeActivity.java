@@ -86,25 +86,31 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
         }
         @Override
         protected String doInBackground(String... params) {
-            MyServerResponse myServerResponse = ServerApiUtils.registerChildToServer(dataToSend);
-            myServerResponse.dump();
+            MyServerResponse myServerRegisterResponse = ServerApiUtils.registerChildToServer(dataToSend);
+            myServerRegisterResponse.dump();
 
-            if(myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+            if(myServerRegisterResponse.getResponseCode() > 199 && myServerRegisterResponse.getResponseCode() < 300) {
                 //Toast.makeText(MyApp.getContext(),"going to sms", Toast.LENGTH_LONG).show();
                 //read header
-                String xSessid = (String)myServerResponse.getHeaderEntryHM().get("X-SESSID");
-                System.out.println("myServerResponse xSessid sync = " + xSessid);
+                //System.out.println("saving X-SESSID");
+                String xSessid = (String)myServerRegisterResponse.getHeaderEntryHM().get("X-SESSID");
                 MyApp.getPreferences().edit()
                         .putString("X-SESSID",xSessid)
                         .apply();
                 String xSessidShared = MyApp.getPreferences().getString("X-SESSID","");
-                System.out.println("xSessidShared = " + xSessidShared);
-                //System.out.println("xSessid in async = " + xSessid);
-                gotoNextActivity();
-                return null;
+                System.out.println("saved X-SESSID = " + xSessidShared);
+                //send get beat
+                MyServerResponse myServerBeatResponse = ServerApiUtils.getBeatFromServer("");
+                myServerBeatResponse.dump();
+
+                if(myServerRegisterResponse.getResponseCode() > 199 && myServerRegisterResponse.getResponseCode() < 300) {
+                    //System.out.println("xSessid in async = " + xSessid);
+                    gotoNextActivity();
+                    return null;
+                }
             }
 
-            if(myServerResponse.getResponseCode() == 429) {
+            if(myServerRegisterResponse.getResponseCode() == 429) {
                 asyncToast(getString(R.string.too_many_request));
                 //Toast.makeText(MyApp.getContext(),getString(R.string.too_many_request), Toast.LENGTH_LONG).show();
                 //tvIsValidPhone.setText(getString(R.string.too_many_request));
@@ -112,7 +118,7 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
                 return null;
             }
 
-            if(myServerResponse.getResponseCode() == 401) {
+            if(myServerRegisterResponse.getResponseCode() == 401) {
                 asyncToast(getString(R.string.wrong_sms_code));
                 //Toast.makeText(MyApp.getContext(),getString(R.string.too_many_request), Toast.LENGTH_LONG).show();
                 //tvIsValidPhone.setText(getString(R.string.too_many_request));
@@ -149,7 +155,7 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
     }
 
     private void gotoNextActivity() {
-        Intent intent = new Intent(MyApp.getContext(), ProperlyConfiguredActivity.class);
+        Intent intent = new Intent(MyApp.getContext(), ProperlySettedActivity.class);
         intent.putExtra("countryCode",countryCode); //quello con il +
         intent.putExtra("phoneNumber",phoneNumber);
         startActivity(intent);
