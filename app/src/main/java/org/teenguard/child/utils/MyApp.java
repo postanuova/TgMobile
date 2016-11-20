@@ -2,6 +2,9 @@ package org.teenguard.child.utils;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 
 /**
  * Created by chris on 13/10/16.
@@ -16,7 +19,8 @@ Useful for having app-context everywhere
 //added to manifest
 public class MyApp extends Application {
     private static MyApp instance;
-
+    //private static CookieManager cookieManager = CookieManager.getInstance();
+    private static SharedPreferences preferences;
     public MyApp() {
         instance = this;
     }
@@ -25,4 +29,11 @@ public class MyApp extends Application {
         return instance;
     }
 
+   /* public static CookieManager getCookieManager() {
+        return cookieManager;
+    }*/
+
+    public static SharedPreferences getPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(getContext());
+    }
 }

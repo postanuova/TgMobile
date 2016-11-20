@@ -17,6 +17,7 @@ import org.teenguard.child.dbdao.DbGeofenceDAO;
 import org.teenguard.child.dbdao.DbLocationEventDAO;
 import org.teenguard.child.dbdao.DbMediaDAO;
 import org.teenguard.child.dbdao.DbMediaEventDAO;
+import org.teenguard.child.utils.MyApp;
 import org.teenguard.child.utils.MyLog;
 
 public class ChildMainActivity extends AppCompatActivity {
@@ -74,9 +75,11 @@ public class ChildMainActivity extends AppCompatActivity {
 
             case R.id.item_welcome: {
                 Log.i(this.getClass().getName(),"welcome screen");
-                Intent intent = new Intent(this, InsertPhoneNumberActivity.class);
-                intent.putExtra("countryCode","+39"); //quello con il +
-                intent.putExtra("phoneNumber","3281233727");
+                Intent intent = new Intent(this, InsertSmsCodeActivity.class);
+                intent.putExtra("countryCode","34"); //quello con il +
+                intent.putExtra("phoneNumber","603000000");
+                String xSessidShared = MyApp.getPreferences().getString("X-SESSID","");
+                System.out.println("restarted: xSessidShared = " + xSessidShared);
                 startActivity(intent);
 
                 return true;

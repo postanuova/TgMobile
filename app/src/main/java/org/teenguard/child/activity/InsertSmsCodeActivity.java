@@ -55,7 +55,7 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
                 if(editSmsCode.getText().length() == 6) {
                     System.out.println("<SEND CODE TO SERVER>");
                     JSon json = new JSon();
-                    json.add("phone_number",phoneNumber);
+                    json.add("phone_number",countryCode + phoneNumber);
                     json.add("code",editSmsCode.getText().toString());
                     System.out.println("json.getJSonString() = " + json.getJSonString());
                     AsyncSendToServer asyncSendToServer = new AsyncSendToServer(json.getJSonString());
@@ -88,11 +88,22 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
         protected String doInBackground(String... params) {
             MyServerResponse myServerResponse = ServerApiUtils.registerChildToServer(dataToSend);
             myServerResponse.dump();
+
             if(myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
                 //Toast.makeText(MyApp.getContext(),"going to sms", Toast.LENGTH_LONG).show();
+                //read header
+                String xSessid = (String)myServerResponse.getHeaderEntryHM().get("X-SESSID");
+                System.out.println("myServerResponse xSessid sync = " + xSessid);
+                MyApp.getPreferences().edit()
+                        .putString("X-SESSID",xSessid)
+                        .apply();
+                String xSessidShared = MyApp.getPreferences().getString("X-SESSID","");
+                System.out.println("xSessidShared = " + xSessidShared);
+                //System.out.println("xSessid in async = " + xSessid);
                 gotoNextActivity();
                 return null;
             }
+
             if(myServerResponse.getResponseCode() == 429) {
                 asyncToast(getString(R.string.too_many_request));
                 //Toast.makeText(MyApp.getContext(),getString(R.string.too_many_request), Toast.LENGTH_LONG).show();

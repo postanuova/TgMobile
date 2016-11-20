@@ -4,6 +4,8 @@ package org.teenguard.child.datatype;
  * Created by chris on 20/10/16.
  */
 
+import java.util.HashMap;
+
 /**
  * this class is a container for  server responses after a post
  */
@@ -12,6 +14,7 @@ public class MyServerResponse {
     private String requestMethod = "unknown";
     private String requestUrl ="unknown";
     private String requestBody = "unknown";
+    private HashMap headerEntryHM = new <String,String>HashMap();
     private  int responseNumber;
     private int responseCode;
     private String responseMessage = "unknown";
@@ -43,12 +46,14 @@ public class MyServerResponse {
         System.out.println("requestMethod = " + requestMethod);
         System.out.println("requestUrl = " + getRequestUrl());
         System.out.println("requestBody = <" + getRequestBody()+">");
+        System.out.println("headerEntryHM size " + headerEntryHM.size());
         System.out.println("responseNumber = " + responseNumber);
         System.out.println("responseCode = " + responseCode);
         System.out.println("responseMessage = <" + responseMessage+">");
         if(responseBody != null) System.out.println("responseBody length = " + responseBody.length());
         System.out.println("responseBody = <" + responseBody +">");
         System.out.println("responseError = <" + responseErrorBody+">");
+
         System.out.println("---------------------------------------------");
     }
 
@@ -110,5 +115,14 @@ public class MyServerResponse {
 
     public String getResponseMessage() {
         return responseMessage;
+    }
+
+
+    public HashMap getHeaderEntryHM() {
+        return headerEntryHM;
+    }
+
+    public void setHeaderEntryHM(HashMap headerEntryHM) {
+        this.headerEntryHM = headerEntryHM;
     }
 }

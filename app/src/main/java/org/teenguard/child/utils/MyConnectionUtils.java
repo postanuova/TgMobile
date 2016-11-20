@@ -9,6 +9,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by chris on 20/10/16.
@@ -68,6 +70,22 @@ public class MyConnectionUtils {
                 //Get Response
                 try {
                     // Will throw IOException if server responds with 401.
+                    ///////////
+                    if(connection.getHeaderFields() != null) {
+                        Map<String, List<String>> headerMap = connection.getHeaderFields();
+                        ////
+                        for (Map.Entry<String, List<String>> entry : headerMap.entrySet()) {
+                            if (entry.getKey() != null) {
+                                List<String> currHeaderValues = entry.getValue();
+                                myServerResponse.getHeaderEntryHM().put(entry.getKey(), currHeaderValues.get(0));
+                            }
+                        }
+                        ////
+                    }
+                    ///////////
+
+                    String xSessid = connection.getHeaderField("X-SESSID");
+                    System.out.println("xSessid = " + xSessid);
                     myServerResponse.setResponseCode(connection.getResponseCode());
                     System.out.println("connection.getResponseCode() = " + connection.getResponseCode());
                     myServerResponse.setRequestMethod(requestMethod);
