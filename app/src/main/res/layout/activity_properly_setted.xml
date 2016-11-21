@@ -11,36 +11,48 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="org.teenguard.child.activity.ProperlySettedActivity">
 
-    <ImageButton
+    <Button
+        android:id="@+id/btn_close"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:textColor="@color/light_blue"
+        style="?android:attr/borderlessButtonStyle"
+        android:text="@string/str_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_now_configure_parent"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:id="@+id/img_properly_setted"
         android:layout_width="150dp"
         android:layout_height="150dp"
         app:srcCompat="@mipmap/ic_properly_setted_icon"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="67dp"
-        android:id="@+id/imageButton" />
+        android:layout_centerHorizontal="true" />
 
     <TextView
+        android:id="@+id/tv_properly_setted"
         android:text="@string/str_properly_setted"
-        android:textSize="20sp"
+        android:textSize="25sp"
         android:gravity="center"
         android:textColor="@color/light_blue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
+        tools:text="@string/str_properly_setted"
+        android:layout_above="@+id/tv_now_configure_parent"
         android:layout_centerHorizontal="true"
-        android:id="@+id/tv_properly_setted"
-        tools:text="@string/str_properly_setted" />
+        android:layout_marginBottom="19dp" />
 
     <TextView
+
+        android:id="@+id/tv_now_configure_parent"
         android:gravity="center"
         android:textSize="20sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tv_properly_setted"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="78dp"
-        android:id="@+id/tv_now_configure_parent"
         tools:text="@string/str_now_configure_parent"
-        android:text="@string/str_now_configure_parent" />
+        android:text="@string/str_now_configure_parent"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

@@ -14,9 +14,22 @@ public class WelcomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("WelcomeActivity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
+        boolean parentConfigured = MyApp.getPreferences().getBoolean("PARENT-CONFIGURED",false);
+        System.out.println("WelcomeActivity parentConfigured = " + parentConfigured);
+        if(parentConfigured) {//device already configured,skip all activities
+            gotoLastActivity();
+        }
         getSupportActionBar().hide(); //nasconde la barra
+        viewBinding();
+
+    }
+
+
+    private void viewBinding() {
+
         //listener del button
         Button acceptButton = (Button) findViewById(R.id.button_accept);
         acceptButton.setOnClickListener(new View.OnClickListener() {
@@ -37,9 +50,17 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
 
+    private void gotoLastActivity() {
+        System.out.println("skipping to last activity");
+        Intent intent = new Intent(MyApp.getContext(), ProperlySettedActivity.class);
+        startActivity(intent);
+        this.finish();
+    }
+
     private void gotoNextActivity() {
         Intent intent = new Intent(MyApp.getContext(), RoleChooseActivity.class);
         startActivity(intent);
+        this.finish();//close current activity
     }
 
 

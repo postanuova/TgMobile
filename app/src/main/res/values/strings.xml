@@ -11,6 +11,7 @@
     <string name="str_back">Back</string>
     <string name="str_next">Next</string>
     <string name="str_continue">Continue</string>
+    <string name="str_close">Close</string>
     <!-- WELCOME ACTIVITY -->
     <string name="str_welcome">Welcome to TeenGuard</string>
     <string name="str_hardest_job">We are glad to help you in one of the human&#180;s hardest job</string>
@@ -39,7 +40,9 @@
     <string name="resend_sms_code">Sms not received? Click to resend SMS</string>
     <string name="error_occurred">An error occurred: try later</string>
 
-    <!-- INSERT SMS ACTIVITY -->
+    <!-- PROPERLY SETTED ACTIVITY -->
     <string name="str_properly_setted">TeenGuard is properly setted</string>
-    <string name="str_now_configure_parent">Now follow instructions on parent device</string>
+    <string name="str_now_configure_parent">Now follow instructions on parent\'s device</string>
+    <string name="str_service_is_running">Service is running</string>
+    <string name="str_service_is_not_running">Network issue: service is not running</string>
 </resources>

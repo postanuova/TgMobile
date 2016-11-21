@@ -40,11 +40,23 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert_phone_number);
+        boolean parentConfigured = MyApp.getPreferences().getBoolean("PARENT-CONFIGURED",false);
+        System.out.println("InsertPhoneNumberActivity parentConfigured = " + parentConfigured);
+        if(parentConfigured) {//device already configured,skip all activities
+            gotoLastActivity();
+        }
+
+
         //set title
         setTitle(R.string.phone_number_title);
         //enable back button
         //getActionBar().setHomeButtonEnabled(true);
         //getActionBar().setDisplayHomeAsUpEnabled(true);
+        viewBinding();
+
+    }
+
+    private void viewBinding() {
         //binding
         tvIsValidPhone = (TextView) findViewById(R.id.tvIsValidPhone);
         tvCountryCode = (TextView) findViewById(R.id.tvCountryCode);
@@ -95,6 +107,8 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
                             asyncSendToServer.execute();
                         } else {//not validated from LibPhoneNumber
                             tvIsValidPhone.setText(getString(R.string.phone_number_invalid));
+                            System.out.println("cleaning edtPhoneNumber");
+                            edtPhoneNumber.setText("");
                         }
                     } else {//country code or phone number not inserted (!isValidPhoneNumber)
                         System.out.println("!isValidPhoneNumber");
@@ -165,6 +179,7 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
         intent.putExtra("countryCode",tvCountryCode.getText()); //quello con il +
         intent.putExtra("phoneNumber",phoneNumberSTR);
         startActivity(intent);
+        this.finish();
     }
 
     private void gotoHomeActivity() {
@@ -172,6 +187,12 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void gotoLastActivity() {
+        System.out.println("skipping to last activity");
+        Intent intent = new Intent(MyApp.getContext(), ProperlySettedActivity.class);
+        startActivity(intent);
+        this.finish();
+    }
     ///////////////////////VALIDATION METHOD'S ///////////////////////
 
     private boolean isValidPhoneNumber(CharSequence phoneNumber) {

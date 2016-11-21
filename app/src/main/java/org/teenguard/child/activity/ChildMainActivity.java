@@ -81,7 +81,7 @@ public class ChildMainActivity extends AppCompatActivity {
                 String xSessidShared = MyApp.getPreferences().getString("X-SESSID","");
                 System.out.println("restarted: xSessidShared = " + xSessidShared);
                 startActivity(intent);
-
+                this.finish();//close current activity
                 return true;
             }
 

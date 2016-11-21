@@ -27,7 +27,18 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        boolean parentConfigured = MyApp.getPreferences().getBoolean("PARENT-CONFIGURED",false);
+        System.out.println("InsertSmsCodeActivity parentConfigured = " + parentConfigured);
+        if(parentConfigured) {//device already configured,skip all activities
+            gotoLastActivity();
+        }
+
         setContentView(R.layout.activity_insert_sms_code);
+        viewBinding();
+
+    }
+
+    private void viewBinding() {
         //binding
         tvPhoneNumber = (TextView)findViewById(R.id.tvPhoneNumber);
         editSmsCode = (EditText) findViewById(R.id.editSmsCode);
@@ -154,16 +165,25 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
         });
     }
 
+    private void gotoLastActivity() {
+        System.out.println("skipping to last activity");
+        Intent intent = new Intent(MyApp.getContext(), ProperlySettedActivity.class);
+        startActivity(intent);
+        this.finish();
+    }
+
     private void gotoNextActivity() {
         Intent intent = new Intent(MyApp.getContext(), ProperlySettedActivity.class);
         intent.putExtra("countryCode",countryCode); //quello con il +
         intent.putExtra("phoneNumber",phoneNumber);
         startActivity(intent);
+        this.finish();
     }
 
     private void gotoHomeActivity() {
         Intent intent = new Intent(MyApp.getContext(), WelcomeActivity.class);
         startActivity(intent);
+        this.finish();
     }
 
     private void reloadCurrentActivity() {
@@ -172,6 +192,7 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
         intent.putExtra("countryCode",countryCode); //quello con il +
         intent.putExtra("phoneNumber",phoneNumber);
         startActivity(intent);
+        this.finish();
     }
 
 
