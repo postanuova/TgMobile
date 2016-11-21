@@ -12,8 +12,8 @@
     tools:context="org.teenguard.child.activity.ProperlySettedActivity">
 
     <ImageButton
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         app:srcCompat="@mipmap/ic_properly_setted_icon"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
@@ -40,5 +40,7 @@
         android:layout_below="@+id/tv_properly_setted"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="78dp"
-        android:id="@+id/tv_now_configure_parent" />
+        android:id="@+id/tv_now_configure_parent"
+        tools:text="@string/str_now_configure_parent"
+        android:text="@string/str_now_configure_parent" />
 </RelativeLayout>

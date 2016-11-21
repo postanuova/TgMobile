@@ -11,28 +11,23 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="org.teenguard.child.activity.WelcomeActivity">
 
-    <ImageView
-        android:layout_width="110dp"
-        android:layout_height="110dp"
-        app:srcCompat="@mipmap/ic_welcome_mobile"
-        android:id="@+id/ivPhoneImage"
-        android:layout_below="@+id/textView"
-        android:layout_centerHorizontal="true" />
 
     <TextView
-        android:text="@string/str_accept_terms"
+        android:text="@string/str_hardest_job"
         android:textSize="20sp"
         android:gravity="center"
+        android:textColor="@color/dark_grey"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textView3"
-        android:layout_below="@+id/textView2"
+        android:id="@+id/textView2"
+        tools:text="@string/str_hardest_job"
+        android:layout_below="@+id/ivPhoneImage"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="21dp" />
+        android:layout_marginTop="26dp" />
 
     <TextView
         android:text="@string/str_welcome"
-        android:textSize="20sp"
+        android:textSize="25sp"
         android:gravity="center"
         android:textColor="@color/light_blue"
         android:layout_width="wrap_content"
@@ -42,26 +37,37 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        app:srcCompat="@mipmap/ic_welcome_mobile"
+        android:id="@+id/ivPhoneImage"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true" />
+
     <TextView
-        android:text="@string/str_hardest_job"
+        android:text="@string/str_accept_terms"
         android:textSize="20sp"
         android:gravity="center"
+        android:textColor="@color/dark_grey"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textView2"
-        tools:text="@string/str_hardest_job"
-        android:layout_below="@+id/ivPhoneImage"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="26dp" />
+        android:id="@+id/textView3"
+        android:layout_marginTop="22dp"
+        android:layout_below="@+id/textView2"
+        android:layout_alignParentStart="true" />
 
     <Button
         android:text="@string/str_accept_and_continue"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:textColor="@color/light_blue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button_accept"
         tools:text="@string/str_accept_and_continue"
         style="?android:attr/borderlessButtonStyle"
+        android:layout_marginTop="31dp"
         android:layout_below="@+id/textView3"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="18dp" />
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
