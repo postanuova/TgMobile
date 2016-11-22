@@ -56,6 +56,15 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
 
     }
 
+    /*public void onResume() {
+        super.onResume();
+        System.out.println("onresumeeeeeeee " + true);
+        //gotoLastActivity();
+        this.finish();
+    }*/
+
+
+
     private void viewBinding() {
         //binding
         tvIsValidPhone = (TextView) findViewById(R.id.tvIsValidPhone);

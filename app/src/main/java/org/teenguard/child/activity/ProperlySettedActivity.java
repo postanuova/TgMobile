@@ -58,8 +58,10 @@ public class ProperlySettedActivity extends AppCompatActivity {
 
     private void closeActivity() {
         MyApp.getPreferences().edit()
-                .putBoolean("PARENT-CONFIGURED",true)
+                .putBoolean("PARENT-CONFIGURED",false)// TODO: 22/11/16 rimettere true
                 .commit();
+
+
         this.finish();
     }
 

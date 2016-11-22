@@ -25,10 +25,13 @@ public class RoleChooseActivity extends AppCompatActivity {
         viewBinding();
 
     }
-
-    public void onResume() {
+    //activity lifecycle: add on resume in every activity  if parent is configured
+    /*public void onResume() {
+        super.onResume();
         System.out.println("onresumeeeeeeee " + true);
-    }
+        //gotoLastActivity();
+        this.finish();
+    }*/
 
     private void viewBinding() {
         //  PARENT IMAGE listener

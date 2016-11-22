@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -37,6 +38,14 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
         viewBinding();
 
     }
+
+
+  /*  public void onResume() {
+        super.onResume();
+        System.out.println("onresumeeeeeeee " + true);
+        //gotoLastActivity();
+        this.finish();
+    }*/
 
     private void viewBinding() {
         //binding
@@ -174,6 +183,10 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
 
     private void gotoNextActivity() {
         Intent intent = new Intent(MyApp.getContext(), ProperlySettedActivity.class);
+        System.out.println("closing all activities");
+        //closing all previous activities
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra("countryCode",countryCode); //quello con il +
         intent.putExtra("phoneNumber",phoneNumber);
         startActivity(intent);
