@@ -19,7 +19,7 @@ import org.teenguard.child.dbdao.DbMediaDAO;
 import org.teenguard.child.dbdao.DbMediaEventDAO;
 import org.teenguard.child.utils.MyApp;
 import org.teenguard.child.utils.MyLog;
-
+//moved to ssd
 public class ChildMainActivity extends AppCompatActivity {
 
     @Override
