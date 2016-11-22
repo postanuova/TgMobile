@@ -2,14 +2,13 @@ package org.teenguard.child.utils;
 
 import android.graphics.Bitmap;
 
-import com.google.gson.Gson;
-
 import org.json.JSONObject;
-import org.teenguard.child.datatype.BeatResponseJsonWrapper;
 import org.teenguard.child.datatype.MyServerResponse;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import static org.teenguard.child.utils.TypeConverter.fileToByteAR;
 
 
 /**
@@ -29,8 +28,8 @@ public class ServerApiUtils {
 
     public final static String APPLICATION_SERVER_REQUEST_ADD_MEDIA_METADATA_URL = "/api2.php";
     public final static String APPLICATION_SERVER_REQUEST_REMOVE_MEDIA_URL = "/api2.php";
-    public final static String APPLICATION_SERVER_REQUEST_ADD_MEDIA_METADATA_AND_MEDIA_DATA_URL = "/api2.php";
-    public final static String APPLICATION_SERVER_REQUEST_TEST_ADD_MEDIA_METADATA_AND_MEDIA_DATA_URL = "/child/upload.php";// URL PER RIVEDERLE  /child/uploads/
+    //public final static String APPLICATION_SERVER_REQUEST_ADD_MEDIA_METADATA_AND_MEDIA_DATA_URL = "/api2.php";
+    public final static String APPLICATION_SERVER_REQUEST_ADD_MEDIA_METADATA_AND_MEDIA_DATA_URL = "/child/upload.php";// URL PER RIVEDERLE  /child/uploads/
     public final static String APPLICATION_SERVER_REQUEST_ADD_LOCATION = "/api2.php";
 
     public final static String APPLICATION_SERVER_REQUEST_ADD_GEOFENCE_EVENT = "/api2.php";
@@ -140,7 +139,8 @@ public class ServerApiUtils {
         return myServerResponse;
     }
 
-    public static MyServerResponse addMediaMetadataAndMediaDataToServer(JSONObject headerMetadataJSON,String bodyRawData) {
+    //it works
+    public static MyServerResponse addMediaMetadataAndMediaDataToServer(JSONObject headerMetadataJSON,byte[] bodyRawData) {
         MyServerResponse myServerResponse = new MyServerResponse();
 
         try{
@@ -156,9 +156,10 @@ public class ServerApiUtils {
         //http://stackoverflow.com/questions/9397076/android-sending-an-image-through-post
         MyServerResponse myServerResponse = new MyServerResponse();
         byte[] dataAR = TypeConverter.bitmapToByteAR(bitmap);
+        System.out.println("bitmap dataAR.length = " + dataAR.length);
         try{
             URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_ADD_MEDIA_METADATA_AND_MEDIA_DATA_URL);
-            myServerResponse = MyConnectionUtils.doAndroidMediaRequestWithHeader("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,headerMetadataJSON,dataAR.toString());
+            myServerResponse = MyConnectionUtils.doAndroidMediaRequestWithHeader("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,headerMetadataJSON,dataAR);
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         }
@@ -210,7 +211,7 @@ public class ServerApiUtils {
 
     public static void main (String args[]) {
 
-        MyServerResponse myServerResponse = getBeatFromServer(" e4215e61696d8d130d2e110636df7568f3947c6b");
+       /* MyServerResponse myServerResponse = getBeatFromServer(" e4215e61696d8d130d2e110636df7568f3947c6b");
         myServerResponse.dump();
         String jsonResponse = myServerResponse.getResponseBody();
         //jsonResponse ="{data:{a:1}}";
@@ -218,7 +219,12 @@ public class ServerApiUtils {
         System.out.println("start parsing");
         Gson gson = new Gson();
         BeatResponseJsonWrapper beatResponseJsonWrapper = gson.fromJson(jsonResponse,BeatResponseJsonWrapper.class);
-        System.out.println(beatResponseJsonWrapper.data.geofences.size());
+        System.out.println(beatResponseJsonWrapper.data.geofences.size());*/
+        
+        byte [] byteAR = fileToByteAR(Constant.FLOWERS_PATH);
+        System.out.println("byteAR.length = " + byteAR.length);
+        MyServerResponse myServerResponse = ServerApiUtils.addMediaMetadataAndMediaDataToServer(null, byteAR);
+myServerResponse.dump();
     }
 
 

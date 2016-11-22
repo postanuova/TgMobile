@@ -53,10 +53,10 @@ public class MyConnectionUtils {
                 //Send request
                 if (requestMethod.equalsIgnoreCase("POST")) {
                     connection.setDoOutput(true);
-                    DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-                    wr.writeBytes(bodyData);
-                    wr.flush();
-                    wr.close();
+                    DataOutputStream dos = new DataOutputStream(connection.getOutputStream());
+                    dos.writeBytes(bodyData);
+                    dos.flush();
+                    dos.close();
                 }
 
                 /*if(requestMethod.equalsIgnoreCase("GET")) {
@@ -114,7 +114,7 @@ public class MyConnectionUtils {
         return myServerResponse;
     }
 
-    public static MyServerResponse doAndroidMediaRequestWithHeader(String requestMethod, URL url, String contentType, JSONObject jsonObjectHeader, String bodyData) {
+    public static MyServerResponse doAndroidMediaRequestWithHeader(String requestMethod, URL url, String contentType, JSONObject jsonObjectHeader, byte [] bodyData) {
         MyServerResponse myServerResponse = new MyServerResponse();
         if(!isAirplaneModeOn()) {
             HttpURLConnection connection = null;
@@ -143,25 +143,34 @@ public class MyConnectionUtils {
                 connection.setRequestProperty("x-longitude",String.valueOf(jsonObjectHeader.get("longitude")));
                 connection.setRequestProperty("x-accuracy",String.valueOf(jsonObjectHeader.get("accuracy")));
 
-
+///
+                /*byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = is.read(buffer)) != -1) {
+                    bytes.write(buffer, 0, bytesRead);
+                }*/
                 //Send request
                 if(requestMethod.equalsIgnoreCase("POST")) {
+                    connection.setRequestProperty("charset","UTF-8");
                     connection.setDoOutput(true);
-                    DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-                    wr.writeBytes(bodyData);
-                    wr.flush();
-                    wr.close();
+                    DataOutputStream dos = new DataOutputStream(connection.getOutputStream());
+
+                     //connection.setRequestProperty("Content-Length",Integer.toString(parametersSB.toString().getBytes().length));
+                   dos.write(bodyData);
+
+                    dos.flush();
+                    dos.close();
                 }
                 //Get Response
-                System.out.println("connection.getResponseCode() = " + connection.getResponseCode());
+                System.out.println(" connection.getResponseCode() = " + connection.getResponseCode());
                 myServerResponse.setResponseCode(connection.getResponseCode());
                 myServerResponse.setRequestMethod(requestMethod);
                 myServerResponse.setRequestUrl(url.toString());
-                myServerResponse.setRequestBody(bodyData);
+                myServerResponse.setRequestBody("too long");
                 if(connection.getInputStream() != null) myServerResponse.setResponseBody(TypeConverter.inputStreamToString(connection.getInputStream()));
                 if(connection.getErrorStream() != null) myServerResponse.setResponseError(TypeConverter.inputStreamToString(connection.getErrorStream()));
             } catch (Exception e) {
-                //e.printStackTrace();
+                e.printStackTrace();
                 System.out.println("doAndroidMediaRequestWithHeader : server connection failed:is device  offline? ");
                 return myServerResponse;
             } finally {

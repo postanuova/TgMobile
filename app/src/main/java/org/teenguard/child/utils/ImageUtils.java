@@ -82,13 +82,14 @@ public class ImageUtils {
         return Bitmap.createBitmap(b, 0, 0, b.getWidth(), b.getHeight(), m, true);
     }
 
-    public static void dump(Bitmap bitmap) {
+    public static void dump(String label,Bitmap bitmap) {
         System.out.println("bitmap size" + bitmap.getByteCount());
         System.out.println("bitmap Height = " + bitmap.getHeight());
-        System.out.println("bitmap getWidth = " + bitmap.getWidth());
+        System.out.println("bitmap Width = " + bitmap.getWidth());
     }
 
-    public static File storeImage(Bitmap image) {
+    public static File storeCompressedImage(Bitmap bitmap) {
+        System.out.println("original bitmap.getByteCount() = " + bitmap.getByteCount());
         File pictureFile = getOutputMediaFile();
         if (pictureFile == null) {
             System.out.println("Error creating media file, check storage permissions: ");// e.getMessage());
@@ -96,7 +97,8 @@ public class ImageUtils {
         }
         try {
             FileOutputStream fos = new FileOutputStream(pictureFile);
-            image.compress(Bitmap.CompressFormat.JPEG, Constant.IMAGE_QUALITY, fos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 30, fos);
+            System.out.println("compressed bitmap.getByteCount() = " + bitmap.getByteCount());
             fos.close();
         } catch (FileNotFoundException e) {
             System.out.println("File not found: " + e.getMessage());

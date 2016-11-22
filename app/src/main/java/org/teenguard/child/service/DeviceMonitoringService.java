@@ -37,7 +37,7 @@ public class DeviceMonitoringService extends Service {
         //monitoring contact list changes
         //startMonitoringContactsChanges();
         //monitoring media changes
-        //startMonitoringMediaStoreChanges();
+        startMonitoringMediaStoreChanges();
         //location tracking
         //startLocationTracking();
         //visit tracking
@@ -57,7 +57,7 @@ public class DeviceMonitoringService extends Service {
                 false,/*no propagation to descendant*/
                 mediaStoreObserver);
     }
-
+//ch
     private void startLocationTracking() {
 
         deviceLocationListener = new DeviceLocationListener();

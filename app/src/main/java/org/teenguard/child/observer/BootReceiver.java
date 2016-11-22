@@ -13,7 +13,7 @@ public class BootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i(this.getClass().getName(),"started boot receiver intent.getAction() " + intent.getAction());
+        Log.i(this.getClass().getName(),"started BootReceiver intent.getAction() " + intent.getAction());
         String action = intent.getAction();
         if (action.equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED) ||
                 action.equalsIgnoreCase(Intent.ACTION_PACKAGE_REPLACED) ||

@@ -90,7 +90,7 @@ public class DbContactDAO extends GenericDbDAO{
         DbContact dbContact;
         if (cursor != null) {
             try {
-                MyLog.i(this, "<<<<<<<<<<<<<<<< getDbContactHM cursor.count" + cursor.getCount());
+                MyLog.i(this, "getDbContactHM cursor.count" + cursor.getCount());
                 int putCounter = 0;
                 while (cursor.moveToNext()) {
                     putCounter++;
@@ -103,7 +103,7 @@ public class DbContactDAO extends GenericDbDAO{
                     dbContact = new DbContact(id, phoneId, name, lastModified, serializedData);
                     dbContactHM.put(dbContact.getPhoneId(), dbContact);
                 }
-                MyLog.i(this, "putCounter " + putCounter);
+                MyLog.i(this, "Added " + putCounter + " contacts to dbContactHM");
 
             } finally {
                 if (!cursor.isClosed()) {
