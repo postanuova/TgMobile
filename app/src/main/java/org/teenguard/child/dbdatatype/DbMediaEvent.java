@@ -17,6 +17,7 @@ public class DbMediaEvent {
     private long id; //autoincrement
     private long csId; //is the phone_id
     private int eventType; //add, modify, delete
+    private String eventTypeSTR;
     private String serializedData; //json data che verranno inviati al server
 private String path;
     private String compressedMediaPath;
@@ -38,6 +39,7 @@ private String path;
         System.out.println("id = " + id);
         System.out.println("csId = " + csId);
         System.out.println("eventType = " + eventType);
+        System.out.println("eventTypeSTR = " + getEventTypeSTR());
         System.out.println("serializedData = " + serializedData);
         System.out.println("path = " + path);
         System.out.println("compressedMediaPath = " + compressedMediaPath);
@@ -99,5 +101,16 @@ private String path;
     }
 
 
+    public String getEventTypeSTR() {
+        switch(this.getEventType()) {
+            case MEDIA_EVENT_ADD: return "MEDIA_EVENT_ADD";
+            case MEDIA_EVENT_DELETE: return "MEDIA_EVENT_DELETE";
+            case DEBUG_MEDIA_EVENT_SENT_METADATA_ONLY: return "DEBUG_MEDIA_EVENT_SENT_METADATA_ONLY";
+            case MEDIA_EVENT_COMPRESSED: return "MEDIA_EVENT_COMPRESSED";
+            case DEBUG_MEDIA_EVENT_SENT_METADATA_AND_MEDIA_TO_DELETE: return "DEBUG_MEDIA_EVENT_SENT_METADATA_AND_MEDIA_TO_DELETE";
+
+        }
+        return "MEDIA_EVENT_UNKNOWN";
+    }
 }
 

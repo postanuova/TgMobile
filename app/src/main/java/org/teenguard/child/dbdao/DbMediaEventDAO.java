@@ -71,10 +71,12 @@ public class DbMediaEventDAO extends GenericDbDAO implements InterfaceDbDAO {
 
 
     public ArrayList<DbMediaEvent> getList(String whereSQL) {
-        String query = "SELECT _id,cs_id,event_type,serialized_data FROM media_event ";
+        //String query = "SELECT _id,cs_id,event_type,serialized_data FROM media_event ";
+        String query = "SELECT * FROM media_event ";
         if(whereSQL != null) {
             query += whereSQL;
         }
+        System.out.println("query = " + query);
         Cursor cursor = db.rawQuery(query,null);
         ArrayList <DbMediaEvent> dbMediaEventAL = new <DbMediaEvent> ArrayList();
         DbMediaEvent dbMediaEvent;
@@ -84,7 +86,6 @@ public class DbMediaEventDAO extends GenericDbDAO implements InterfaceDbDAO {
             int addCounter = 0;
             while (cursor.moveToNext()) {
                 addCounter++;
-                //dbMedia = new DbMedia(cursor);
                 int id = cursor.getInt(cursor.getColumnIndex(MEDIA_EVENT_ID));
                 int csId = cursor.getInt(cursor.getColumnIndex(MEDIA_EVENT_CS_ID));
                 int eventType = cursor.getInt(cursor.getColumnIndex(MEDIA_EVENT_TYPE));
