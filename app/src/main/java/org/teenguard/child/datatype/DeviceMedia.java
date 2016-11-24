@@ -6,6 +6,7 @@ import android.provider.MediaStore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.teenguard.child.utils.CalendarUtils;
 import org.teenguard.child.utils.JSon;
 
 import static android.R.attr.id;
@@ -58,7 +59,7 @@ public DeviceMedia(String serializedData) {
     public String getMetadataJsonSTR() {
         JSon jSon = new JSon();
         jSon.add("id", getPhoneId());
-        jSon.add("date", getDateTaken());
+        jSon.add("date", CalendarUtils.serverTimeFormat(getDateTaken()));
         jSon.add("media_type", getMediaType());
         jSon.add("media_duration", getMediaDuration());
         jSon.add("latitude", getLatitude());
@@ -68,14 +69,14 @@ public DeviceMedia(String serializedData) {
     }
 
     /**
-     *
+     *DEPRECATED ???
      * @return a JSon object used to populate header of a request which sends matadata end raw image to server
      */
     public JSONObject getJSonRequestHeader() {
         JSONObject json = new JSONObject();
         try {
             json.put("id", getPhoneId());
-            json.put("date", getDateTaken());
+            json.put("date", CalendarUtils.serverTimeFormat(getDateTaken()));
             json.put("media_type", getMediaType());
             json.put("media_duration", getMediaDuration());
             json.put("latitude", getLatitude());

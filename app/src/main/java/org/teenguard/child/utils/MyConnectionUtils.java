@@ -42,7 +42,11 @@ public class MyConnectionUtils {
                 connection.setRequestProperty("Content-Type", contentType);
                 connection.setUseCaches(false);
                 connection.setDoInput(true);
-                ////////////
+                ////SETTING X-SESSID////
+                String xSessid = MyApp.getPreferences().getString("X-SESSID","unknown x-sessid");
+                System.out.println("doAndroidRequest HEADER: xSessid = " + xSessid);
+                connection.setRequestProperty("X-SESSID",xSessid);
+                ////////////////////////
                 if (requestMethod.equalsIgnoreCase("DELETE")) {//java.net.ProtocolException: DELETE does not support writing
                     System.out.println("overriding RequestProperty for DELETE");
                     connection.setRequestProperty("X-HTTP-Method-Override", "DELETE");
@@ -126,7 +130,11 @@ public class MyConnectionUtils {
                 connection.setRequestProperty("Content-Type", contentType);
                 connection.setUseCaches(false);
                 connection.setDoInput(true);
-                ////////////
+                ////SETTING X-SESSID////
+                String xSessid = MyApp.getPreferences().getString("X-SESSID","unknown x-sessid");
+                System.out.println("doAndroidMediaRequestWithHeader HEADER: xSessid = " + xSessid);
+                connection.setRequestProperty("X-SESSID",xSessid);
+                ////////////////////////
                 if(requestMethod.equalsIgnoreCase("DELETE")) {//java.net.ProtocolException: DELETE does not support writing
                     System.out.println("overriding RequestProperty for DELETE");
                     connection.setRequestProperty("X-HTTP-Method-Override", "DELETE");

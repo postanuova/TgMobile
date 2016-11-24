@@ -88,8 +88,6 @@ public class ContactListObserver extends ContentObserver {
             MyLog.i(this," userHM < dbHM : contact deleted");
             manageContactDeleted();
         }
-        /*dbContactEventDAO.close();
-        dbContactDAO.close();*/
         flushContactEventTable();
     }
 

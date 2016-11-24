@@ -1,6 +1,7 @@
 package org.teenguard.child.dbdatatype;
 
 import org.teenguard.child.dbdao.DbVisitEventDAO;
+import org.teenguard.child.utils.CalendarUtils;
 
 import java.util.Date;
 
@@ -51,10 +52,10 @@ public class DbVisitEvent {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("{");
 //        stringBuilder.append("\"id\":" + this.getId());
-        stringBuilder.append("\"arrival_date\":" + this.getArrivalDate());
-        stringBuilder.append("\"departure_date\":" + this.getDepartureDate());
-        stringBuilder.append("\"latitude\":" + this.getLatitude());
-        stringBuilder.append("\"longitude\":" + this.getLongitude());
+        stringBuilder.append("\"arrival_date\":" + CalendarUtils.serverTimeFormat(this.getArrivalDate())+ ",");
+        stringBuilder.append("\"departure_date\":" + CalendarUtils.serverTimeFormat(this.getDepartureDate())+ ",");
+        stringBuilder.append("\"latitude\":" + this.getLatitude()+ ",");
+        stringBuilder.append("\"longitude\":" + this.getLongitude()+ ",");
         stringBuilder.append("\"accuracy\":" + this.getAccuracy());
         stringBuilder.append("}");
         return stringBuilder.toString();

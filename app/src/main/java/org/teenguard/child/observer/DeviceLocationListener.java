@@ -59,7 +59,7 @@ public class DeviceLocationListener implements GoogleApiClient.OnConnectionFaile
     public void onConnected(@Nullable Bundle bundle) {
         System.out.println("GpsObserver.onConnected()");
         Log.i(this.getClass().getName(),"<<<started onConnected");
-        Log.i(this.getClass().getName(),"setting LocationRequest parameters");
+        Log.i(this.getClass().getName(),"setting LocationRequest  parameters");
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setFastestInterval(LOCATION_TIME_MILLISECONDS_THRESHOLD);
         mLocationRequest.setInterval(LOCATION_TIME_MILLISECONDS_THRESHOLD); //aggiorna posizione ogni x secondi

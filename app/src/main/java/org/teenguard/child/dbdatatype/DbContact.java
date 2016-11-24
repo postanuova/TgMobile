@@ -1,5 +1,6 @@
 package org.teenguard.child.dbdatatype;
 
+import org.teenguard.child.utils.CalendarUtils;
 import org.teenguard.child.utils.JSon;
 
 /**
@@ -34,7 +35,7 @@ public class DbContact {
     public JSon getJson() {
             JSon jSon = new JSon();
             jSon.add("id", this.getId());
-            jSon.add("date", this.getLastModified());
+            jSon.add("date", CalendarUtils.serverTimeFormat(this.getLastModified()));
             jSon.add("first_name", this.getName());
             jSon.add("last_name", "");
             jSon.addArray("phone_numbers", "[" + this.getSerializedData() + "]");
