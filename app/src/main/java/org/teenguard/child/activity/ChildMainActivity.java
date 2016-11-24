@@ -17,6 +17,7 @@ import org.teenguard.child.dbdao.DbGeofenceDAO;
 import org.teenguard.child.dbdao.DbLocationEventDAO;
 import org.teenguard.child.dbdao.DbMediaDAO;
 import org.teenguard.child.dbdao.DbMediaEventDAO;
+import org.teenguard.child.dbdao.DbVisitEventDAO;
 import org.teenguard.child.utils.MyApp;
 import org.teenguard.child.utils.MyLog;
 //moved to ssd
@@ -85,7 +86,12 @@ public class ChildMainActivity extends AppCompatActivity {
                 return true;
             }
 
-
+            case R.id.item_clear_visit: {
+                Log.i(this.getClass().getName(),"cleaning visitEvent table");
+                DbVisitEventDAO dbVisitEventDAO = new DbVisitEventDAO();
+                dbVisitEventDAO.delete();
+                return true;
+            }
             //item_send_db_contact_event{"id":"227","date":"1476971135466","first_name":"Aaaaaab","last_name":"","phone_numbers":["147"]}
 
             default:

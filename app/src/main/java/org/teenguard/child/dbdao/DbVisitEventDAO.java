@@ -8,16 +8,14 @@ import org.teenguard.child.utils.MyLog;
 
 import java.util.ArrayList;
 
-import static org.teenguard.child.dbdao.GenericDbDAO.db;
-
 /**
  * Created by chris on 03/11/16.
  */
-public class DbVisitEventDAO {
+public class DbVisitEventDAO extends GenericDbDAO {
     public final static String TABLE = "visit_event";
     public final static String VISIT_EVENT_ID = "_id"; //table primary key: IS THE CLIENT-SIDE ID
     public final static String VISIT_EVENT_ARRIVAL_DATE = "arrival_date";
-    public final static String VISIT_EVENT_DEPARTURE_DATE = "arrival_date";
+    public final static String VISIT_EVENT_DEPARTURE_DATE = "departure_date";
     public final static String VISIT_EVENT_LATITUDE = "latitude";
     public final static String VISIT_EVENT_LONGITUDE = "longitude";
     public final static String VISIT_EVENT_ACCURACY = "accuracy";
@@ -32,6 +30,11 @@ public class DbVisitEventDAO {
         MyLog.i(this,"deleting location id = " + id + " query " + deleteQuery);
         db.execSQL(deleteQuery);
 
+    }
+
+    public void delete() {
+        String deleteQuery = "DELETE FROM " + TABLE;
+        db.execSQL(deleteQuery);
     }
 
     private long upsert(long id, long arrivalDate,long departureDate, double latitude, double longitude, double accuracy){
@@ -57,7 +60,7 @@ public class DbVisitEventDAO {
     }
 
     public Cursor getDbVisitEventCursor() {
-        String[] cols = new String[] {VISIT_EVENT_ID,VISIT_EVENT_DEPARTURE_DATE,VISIT_EVENT_DEPARTURE_DATE,VISIT_EVENT_LATITUDE,VISIT_EVENT_LONGITUDE,VISIT_EVENT_ACCURACY,VISIT_EVENT_ACCURACY};
+        String[] cols = new String[] {VISIT_EVENT_ID,VISIT_EVENT_ARRIVAL_DATE,VISIT_EVENT_DEPARTURE_DATE,VISIT_EVENT_LATITUDE,VISIT_EVENT_LONGITUDE,VISIT_EVENT_ACCURACY,VISIT_EVENT_ACCURACY};
         Cursor mCursor = db.query(true, TABLE,cols,null, null, null, null, null, null);
         return mCursor; // iterate to get each value.
     }

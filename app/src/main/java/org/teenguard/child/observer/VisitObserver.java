@@ -21,10 +21,9 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import org.teenguard.child.datatype.MyServerResponse;
-import org.teenguard.child.dbdao.DbLocationEventDAO;
 import org.teenguard.child.dbdao.DbVisitEventDAO;
-import org.teenguard.child.dbdatatype.DbLocationEvent;
 import org.teenguard.child.dbdatatype.DbVisitEvent;
+import org.teenguard.child.utils.CalendarUtils;
 import org.teenguard.child.utils.Chronometer;
 import org.teenguard.child.utils.MyApp;
 import org.teenguard.child.utils.MyLog;
@@ -68,12 +67,15 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
         googleApiClient.connect();
         chronometer = new Chronometer();
        checkChronometerThread = new CheckChronometerThread();
+        //////////////////
+        flushVisitTable();
+        //////////////////
     }
 
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Log.i(this.getClass().getName()," <<<visitObserver onConnected");
+        Log.i(this.getClass().getName()," <<< visitObserver onConnected");
         Log.i(this.getClass().getName(),"setting LocationRequest parameters");
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setFastestInterval(VISIT_TIME_MILLISECONDS_THRESHOLD/10);
@@ -88,15 +90,20 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
             // TODO: we must require permission https://developer.android.com/training/permissions/requesting.html
             return;
         } else { //ha tutti i diritti
-            previousLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+
+            visitInProgress = false;
+            chronometer.start();//<<<<<<<<<<<<<<<<< avvio cronometro
+            checkChronometerThread.start();
+           /* previousLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
             if (previousLocation != null) {
 
-                visitInProgress = false;
-                chronometer.start();//<<<<<<<<<<<<<<<<< avvio cronometro
-                checkChronometerThread.start();
+
                 DbVisitEvent dbVisitEvent = new DbVisitEvent();
                 dbVisitEvent.setId(0);
-                dbVisitEvent.setArrivalDate(previousLocation.getTime());
+                dbVisitEvent.setArrivalDate(CalendarUtils.nowUTCMillis());
+                if(previousLocation.getTime() > 1480000000) {
+                    dbVisitEvent.setArrivalDate(previousLocation.getTime());
+                }
                 dbVisitEvent.setDepartureDate(-1);
                 dbVisitEvent.setLatitude(previousLocation.getLatitude());
                 dbVisitEvent.setLongitude(previousLocation.getLongitude());
@@ -107,14 +114,15 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
 
                 dbVisitEvent.setId(id);
                 dbVisitEvent.dump();
-                System.out.println("TODO:  03/11/16 riabilitare invio al server");
-                /*AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbVisitEvent.buildSerializedDataString() + "]", "" + dbVisitEvent.getId());
-                asyncSendToServer.execute();*/
+                AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbVisitEvent.buildSerializedDataString() + "]", "" + dbVisitEvent.getId());
+                asyncSendToServer.execute();
 
             }
+            System.out.println("starting to request requestLocationUpdates");
+            */LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);
         }
-        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);
-        Log.i(this.getClass().getName(),">>>completed onConnected");
+
+        Log.i(this.getClass().getName(),">>> completed onConnected");
     }
 
     @Override
@@ -150,16 +158,25 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
 
                 DbVisitEvent dbVisitEvent = new DbVisitEvent();
                 dbVisitEvent.setId(0);
-                dbVisitEvent.setArrivalDate(previousLocation.getTime());
-                dbVisitEvent.setDepartureDate(newLocation.getTime());
+
+                dbVisitEvent.setArrivalDate(CalendarUtils.nowUTCMillis());
+                if(previousLocation.getTime() > 1480000000) {
+                    dbVisitEvent.setArrivalDate(previousLocation.getTime());
+                }
+
+                /*dbVisitEvent.setDepartureDate(CalendarUtils.nowUTCMillis());
+                if(newLocation.getTime() >  1480000000) {*/
+                    dbVisitEvent.setDepartureDate(newLocation.getTime());
+               // }
+
                 dbVisitEvent.setLatitude(previousLocation.getLatitude());
                 dbVisitEvent.setLongitude(previousLocation.getLongitude());
                 dbVisitEvent.setAccuracy(previousLocation.getAccuracy());
                 long id = dbVisitEvent.writeMe();
                 dbVisitEvent.setId(id);
                 dbVisitEvent.dump();
-                System.out.println("Visit duration :" + dbVisitEvent.getDurationMilliseconds()/1000 + "s");
-                //System.out.println("TODO: 03/11/16 riabilitare invio al server di visit ended");
+                System.out.println(" Visit duration :" + dbVisitEvent.getDurationMilliseconds()/1000 + "s");
+                System.out.println("sending visit ended");
                 AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbVisitEvent.buildSerializedDataString() + "]", "" + dbVisitEvent.getId());
                 asyncSendToServer.execute();
                 previousLocation = newLocation;
@@ -173,8 +190,6 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
 
 
     public class CheckChronometerThread extends Thread {
-        public CheckChronometerThread() {
-        }
 
         public void run() {
             while (true) {
@@ -208,6 +223,9 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
                         dbVisitEvent.dump();
                 AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbVisitEvent.buildSerializedDataString() + "]", "" + dbVisitEvent.getId());
                 asyncSendToServer.execute();
+                        /////////////////////
+                        flushVisitTable();
+                        //////////////////////
                     }
                 }
                 try {
@@ -218,27 +236,32 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
             }
         }
     }
-    public void flushLocationTable() {
+
+    public void flushVisitTable() {
         // TODO: 02/11/16 to be used and tested
-        DbLocationEventDAO dbLocationEventDAO = new DbLocationEventDAO();
-        ArrayList<DbLocationEvent> dbLocationEventAL = dbLocationEventDAO.getList();
-        StringBuilder stringBuilder = new StringBuilder();
-        StringBuilder idToDeleteListSB = new StringBuilder(); //la usero' per cancellare gli eventi una volta inviati
-        for (DbLocationEvent dbLocationEvent:dbLocationEventAL) {
-            stringBuilder.append(dbLocationEvent.buildSerializedDataString());
-            stringBuilder.append(",");
-            idToDeleteListSB.append(dbLocationEvent.getId());
+        System.out.println("FLUSHING VISIT EVENT TABLE " + new Date(CalendarUtils.nowUTCMillis()).toString());
+        DbVisitEventDAO dbVisitEventDAO = new DbVisitEventDAO();
+        ArrayList<DbVisitEvent> dbVisitEventAL = dbVisitEventDAO.getList();
+        System.out.println("FLUSHING dbVisitEventAL.size() = " + dbVisitEventAL.size());
+        if(dbVisitEventAL.size() > 0) {
+            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder idToDeleteListSB = new StringBuilder(); //la usero' per cancellare gli eventi una volta inviati
+            for (DbVisitEvent dbVisitEvent : dbVisitEventAL) {
+                stringBuilder.append(dbVisitEvent.buildSerializedDataString());
+                stringBuilder.append(",");
+                idToDeleteListSB.append(dbVisitEvent.getId());
+            }
+            String bulkVisitEventSTR = stringBuilder.toString();
+            if (bulkVisitEventSTR.endsWith(","))
+                bulkVisitEventSTR = bulkVisitEventSTR.substring(0, bulkVisitEventSTR.length() - 1);
+            String idToDeleteListSTR = stringBuilder.toString();
+            if (idToDeleteListSTR.endsWith(","))
+                idToDeleteListSTR = idToDeleteListSTR.substring(0, idToDeleteListSTR.length() - 1);
+            AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + bulkVisitEventSTR + "]", idToDeleteListSTR);
+            asyncSendToServer.execute();
         }
-        String bulkLocationEventSTR = stringBuilder.toString();
-        if(bulkLocationEventSTR.endsWith(",")) bulkLocationEventSTR = bulkLocationEventSTR.substring(0,bulkLocationEventSTR.length()-1);
-        String idToDeleteListSTR = stringBuilder.toString();
-        if(idToDeleteListSTR.endsWith(",")) idToDeleteListSTR = idToDeleteListSTR.substring(0,idToDeleteListSTR.length()-1);
-        AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + bulkLocationEventSTR + "]",idToDeleteListSTR);
-        asyncSendToServer.execute();
-
-
     }
-
+working on visit flushing: invia la prima visit a buffo con start ed end
     //////////////////////////////////
     private class AsyncSendToServer extends AsyncTask<String, String, String> {
         //http://www.journaldev.com/9708/android-asynctask-example-tutorial
@@ -251,14 +274,14 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
         }
         @Override
         protected String doInBackground(String... params) {
-            ///////////////NEEDS TO BE EXECUTED IN BACKGROUND/////////////////////
-            MyLog.i(this, "ASYNC SENDING NEW LOCATION TO SERVER");
+            MyLog.i(this, "ASYNC  SENDING NEW VISIT TO SERVER");
             MyServerResponse myServerResponse = ServerApiUtils.addVisitToServer(dataToSend);
             myServerResponse.dump();
             if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
                 MyLog.i(this, "SENT NEW VISIT TO SERVER, DELETING  "  + idToDeleteListSTR);
                 DbVisitEventDAO dbVisitEventDAO = new DbVisitEventDAO();
-                dbVisitEventDAO.delete(idToDeleteListSTR);
+                System.out.println(" AsyncSendToServer VISITS: riattivare cancellazione ");
+               // dbVisitEventDAO.delete(idToDeleteListSTR);
             }
             return null;
         }
@@ -266,7 +289,7 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            System.out.println("completed async execution");
+            System.out.println(" completed async execution");
         }
     }
 }

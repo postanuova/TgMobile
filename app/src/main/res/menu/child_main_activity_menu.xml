@@ -19,7 +19,7 @@
     <item
         android:title="item_send_db_contact_event"
         app:showAsAction="always"
-        android:id="@+id/item_send_db_contact_event"
+        android:id="@+id/item_clear_visit"
         android:icon="@android:drawable/ic_media_play" />
     <item
         android:title="media cleaner"
