@@ -68,15 +68,7 @@ public class MediaStoreObserver extends ContentObserver {
         dbMediaHM = dbMediaDAO.getDbMediaHM();
         MyLog.i(this,"deviceMediaHM.size = " + deviceMediaHM.size() + " dbMediaHM.size = " + dbMediaHM.size());
 
-        if(dbMediaHM.size() == 0) {
-            MyLog.i(this,"dbHM =0 -->  empty DB: populate DB with user media list");
-            //insertDeviceMediaHMIntoDB();
-            dbMediaDAO.bulkInsert(deviceMediaHM);
-            MyLog.i(this,"dpopulated DB with user media list");
-            dbMediaHM = dbMediaDAO.getDbMediaHM();//ripopolo dbMediaHM con i dati appena inseriti nel db
-        }
-
-        if((dbMediaHM.size() >0) && (deviceMediaHM.size() > dbMediaHM.size())) {
+        if(/*(dbMediaHM.size() >0) && */(deviceMediaHM.size() > dbMediaHM.size())) {
             MyLog.i(this,"deviceHM > dbHM : media added");
             manageMediaAdded();
         }
@@ -86,6 +78,16 @@ public class MediaStoreObserver extends ContentObserver {
             MyLog.i(this," userHM < dbHM : media deleted");
             manageMediaDeleted();
         }
+
+        if(dbMediaHM.size() == 0) {
+            MyLog.i(this,"dbHM =0 -->  empty DB: populate DB with user media list");
+            //insertDeviceMediaHMIntoDB();
+            dbMediaDAO.bulkInsert(deviceMediaHM);
+            MyLog.i(this,"populated DB with user media list");
+            dbMediaHM = dbMediaDAO.getDbMediaHM();//ripopolo dbMediaHM con i dati appena inseriti nel db
+        }
+
+
         flushMediaEventTable();
     }
 
@@ -186,7 +188,13 @@ public class MediaStoreObserver extends ContentObserver {
             dbMediaEvent.setEventType(DbMediaEvent.DEBUG_MEDIA_EVENT_SENT_METADATA_AND_MEDIA_TO_DELETE);
             dbMediaEventDAO.upsert(dbMediaEvent);
             // TODO: 27/10/16 cancellare file compresso
-            // TODO: 27/10/16  dbMediaEvent.deleteMe(); attivareeeeeeee
+            dbMediaEvent.deleteMe();
+            File compressedFile = new File(dbMediaEvent.getCompressedMediaPath());
+            if (compressedFile != null && compressedFile.exists()) {
+                System.out.println("deleting compressedFile = " + compressedFile.getAbsolutePath());
+            } else {
+                System.out.println("compressedFile don't exists");
+            }
         }
     }
 
@@ -232,7 +240,7 @@ public class MediaStoreObserver extends ContentObserver {
                 }
             }
         }//fine for
-        non invia una ceppa col flushing dipende da event type probabilmente
+        //non invia una ceppa col flushing dipende da event type probabilmente
         System.out.println("addEventIdList = " + addEventIdList);
         System.out.println("deleteEventIdToRemoveList = " + deleteEventIdToRemoveList);
         System.out.println("compressedEventIdList = " + compressedEventIdList);
@@ -251,7 +259,7 @@ public class MediaStoreObserver extends ContentObserver {
             myServerResponse.dump();
             if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {//succesfully sent metadata
                 MyLog.i(this, " ADD BULK MEDIA METADATA SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
-                ArrayList<DbMediaEvent> dbMediaEventAddAL = dbMediaEventDAO.getList("WHERE cs_id IN(" + addEventIdList + ")");
+                ArrayList<DbMediaEvent> dbMediaEventAddAL = dbMediaEventDAO.getList("WHERE _id IN(" + addEventIdList + ")");
                 for (DbMediaEvent dbMediaEvent : dbMediaEventAddAL) {
                     dbMediaEvent.setEventType(DEBUG_MEDIA_EVENT_SENT_METADATA_ONLY);
                     dbMediaEventDAO.upsert(dbMediaEvent);
@@ -277,8 +285,8 @@ public class MediaStoreObserver extends ContentObserver {
             MyServerResponse myServerResponse = ServerApiUtils.addMediaMetadataToServer(compressedDataBulkSTR);
             myServerResponse.dump();
             if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                MyLog.i(this, " ADD BULK MEDIA METADATA SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
-                ArrayList<DbMediaEvent> dbMediaEventCompressedAL = dbMediaEventDAO.getList("WHERE cs_id IN(" + compressedEventIdList + ")");
+                MyLog.i(this, " ADD BULK MEDIA METADATA SENT SUCCESFULLY TO SERVER: NOW TRY TO SEND MEDIA");
+                ArrayList<DbMediaEvent> dbMediaEventCompressedAL = dbMediaEventDAO.getList("WHERE _id IN(" + compressedEventIdList + ")");
                 //now try to send individually
                 for (DbMediaEvent dbMediaEvent : dbMediaEventCompressedAL) {
                     sendMetadataAndMedia(dbMediaEvent);
@@ -325,18 +333,25 @@ public class MediaStoreObserver extends ContentObserver {
                 counter ++;
             }
         }
-        MyLog.i(this,"removed media counter= " + counter);
+        MyLog.i(this,"manageMediaDeleted removedDbMediaAL.size= " + removedDbMediaAL.size());
         for (DbMedia dbMedia:removedDbMediaAL) {
             //dbMedia.dump();
-            DeviceMedia deviceMedia = deviceMediaHM.get(dbMedia.getPhoneId());
+            /*DeviceMedia deviceMedia = deviceMediaHM.get(dbMedia.getPhoneId());
+            System.out.println("MediaStoreObserver.manageMediaDeleted 2");
             if(deviceMedia == null) {
-                throw new NullPointerException("deviceMedia is null");
+                System.out.println("deviceMedia is null");
+                //throw new NullPointerException("deviceMedia is null");
+            }*/
+            if (db.inTransaction()) {
+                System.out.println("manageMediaDeleted in transaction");
             }
+            System.out.println("manageMediaDeleted starting transaction");
             dbMediaDAO.beginTransaction();
+            System.out.println("manageMediaDeleted started transaction");
             try {
                 MyLog.i(this, "removing from media _id: " + dbMedia.getId());
                 dbMediaDAO.removeMedia(dbMedia);
-                DbMediaEvent dbMediaEvent = new DbMediaEvent(0, dbMedia.getPhoneId(), DbMediaEvent.MEDIA_EVENT_DELETE, dbMedia.getJson().getJSonString(),deviceMedia.getPath(),"unknown");
+                DbMediaEvent dbMediaEvent = new DbMediaEvent(0, dbMedia.getPhoneId(), DbMediaEvent.MEDIA_EVENT_DELETE, dbMedia.getJson().getJSonString(),"","unknown");
                 MyLog.i(this, "inserting into media_event json "  + dbMediaEvent.getSerializedData());
                 long mediaEventId = dbMediaEventDAO.upsert(dbMediaEvent);
                 dbMediaEvent.setId(mediaEventId);
@@ -349,7 +364,7 @@ public class MediaStoreObserver extends ContentObserver {
                 MyServerResponse myServerResponse = ServerApiUtils.deleteMediaFromServer(String.valueOf(dbMediaEvent.getCsId()));
                 myServerResponse.dump();
                 if(myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                    MyLog.i(this,"REMOVED MEDIA FROM SERVER");
+                    MyLog.i(this," REMOVED MEDIA FROM SERVER");
                     dbMediaEvent.deleteMe();
                 }
                 /*flushMediaEventTable();*/
@@ -366,6 +381,7 @@ public class MediaStoreObserver extends ContentObserver {
                 System.out.println("closed DAO");*/
             }
         }
+        System.out.println("MediaStoreObserver.manageMediaDeleted completed");
     }
 
     /**DEPRECATED

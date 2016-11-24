@@ -40,12 +40,12 @@ public class DeviceMediaDAO {
         ContentResolver contentResolver = MyApp.getContext().getContentResolver();
         Cursor deviceMediaCursor = contentResolver.query(DeviceMedia.PHOTO_EXTERNAL_CONTENT_URI, projection, selection, null, null);
 
-        Log.i("DeviceMediaDAO", "getDeviceMediaHM : deviceMediaCursor columns " + deviceMediaCursor.getColumnCount() + " rows " + deviceMediaCursor.getCount());
+       // Log.i("DeviceMediaDAO", "getDeviceMediaHM : deviceMediaCursor columns " + deviceMediaCursor.getColumnCount() + " rows " + deviceMediaCursor.getCount());
         if (deviceMediaCursor != null) {
             String columnNamesAR[] = deviceMediaCursor.getColumnNames();
-            for (int i = 0; i < columnNamesAR.length; i++) {
+            /*for (int i = 0; i < columnNamesAR.length; i++) {
                 Log.i("media column names", i + " " + columnNamesAR[i]);
-            }
+            }*/
             int _idIdx = deviceMediaCursor.getColumnIndex(MediaStore.Images.ImageColumns._ID);
             int dateTakenIdx = deviceMediaCursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN);
             int latitudeIdx = deviceMediaCursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE);
