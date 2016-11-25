@@ -59,7 +59,7 @@ public class DbGeofenceEventDAO extends GenericDbDAO implements InterfaceDbDAO {
                     int id = cursor.getInt(cursor.getColumnIndex(GEOFENCE_EVENT_ID));
                     String geofenceId = cursor.getString(cursor.getColumnIndex(GEOFENCE_EVENT_GEOFENCE_ID));
                     long date = cursor.getLong(cursor.getColumnIndex(GEOFENCE_EVENT_DATE));
-                    int event = cursor.getInt(cursor.getColumnIndex(GEOFENCE_EVENT_DATE));
+                    int event = cursor.getInt(cursor.getColumnIndex(GEOFENCE_EVENT_EVENT));
                     object = new DbGeofenceEvent(id, geofenceId,date,event);
                     objectAL.add(object);
                 }

@@ -41,9 +41,9 @@ public class DeviceMonitoringService extends Service {
         //location tracking
         //startLocationTracking();
         //visit tracking
-        startVisitTracking();
+        //startVisitTracking();
         //geofences observer;
-        //startMonitoringGeofences();
+        startMonitoringGeofences();
 
     }
 

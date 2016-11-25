@@ -77,7 +77,12 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
         System.out.println("onConnected: calling populateDeviceGeofenceAL for initial populating");
         populateDeviceGeofenceAL(); //inizialmente carico nel device le geofences preesistenti sul db
         if(!MyConnectionUtils.isAirplaneModeOn()) {
-            registerGeofences();
+            if (deviceGeofenceAL != null && deviceGeofenceAL.size() > 0) {
+                System.out.println("onConnected registering geofences");
+                registerGeofences();
+            } else {
+                System.out.println("onConnected deviceGeofenceAL is null or zero sized");
+            }
             AsyncGetGeofencesFromServer asyncGetGeofencesFromServer = new AsyncGetGeofencesFromServer(shaFingerPrint);
             asyncGetGeofencesFromServer.execute(); //will load and eventually register geofences on post execution
             ////////////
@@ -93,8 +98,10 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
         } else {
             System.out.println("GeofenceObserver.onConnected: DEVICE IS IN AIRPLANE MODE");
         }
+
         SendBeatToServerThread sendBeatToServerThread = new SendBeatToServerThread();
-        sendBeatToServerThread.run();
+        System.out.println("GeofenceObserver.onConnected RIABILITARE SEND BEAT TO SERVER");
+        //sendBeatToServerThread.run();
     }
 
     /**
@@ -176,7 +183,7 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
                     System.out.println("shaFingerPrint h = " + shaFingerPrint);
                     System.out.println(" NEW geofences number " + beatResponseJsonWrapper.data.geofences.size());
                     //delete geofences from db
-                    System.out.println("delete old geofences from db");
+                    System.out.println(" delete old geofences from db");
                     dbGeofenceDAO.delete();
                     //remove all active geofences
                     //TODO: 10/11/16 aggiunta di nuove,overwrite di quelle che già esistono...e cancellazione di quelle che non ci sono più???
@@ -211,7 +218,12 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
             super.onPostExecute(s);
             //reloadGeofencesFrom db into device
             populateDeviceGeofenceAL();
-            registerGeofences();
+            if (deviceGeofenceAL != null && deviceGeofenceAL.size() > 0) {
+                System.out.println("onPostExecute registering geofences");
+                registerGeofences();
+            } else {
+                System.out.println("onPostExecute deviceGeofenceAL is null or zero sized");
+            }
             System.out.println("completed AsyncGetGeofencesFromServer execution");
         }
     }
@@ -229,22 +241,26 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
             return;
         } else {
             //ha tutti i diritti
-            System.out.println("registerGeofences: all rights enabled: initializing geofencingRequest");
-            //costruisco l'oggetto geofencingRequest che conterrà la lista delle geofences
-            GeofencingRequest.Builder geofencingRequestBuilder = new GeofencingRequest.Builder();
-            geofencingRequestBuilder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
-            geofencingRequestBuilder.addGeofences(deviceGeofenceAL);
-            GeofencingRequest geofencingRequest = geofencingRequestBuilder.build();
-            System.out.println("registerGeofences geofencingRequest.getGeofences().size() = " + geofencingRequest.getGeofences().size());
-            //costruisco il pending Intent
-            Intent intent = new Intent(MyApp.getContext(),GeofenceTransitionsIntentService.class);
-            PendingIntent pendingIntent = PendingIntent.getService(MyApp.getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);// We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling addgeoFences()
+            System.out.println(" registerGeofences: all rights enabled: initializing geofencingRequest");
 
-            LocationServices.GeofencingApi.addGeofences(
-                    googleApiClient,
-                    geofencingRequest,
-                    pendingIntent).setResultCallback(this);//chiama onResult
+                //costruisco l'oggetto geofencingRequest che conterrà la lista delle geofences
+
+                GeofencingRequest.Builder geofencingRequestBuilder = new GeofencingRequest.Builder();
+                geofencingRequestBuilder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+                geofencingRequestBuilder.addGeofences(deviceGeofenceAL);
+                GeofencingRequest geofencingRequest = geofencingRequestBuilder.build();
+                System.out.println("registerGeofences geofencingRequest.getGeofences().size() = " + geofencingRequest.getGeofences().size());
+                //costruisco il pending Intent
+                Intent intent = new Intent(MyApp.getContext(), GeofenceTransitionsIntentService.class);
+                PendingIntent pendingIntent = PendingIntent.getService(MyApp.getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);// We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling addgeoFences()
+
+                LocationServices.GeofencingApi.addGeofences(
+                        googleApiClient,
+                        geofencingRequest,
+                        pendingIntent).setResultCallback(this);//chiama onResult
+
         }
+        if (deviceGeofenceAL == null) System.out.println("GeofenceObserver.registerGeofences deviceGeofenceAL is null");
         if(googleApiClient == null) System.out.println("registerGeofences.googleApiClient is null");
         if(mLocationRequest == null) System.out.println("registerGeofences.mLocationRequest is null");
         if(this == null) System.out.println("this is null");
@@ -286,9 +302,12 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
 
     @Override
     public void onLocationChanged(Location location) {
+        //////////////////////////
+        flushGeofenceEventTable();
+        //////////////////////////
         System.out.println("GEOFENCE OBSERVER location CHANGED = " + location.getTime());
         System.out.println("server time format = " + CalendarUtils.serverTimeFormat(location.getTime()));
-        System.out.println("location.getLatitude() = " + location.getLatitude());
+        System.out.println(" location.getLatitude() = " + location.getLatitude());
         System.out.println("location.getLongitude() = " + location.getLongitude());
         System.out.println("location.getAccuracy() = " + location.getAccuracy());
 
@@ -303,7 +322,7 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
     // TODO: 05/11/16 json parsing of incoming geofences
 
 
-    public void flushGeofenceTable() {
+    /*public void flushGeofenceTable() {
         // TODO: 13/11/16 to be used and tested
         DbGeofenceEventDAO dbGeofenceEventDAO = new DbGeofenceEventDAO();
         ArrayList <DbGeofenceEvent> dbGeofenceEventAL = dbGeofenceEventDAO.getList();
@@ -320,8 +339,36 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
         if(idToDeleteListSTR.endsWith(",")) idToDeleteListSTR = idToDeleteListSTR.substring(0,idToDeleteListSTR.length()-1);
         GeofenceTransitionsIntentService.AsyncSendToServer asyncSendToServer = new GeofenceTransitionsIntentService().new AsyncSendToServer("[" + bulkGeofenceEventSTR + "]",idToDeleteListSTR);
         asyncSendToServer.execute();
-    }
+    }*/
 
+    public void flushGeofenceEventTable() {
+        // TODO: 25/11/16 to be used and tested
+        System.out.println("FLUSHING GEOFENCE EVENT TABLE " + new Date(CalendarUtils.nowUTCMillis()).toString());
+        DbGeofenceEventDAO dbGeofenceEventDAO = new DbGeofenceEventDAO();
+        ArrayList<DbGeofenceEvent> dbGeofenceEventAL = dbGeofenceEventDAO.getList();
+        System.out.println(" FLUSHING dbGeofenceEventAL.size() = " + dbGeofenceEventAL.size());
+        if(dbGeofenceEventAL.size() > 0) {
+            StringBuilder bulkGeofenceEventSB = new StringBuilder();//contiene gli eventi geofence da inviare
+            StringBuilder idToDeleteListSB = new StringBuilder(); //la usero' per cancellare gli eventi una volta inviati
+            for (DbGeofenceEvent dbGeofenceEvent : dbGeofenceEventAL) {
+                System.out.println("dbGeofenceEvent id= " + dbGeofenceEvent.getGeofenceId() + " event" + dbGeofenceEvent.getEvent());
+                bulkGeofenceEventSB.append(dbGeofenceEvent.getSerializedData());
+                bulkGeofenceEventSB.append(",");
+                idToDeleteListSB.append(dbGeofenceEvent.getId());
+                idToDeleteListSB.append(",");
+            }
+            String bulkGeofenceEventSTR = bulkGeofenceEventSB.toString();
+            if (bulkGeofenceEventSTR.endsWith(","))
+                bulkGeofenceEventSTR = bulkGeofenceEventSTR.substring(0, bulkGeofenceEventSTR.length() - 1);
+            String idToDeleteListSTR = idToDeleteListSB.toString();
+            if (idToDeleteListSTR.endsWith(","))
+                idToDeleteListSTR = idToDeleteListSTR.substring(0, idToDeleteListSTR.length() - 1);
+            GeofenceTransitionsIntentService.AsyncSendToServer asyncSendToServer = new GeofenceTransitionsIntentService().new AsyncSendToServer("[" + bulkGeofenceEventSTR + "]", idToDeleteListSTR);
+            asyncSendToServer.execute();
+        }
+    }
+    
+    
    /* public static void main(String args[]){
         parseGeofenceJsonAR();
     }*/

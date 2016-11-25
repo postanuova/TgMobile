@@ -121,8 +121,8 @@ public class GeofenceTransitionsIntentService extends IntentService {
             if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
                 MyLog.i(this, "SENT NEW GEOFENCE EVENT TO SERVER, DELETING  "  + idToDeleteListSTR);
                 DbGeofenceEventDAO dbGeofenceEventDAO = new DbGeofenceEventDAO();
-                System.out.println("enable delete ?");
-                //dbGeofenceEventDAO.delete(idToDeleteListSTR);
+                //System.out.println("enable delete ");
+                dbGeofenceEventDAO.delete(idToDeleteListSTR);
             }
             return null;
         }
