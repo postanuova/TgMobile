@@ -21,8 +21,6 @@ public class CalendarUtils {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"), Locale.getDefault());
         String   timeZone = new SimpleDateFormat("Z").format(calendar.getTime());
         String offset = timeZone.substring(0, 3) + timeZone.substring(3, 5);
-
-        System.out.println("offset = " + offset);
         return offset;
     }
 

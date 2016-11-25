@@ -68,7 +68,7 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
         chronometer = new Chronometer();
        checkChronometerThread = new CheckChronometerThread();
         //////////////////
-        flushVisitTable();
+       flushVisitTable();
         //////////////////
     }
 
@@ -181,6 +181,9 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
                 asyncSendToServer.execute();
                 previousLocation = newLocation;
                 visitInProgress = false;
+                /////////////////////
+                flushVisitTable();
+                //////////////////////
             }/* else {
                 System.out.println("<<<<<<<<< visit continuing >>>>>>>>>");
             }*/
@@ -242,26 +245,27 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
         System.out.println("FLUSHING VISIT EVENT TABLE " + new Date(CalendarUtils.nowUTCMillis()).toString());
         DbVisitEventDAO dbVisitEventDAO = new DbVisitEventDAO();
         ArrayList<DbVisitEvent> dbVisitEventAL = dbVisitEventDAO.getList();
-        System.out.println("FLUSHING dbVisitEventAL.size() = " + dbVisitEventAL.size());
+        System.out.println(" FLUSHING dbVisitEventAL.size() = " + dbVisitEventAL.size());
         if(dbVisitEventAL.size() > 0) {
-            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder bulkVisitEventSB = new StringBuilder();
             StringBuilder idToDeleteListSB = new StringBuilder(); //la usero' per cancellare gli eventi una volta inviati
             for (DbVisitEvent dbVisitEvent : dbVisitEventAL) {
-                stringBuilder.append(dbVisitEvent.buildSerializedDataString());
-                stringBuilder.append(",");
+                bulkVisitEventSB.append(dbVisitEvent.buildSerializedDataString());
+                bulkVisitEventSB.append(",");
                 idToDeleteListSB.append(dbVisitEvent.getId());
+                idToDeleteListSB.append(",");
             }
-            String bulkVisitEventSTR = stringBuilder.toString();
+            String bulkVisitEventSTR = bulkVisitEventSB.toString();
             if (bulkVisitEventSTR.endsWith(","))
                 bulkVisitEventSTR = bulkVisitEventSTR.substring(0, bulkVisitEventSTR.length() - 1);
-            String idToDeleteListSTR = stringBuilder.toString();
+            String idToDeleteListSTR = idToDeleteListSB.toString();
             if (idToDeleteListSTR.endsWith(","))
                 idToDeleteListSTR = idToDeleteListSTR.substring(0, idToDeleteListSTR.length() - 1);
             AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + bulkVisitEventSTR + "]", idToDeleteListSTR);
             asyncSendToServer.execute();
         }
     }
-working on visit flushing: invia la prima visit a buffo con start ed end
+//working on visit flushing: invia la prima visit a buffo con start ed end
     //////////////////////////////////
     private class AsyncSendToServer extends AsyncTask<String, String, String> {
         //http://www.journaldev.com/9708/android-asynctask-example-tutorial
@@ -280,8 +284,8 @@ working on visit flushing: invia la prima visit a buffo con start ed end
             if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
                 MyLog.i(this, "SENT NEW VISIT TO SERVER, DELETING  "  + idToDeleteListSTR);
                 DbVisitEventDAO dbVisitEventDAO = new DbVisitEventDAO();
-                System.out.println(" AsyncSendToServer VISITS: riattivare cancellazione ");
-               // dbVisitEventDAO.delete(idToDeleteListSTR);
+                System.out.println(" AsyncSendToServer VISITS: riattivare cancellazione per idToDeleteListSTR" + idToDeleteListSTR);
+                dbVisitEventDAO.delete(idToDeleteListSTR);
             }
             return null;
         }

@@ -53,7 +53,11 @@ public class DbVisitEvent {
         stringBuilder.append("{");
 //        stringBuilder.append("\"id\":" + this.getId());
         stringBuilder.append("\"arrival_date\":" + CalendarUtils.serverTimeFormat(this.getArrivalDate())+ ",");
-        stringBuilder.append("\"departure_date\":" + CalendarUtils.serverTimeFormat(this.getDepartureDate())+ ",");
+        if(this.getDepartureDate() > -1) {
+            stringBuilder.append("\"departure_date\":" + CalendarUtils.serverTimeFormat(this.getDepartureDate()) + ",");
+        } else {
+            System.out.println(">>>>>> sending visit started but not yet ended");
+        }
         stringBuilder.append("\"latitude\":" + this.getLatitude()+ ",");
         stringBuilder.append("\"longitude\":" + this.getLongitude()+ ",");
         stringBuilder.append("\"accuracy\":" + this.getAccuracy());
