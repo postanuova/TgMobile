@@ -40,6 +40,8 @@ import org.teenguard.child.utils.TypeConverter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 /**
@@ -48,6 +50,8 @@ import java.util.Date;
  * https://code.tutsplus.com/tutorials/how-to-work-with-geofences-on-android--cms-26639
  * dbGeofence = new DbGeofence(0,"Chris",28.0589617,  -16.7299850,500,true,true);
  */
+
+// TODO: 25/11/16 update geofences from server json parsing of incoming geofences
 
 public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener,ResultCallback<Status> {
     int checkInterval; //is the t-parameter of beat response
@@ -102,6 +106,25 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
         SendBeatToServerThread sendBeatToServerThread = new SendBeatToServerThread();
         System.out.println("GeofenceObserver.onConnected RIABILITARE SEND BEAT TO SERVER");
         //sendBeatToServerThread.run();
+        //AsyncSendBeatToServer asyncSendBeatToServer = new AsyncSendBeatToServer("");
+        //asyncSendBeatToServer.doInBackground();
+
+        ///////////
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                // TODO: 14/11/16 leggere shaString precedente
+                if(!MyConnectionUtils.isAirplaneModeOn()) {
+                        System.out.println("TIMER.run: sending beat");
+                    AsyncGetGeofencesFromServer asyncGetGeofencesFromServer = new AsyncGetGeofencesFromServer(shaFingerPrint);
+                    asyncGetGeofencesFromServer.execute();
+                    ////////////
+                } else {
+                    System.out.println(" GeofenceObserver.SendBeatToServerThread: DEVICE IS IN AIRPLANE MODE");
+                }
+            }
+        },0, 5000);
+        ///////////////
     }
 
     /**
@@ -160,6 +183,56 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
             }
         }
     }
+
+
+
+
+    public class AsyncSendBeatToServer extends AsyncTask<String, String, String> {
+        //http://www.journaldev.com/9708/android-asynctask-example-tutorial
+        String dataToSend;
+
+        public AsyncSendBeatToServer(String dataToSend) {
+            this.dataToSend = dataToSend;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            System.out.println(" ASYNC SendBeatToServerThread STARTED");
+            while (true) {
+                System.out.println("SendBeatToServerThread.run: cycle " + new Date(Calendar.getInstance().getTimeInMillis()));
+                try {
+                    if(checkInterval > 5000) {
+                        Thread.sleep(checkInterval);
+                        // TODO: 14/11/16 moltiplicare *1000 check interval
+                    }
+                    else {
+                        Thread.sleep(5000);//per sicurezza
+                    }
+                    System.out.println("sleeping for 5000");
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                //////////
+                // TODO: 14/11/16 leggere shaString precedente
+                if(!MyConnectionUtils.isAirplaneModeOn()) {
+                    System.out.println("SendBeatToServerThread.run: sending beat");
+                    //AsyncGetGeofencesFromServer asyncGetGeofencesFromServer = new AsyncGetGeofencesFromServer(shaFingerPrint);
+                    //asyncGetGeofencesFromServer.execute();
+                    ////////////
+                } else {
+                    System.out.println("GeofenceObserver.SendBeatToServerThread: DEVICE IS IN AIRPLANE MODE");
+                }
+
+            }
+        }
+
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+        }
+    }
+
+
 
     public class AsyncGetGeofencesFromServer extends AsyncTask<String, String, String> {
         //http://www.journaldev.com/9708/android-asynctask-example-tutorial
@@ -319,27 +392,7 @@ public class GeofenceObserver implements GoogleApiClient.OnConnectionFailedListe
 
 
 
-    // TODO: 05/11/16 json parsing of incoming geofences
 
-
-    /*public void flushGeofenceTable() {
-        // TODO: 13/11/16 to be used and tested
-        DbGeofenceEventDAO dbGeofenceEventDAO = new DbGeofenceEventDAO();
-        ArrayList <DbGeofenceEvent> dbGeofenceEventAL = dbGeofenceEventDAO.getList();
-        StringBuilder stringBuilder = new StringBuilder();
-        StringBuilder idToDeleteListSB = new StringBuilder(); //la usero' per cancellare gli eventi una volta inviati
-        for (DbGeofenceEvent dbGeofenceEvent:dbGeofenceEventAL) {
-            stringBuilder.append(dbGeofenceEvent.getSerializedData());
-            stringBuilder.append(",");
-            idToDeleteListSB.append(dbGeofenceEvent.getId());
-        }
-        String bulkGeofenceEventSTR = stringBuilder.toString();
-        if(bulkGeofenceEventSTR.endsWith(",")) bulkGeofenceEventSTR = bulkGeofenceEventSTR.substring(0,bulkGeofenceEventSTR.length()-1);
-        String idToDeleteListSTR = stringBuilder.toString();
-        if(idToDeleteListSTR.endsWith(",")) idToDeleteListSTR = idToDeleteListSTR.substring(0,idToDeleteListSTR.length()-1);
-        GeofenceTransitionsIntentService.AsyncSendToServer asyncSendToServer = new GeofenceTransitionsIntentService().new AsyncSendToServer("[" + bulkGeofenceEventSTR + "]",idToDeleteListSTR);
-        asyncSendToServer.execute();
-    }*/
 
     public void flushGeofenceEventTable() {
         // TODO: 25/11/16 to be used and tested
