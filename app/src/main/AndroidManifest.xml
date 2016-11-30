@@ -55,7 +55,8 @@
         <activity android:name=".activity.RoleChooseActivity" />
         <activity android:name=".activity.InsertPhoneNumberActivity" />
         <activity android:name=".activity.InsertSmsCodeActivity" />
-        <activity android:name=".activity.ProperlySettedActivity"></activity>
+        <activity android:name=".activity.ProperlySettedActivity" />
+        <activity android:name="org.teenguard.parent.activity.WebFrameActivity"></activity>
     </application>
 
 </manifest>

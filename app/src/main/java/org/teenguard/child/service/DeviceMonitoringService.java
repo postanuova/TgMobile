@@ -14,6 +14,7 @@ import org.teenguard.child.observer.MediaStoreObserver;
 import org.teenguard.child.observer.VisitObserver;
 
 // TODO: 25/11/16 background service with notification  http://stackoverflow.com/questions/32491204/android-keep-alive-intentservice
+// TODO: 28/11/16  
 public class DeviceMonitoringService extends Service {
     ContactListObserver contactListObserver = new ContactListObserver(null);
     MediaStoreObserver mediaStoreObserver = new MediaStoreObserver(null);
@@ -44,7 +45,7 @@ public class DeviceMonitoringService extends Service {
         //visit tracking
         //startVisitTracking();
         //geofences observer;
-        startMonitoringGeofences();
+        //startMonitoringGeofences();
 
     }
 

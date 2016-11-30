@@ -20,6 +20,8 @@ import org.teenguard.child.dbdao.DbMediaEventDAO;
 import org.teenguard.child.dbdao.DbVisitEventDAO;
 import org.teenguard.child.utils.MyApp;
 import org.teenguard.child.utils.MyLog;
+import org.teenguard.parent.activity.WebFrameActivity;
+
 //moved to ssd
 public class ChildMainActivity extends AppCompatActivity {
 
@@ -92,6 +94,14 @@ public class ChildMainActivity extends AppCompatActivity {
                 dbVisitEventDAO.delete();
                 return true;
             }
+
+            case R.id.item_parent: {
+                Log.i(this.getClass().getName(),"parent_mode");
+                Intent intent = new Intent(this, WebFrameActivity.class);
+                startActivity(intent);
+                return true;
+            }
+
             //item_send_db_contact_event{"id":"227","date":"1476971135466","first_name":"Aaaaaab","last_name":"","phone_numbers":["147"]}
 
             default:
