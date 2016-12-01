@@ -78,7 +78,8 @@ public class ChildMainActivity extends AppCompatActivity {
 
             case R.id.item_welcome: {
                 Log.i(this.getClass().getName(),"welcome screen");
-                Intent intent = new Intent(this, WelcomeActivity.class);
+                //Intent intent = new Intent(this, WelcomeActivity.class);
+                Intent intent = new Intent(this, InsertSmsCodeActivity.class);
                 intent.putExtra("countryCode","34"); //quello con il +
                 intent.putExtra("phoneNumber","603000000");
                 String xSessidShared = MyApp.getPreferences().getString("X-SESSID","");

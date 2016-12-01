@@ -9,17 +9,21 @@ import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.teenguard.child.R;
 import org.teenguard.child.datatype.MyServerResponse;
+import org.teenguard.child.utils.FxUtils;
 import org.teenguard.child.utils.JSon;
 import org.teenguard.child.utils.MyApp;
 import org.teenguard.child.utils.ServerApiUtils;
 
 public class InsertSmsCodeActivity extends AppCompatActivity {
+    boolean wrongSmsCode = false;
     String countryCode;
     String phoneNumber;
     TextView tvPhoneNumber;
@@ -33,7 +37,6 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
         if(parentConfigured) {//device already configured,skip all activities
             gotoLastActivity();
         }
-
         setContentView(R.layout.activity_insert_sms_code);
         viewBinding();
 
@@ -52,11 +55,17 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
         tvPhoneNumber = (TextView)findViewById(R.id.tvPhoneNumber);
         editSmsCode = (EditText) findViewById(R.id.editSmsCode);
         tvSmsCode = (TextView) findViewById(R.id.tvSmsCode);
+
         //getting extras from phone number activity
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             countryCode = extras.getString("countryCode");
             phoneNumber = extras.getString("phoneNumber");
+            wrongSmsCode = extras.getBoolean("wrongSmsCode");
+            if(wrongSmsCode) {
+                FxUtils.vibe();
+                shake();
+            }
             System.out.println("retrieved <countryCode phoneNumber> = <" + countryCode +  " " + phoneNumber + ">");
             //populating with extra
             tvPhoneNumber.setText(countryCode + " " + phoneNumber);
@@ -96,6 +105,51 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
 
     }
 
+
+
+    private void shake() {
+       /* new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ObjectAnimator
+                        .ofFloat(tvSmsCode, "translationX", 0, 25, -25, 25, -25,15, -15, 6, -6, 0)
+                        .setDuration(5)
+                        .start();
+            }
+        }, 1000);
+*/
+
+       /* new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //result.setText(s);
+                    }
+                });
+
+                tvSmsCode.animate()
+                        .alpha(0)
+                        .setDuration(1000);
+            }
+        }, 100);*/
+
+
+        Animation shake = AnimationUtils.loadAnimation(MyApp.getContext(), R.anim.shake);
+        tvSmsCode.startAnimation(shake);
+
+       /* ObjectAnimator animation2 = ObjectAnimator.ofFloat(tvSmsCode,
+                "x", 10);
+        animation2.setDuration(2000);
+        animation2.start();*/
+        /*for (int i=0;i < 10;i++) {
+            tvSmsCode.animate().translationX(30).withLayer();
+            tvSmsCode.animate().translationX(-30).withLayer();
+        }*/
+
+    }
 
     //////////////////////////////////
     private class AsyncSendToServer extends AsyncTask<String, String, String> {
@@ -140,10 +194,8 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
 
             if(myServerRegisterResponse.getResponseCode() == 401) {
                 asyncToast(getString(R.string.wrong_sms_code));
-                //Toast.makeText(MyApp.getContext(),getString(R.string.too_many_request), Toast.LENGTH_LONG).show();
-                //tvIsValidPhone.setText(getString(R.string.too_many_request));
+                wrongSmsCode = true; //enable shaking
                 reloadCurrentActivity();
-
                 return null;
             }
 
@@ -204,6 +256,7 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
         Intent intent = new Intent(MyApp.getContext(), InsertSmsCodeActivity.class);
         intent.putExtra("countryCode",countryCode); //quello con il +
         intent.putExtra("phoneNumber",phoneNumber);
+        intent.putExtra("wrongSmsCode",true);
         startActivity(intent);
         this.finish();
     }
