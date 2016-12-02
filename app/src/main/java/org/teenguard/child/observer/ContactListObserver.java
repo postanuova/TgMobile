@@ -291,12 +291,12 @@ public class ContactListObserver extends ContentObserver {
     /**
      * transmit events to server and cleanup events table
      */
-    public void flushContactEventTable() {
-        MyLog.i(this, "FLUSHING contact event table");
-        //DbContactEventDAO dbContactEventDAO = new DbContactEventDAO();
+    public static void flushContactEventTable() {
+        System.out.println("FLUSHING contact event table");
+        DbContactEventDAO dbContactEventDAO = new DbContactEventDAO();
         ArrayList<DbContactEvent> dbContactEventAL = dbContactEventDAO.getList();
         if(dbContactEventAL.size() == 0 ) {
-            MyLog.i(this, "no events to flush: return");
+            System.out.println("no contacts events to flush: return");
             return;
         }
         StringBuilder addEventSB = new StringBuilder();
@@ -341,9 +341,9 @@ public class ContactListObserver extends ContentObserver {
                 MyServerResponse myServerResponse = ServerApiUtils.addContactToServer(addDataBulkSTR);
 
             if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                MyLog.i(this, "ADD BULK CONTACT SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
+                System.out.println("ADD BULK CONTACT SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
                 dbContactEventDAO.delete(addEventIdToRemoveList);
-                MyLog.i(this, "deleted from events list " + addEventIdToRemoveList);
+                System.out.println("deleted from events list " + addEventIdToRemoveList);
             }
         }
         /////update
@@ -359,9 +359,9 @@ public class ContactListObserver extends ContentObserver {
             updateEventSTR = "[" + updateEventSTR + "]";
             MyServerResponse myServerResponse = ServerApiUtils.updateContactIntoServer(updateEventSTR);
             if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                MyLog.i(this, "UPDATE BULK CONTACT SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
+                System.out.println("UPDATE BULK CONTACT SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
                 dbContactEventDAO.delete(updateEventIdToRemoveList);
-                MyLog.i(this, "deleted from events list " + updateEventIdToRemoveList);
+                System.out.println("deleted from events list " + updateEventIdToRemoveList);
             }
         }
         /////delete
@@ -377,9 +377,9 @@ public class ContactListObserver extends ContentObserver {
             deleteDataBulkSTR = "[" + deleteDataBulkSTR + "]";
             MyServerResponse myServerResponse = ServerApiUtils.deleteContactFromServer(deleteDataBulkSTR);
             if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                MyLog.i(this, "DELETE BULK CONTACT SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
+                System.out.println("DELETE BULK CONTACT SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
                 dbContactEventDAO.delete(deleteEventIdToRemoveList);
-                MyLog.i(this, "deleted from events list " + deleteEventIdToRemoveList);
+                System.out.println("deleted from events list " + deleteEventIdToRemoveList);
             }
         }
 

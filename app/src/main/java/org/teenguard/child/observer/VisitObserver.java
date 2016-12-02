@@ -240,7 +240,8 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
         }
     }
 
-    public void flushVisitTable() {
+    // TODO: 02/12/16 make static 
+    public  void flushVisitTable() {
         System.out.println("FLUSHING VISIT EVENT TABLE " + new Date(CalendarUtils.nowUTCMillis()).toString());
         DbVisitEventDAO dbVisitEventDAO = new DbVisitEventDAO();
         ArrayList<DbVisitEvent> dbVisitEventAL = dbVisitEventDAO.getList();

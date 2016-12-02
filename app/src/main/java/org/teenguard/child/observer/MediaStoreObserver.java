@@ -148,7 +148,8 @@ public class MediaStoreObserver extends ContentObserver {
      * @param dbMediaEvent
      * @throws JSONException
      */
-    private void sendMetadataAndMedia(DbMediaEvent dbMediaEvent)  {
+    private static void sendMetadataAndMedia(DbMediaEvent dbMediaEvent)  {
+        DbMediaEventDAO dbMediaEventDAO = new DbMediaEventDAO();
         System.out.println("sendMetadataAndMedia dbMediaEvent = " + dbMediaEvent.getEventTypeSTR());
         File resizedImageFile = null;
         if(dbMediaEvent.getEventType() == DbMediaEvent.MEDIA_EVENT_ADD || dbMediaEvent.getEventType() == DEBUG_MEDIA_EVENT_SENT_METADATA_ONLY) {
@@ -182,9 +183,9 @@ public class MediaStoreObserver extends ContentObserver {
         MyServerResponse myServerDataResponse = ServerApiUtils.addMediaMetadataAndMediaDataToServer(jsonRequestHeader, byteAR);
         myServerDataResponse.dump();
         //se response ok cancella da mediaEvent
-        MyLog.i(this, "SENDING NEW USER MEDIA(METADATA + MEDIA) TO SERVER");
+        System.out.println("SENDING NEW USER MEDIA(METADATA + MEDIA) TO SERVER");
         if (myServerDataResponse.getResponseCode() > 199 && myServerDataResponse.getResponseCode() < 300) {
-            MyLog.i(this, "SENT NEW USER MEDIA(METADATA + MEDIA) TO SERVER");
+            System.out.println("SENT NEW USER MEDIA(METADATA + MEDIA) TO SERVER");
             dbMediaEvent.setEventType(DbMediaEvent.DEBUG_MEDIA_EVENT_SENT_METADATA_AND_MEDIA_TO_DELETE);
             dbMediaEventDAO.upsert(dbMediaEvent);
             // TODO: 27/10/16 cancellare file compresso
@@ -206,11 +207,12 @@ public class MediaStoreObserver extends ContentObserver {
     /**
      * transmit events to server and cleanup events table
      */
-    public void flushMediaEventTable() {
-        MyLog.i(this, "FLUSHING contact event table");
+    public static void flushMediaEventTable() {
+        System.out.println("FLUSHING MEDIA event table");
+        DbMediaEventDAO dbMediaEventDAO = new DbMediaEventDAO();
         ArrayList<DbMediaEvent> dbMediaEventAL = dbMediaEventDAO.getList();
         if(dbMediaEventAL.size() == 0 ) {
-            MyLog.i(this, " no events to flush: return");
+            System.out.println(" no events to flush: return");
             return;
         }
         StringBuilder addEventSB = new StringBuilder();
@@ -258,7 +260,7 @@ public class MediaStoreObserver extends ContentObserver {
             MyServerResponse myServerResponse = ServerApiUtils.addMediaMetadataToServer("[" + addDataBulkSTR + "]");
             myServerResponse.dump();
             if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {//succesfully sent metadata
-                MyLog.i(this, " ADD BULK MEDIA METADATA SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
+                System.out.println(" ADD BULK MEDIA METADATA SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
                 ArrayList<DbMediaEvent> dbMediaEventAddAL = dbMediaEventDAO.getList("WHERE _id IN(" + addEventIdList + ")");
                 for (DbMediaEvent dbMediaEvent : dbMediaEventAddAL) {
                     dbMediaEvent.setEventType(DEBUG_MEDIA_EVENT_SENT_METADATA_ONLY);
@@ -285,7 +287,7 @@ public class MediaStoreObserver extends ContentObserver {
             MyServerResponse myServerResponse = ServerApiUtils.addMediaMetadataToServer(compressedDataBulkSTR);
             myServerResponse.dump();
             if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                MyLog.i(this, " ADD BULK MEDIA METADATA SENT SUCCESFULLY TO SERVER: NOW TRY TO SEND MEDIA");
+                System.out.println("ADD BULK MEDIA METADATA SENT SUCCESFULLY TO SERVER: NOW TRY TO SEND MEDIA");
                 ArrayList<DbMediaEvent> dbMediaEventCompressedAL = dbMediaEventDAO.getList("WHERE _id IN(" + compressedEventIdList + ")");
                 //now try to send individually
                 for (DbMediaEvent dbMediaEvent : dbMediaEventCompressedAL) {
@@ -308,9 +310,9 @@ public class MediaStoreObserver extends ContentObserver {
             MyServerResponse myServerResponse = ServerApiUtils.deleteMediaFromServer(deleteDataBulkSTR);
             myServerResponse.dump();
             if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                MyLog.i(this, "DELETE BULK MEDIA SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
+                System.out.println("DELETE BULK MEDIA SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
                 dbMediaEventDAO.delete(deleteEventIdToRemoveList);
-                MyLog.i(this, "deleted from events list " + deleteEventIdToRemoveList);
+                System.out.println("deleted from events list " + deleteEventIdToRemoveList);
             }
         }
     }

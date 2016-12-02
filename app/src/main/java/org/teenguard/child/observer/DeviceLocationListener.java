@@ -119,9 +119,9 @@ public class DeviceLocationListener implements GoogleApiClient.OnConnectionFaile
     }
 
 
-
-    public void flushLocationTable() {
-        // TODO: 02/11/16 to be used and tested
+    // TODO: 02/12/16 make static 
+    public  void flushLocationTable() {
+        // TODO: 02/11/16 to be used and tested and launched in flusher
         DbLocationEventDAO dbLocationEventDAO = new DbLocationEventDAO();
         ArrayList <DbLocationEvent> dbLocationEventAL = dbLocationEventDAO.getList();
         StringBuilder stringBuilder = new StringBuilder();

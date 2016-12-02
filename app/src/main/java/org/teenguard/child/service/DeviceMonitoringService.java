@@ -46,6 +46,8 @@ public class DeviceMonitoringService extends Service {
         //startVisitTracking();
         //geofences observer;
         startMonitoringGeofences();
+        //flushing
+        FlushService.startTimedFlush();
 
     }
 
@@ -54,7 +56,7 @@ public class DeviceMonitoringService extends Service {
     }
 
     private void startMonitoringMediaStoreChanges() {
-        Log.i(this.getClass().getName(), "startMonitoringMediaStoreChanges");
+        Log.i(this.getClass().getName(), " startMonitoringMediaStoreChanges");
         getContentResolver().registerContentObserver(DeviceMedia.PHOTO_EXTERNAL_CONTENT_URI,
                 false,/*no propagation to descendant*/
                 mediaStoreObserver);
