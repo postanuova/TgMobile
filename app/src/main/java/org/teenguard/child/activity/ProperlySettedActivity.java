@@ -18,10 +18,13 @@ public class ProperlySettedActivity extends AppCompatActivity {
         setContentView(R.layout.activity_properly_setted);
         viewBinding();
         getSupportActionBar().hide(); //nasconde la barra
-        // TODO: 20/11/16 binding immagine che chiude
-        // TODO: 20/11/16 visualizza now configure parent solo se non è stato già fatto (posso salvarlo tra le properties)
-        // TODO: 20/11/16 close button
-        // TODO: 20/11/16 eliminare barra
+        //  TODO: 20/11/16 binding immagine che chiude
+        //  TODO: 20/11/16 visualizza now configure parent solo se non è stato già fatto (posso salvarlo tra le properties)
+        //  TODO: 20/11/16 close button
+        //  TODO: 20/11/16 eliminare barra
+        //  TODO: 02/12/16 prima di dare  l'ok un post a beat con contenuto {time_zone: +0000}
+        //  TODO: 02/12/16 implementare giro di richiesta permessi
+        //  per i permessi cambiati post su beat {contact_permission:bool, location_permission:bool, photo_permission:bool}
     }
 
 

@@ -70,11 +70,11 @@ public class GeofenceTransitionsIntentService extends IntentService {
         // Get the transition type.
         int geofenceTransition = geofencingEvent.getGeofenceTransition();
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
-            System.out.println("<<<<< GEOFENCE EVENT: ENTERED >>>>>");
+            System.out.println("<<<<< GEOFENCE EVENT: ENTERED " + CalendarUtils.currentDatetimeUTC() + " >>>>>");
         } else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
-            System.out.println("<<<<< GEOFENCE EVENT: EXITED  >>>>>");
+            System.out.println("<<<<< GEOFENCE EVENT: EXITED " + CalendarUtils.currentDatetimeUTC() + " >>>>>");
         } else {
-            System.out.println("<<<<< GEOFENCE EVENT: ERROR");
+            System.out.println("<<<<< GEOFENCE EVENT: ERROR" + CalendarUtils.currentDatetimeUTC() + " >>>>>");
         }
     }
 

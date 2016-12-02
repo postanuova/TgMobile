@@ -16,6 +16,10 @@ public class CalendarUtils {
         return System.currentTimeMillis();
     }
 
+    public static String currentDatetimeUTC() {
+        return serverTimeFormat(nowUTCMillis());
+    }
+
     public static String getDeviceTimezone() {
         //http://stackoverflow.com/questions/15068113/how-to-get-the-timezone-offset-in-gmtlike-gmt700-from-android-device
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"), Locale.getDefault());

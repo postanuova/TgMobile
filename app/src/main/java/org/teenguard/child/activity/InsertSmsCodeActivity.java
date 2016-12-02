@@ -87,7 +87,7 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
                     json.add("phone_number",countryCode + phoneNumber);
                     json.add("code",editSmsCode.getText().toString());
                     System.out.println("json.getJSonString() = " + json.getJSonString());
-                    AsyncSendToServer asyncSendToServer = new AsyncSendToServer(json.getJSonString());
+                    AsyncSendToServer asyncSendToServer = new AsyncSendToServer(json.getJSonString());//register
                     asyncSendToServer.execute();
                 }
             }
@@ -108,47 +108,8 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
 
 
     private void shake() {
-       /* new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                ObjectAnimator
-                        .ofFloat(tvSmsCode, "translationX", 0, 25, -25, 25, -25,15, -15, 6, -6, 0)
-                        .setDuration(5)
-                        .start();
-            }
-        }, 1000);
-*/
-
-       /* new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        //result.setText(s);
-                    }
-                });
-
-                tvSmsCode.animate()
-                        .alpha(0)
-                        .setDuration(1000);
-            }
-        }, 100);*/
-
-
         Animation shake = AnimationUtils.loadAnimation(MyApp.getContext(), R.anim.shake);
         tvSmsCode.startAnimation(shake);
-
-       /* ObjectAnimator animation2 = ObjectAnimator.ofFloat(tvSmsCode,
-                "x", 10);
-        animation2.setDuration(2000);
-        animation2.start();*/
-        /*for (int i=0;i < 10;i++) {
-            tvSmsCode.animate().translationX(30).withLayer();
-            tvSmsCode.animate().translationX(-30).withLayer();
-        }*/
-
     }
 
     //////////////////////////////////
@@ -176,6 +137,7 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
                 //send get beat
                 MyServerResponse myServerBeatResponse = ServerApiUtils.getBeatFromServer("");
                 myServerBeatResponse.dump();
+                // TODO: 02/12/16   // sostiture get con il post(del time_zone) a beat
 
                 if(myServerRegisterResponse.getResponseCode() > 199 && myServerRegisterResponse.getResponseCode() < 300) {
                     //System.out.println("xSessid in async = " + xSessid);

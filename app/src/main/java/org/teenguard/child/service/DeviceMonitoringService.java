@@ -9,7 +9,7 @@ import org.teenguard.child.datatype.DeviceContact;
 import org.teenguard.child.datatype.DeviceMedia;
 import org.teenguard.child.observer.ContactListObserver;
 import org.teenguard.child.observer.DeviceLocationListener;
-import org.teenguard.child.observer.GeofenceObserver;
+import org.teenguard.child.observer.GeofencesObserver;
 import org.teenguard.child.observer.MediaStoreObserver;
 import org.teenguard.child.observer.VisitObserver;
 
@@ -20,7 +20,7 @@ public class DeviceMonitoringService extends Service {
     MediaStoreObserver mediaStoreObserver = new MediaStoreObserver(null);
     DeviceLocationListener deviceLocationListener;
     VisitObserver visitObserver;
-    GeofenceObserver geofenceObserver;
+    GeofencesObserver geofencesObserver;
 
     public DeviceMonitoringService() {
         Log.i("DeviceMonitoringService", "invoked constructor");
@@ -45,12 +45,12 @@ public class DeviceMonitoringService extends Service {
         //visit tracking
         //startVisitTracking();
         //geofences observer;
-        //startMonitoringGeofences();
+        startMonitoringGeofences();
 
     }
 
     private void startMonitoringGeofences() {
-         geofenceObserver = new GeofenceObserver();
+         geofencesObserver = new GeofencesObserver();
     }
 
     private void startMonitoringMediaStoreChanges() {
