@@ -3,17 +3,12 @@ package org.teenguard.child.activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.teenguard.child.R;
 import org.teenguard.child.datatype.MyServerResponse;
@@ -21,6 +16,8 @@ import org.teenguard.child.utils.FxUtils;
 import org.teenguard.child.utils.JSon;
 import org.teenguard.child.utils.MyApp;
 import org.teenguard.child.utils.ServerApiUtils;
+
+import static org.teenguard.child.utils.FxUtils.asyncToast;
 
 public class InsertSmsCodeActivity extends AppCompatActivity {
     boolean wrongSmsCode = false;
@@ -64,7 +61,7 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
             wrongSmsCode = extras.getBoolean("wrongSmsCode");
             if(wrongSmsCode) {
                 FxUtils.vibe();
-                shake();
+                FxUtils.shake(tvSmsCode);
             }
             System.out.println("retrieved <countryCode phoneNumber> = <" + countryCode +  " " + phoneNumber + ">");
             //populating with extra
@@ -99,18 +96,13 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start,int before, int count) {
                 //System.out.println("onTextChanged");
             }
-
-
         });
 
     }
 
 
 
-    private void shake() {
-        Animation shake = AnimationUtils.loadAnimation(MyApp.getContext(), R.anim.shake);
-        tvSmsCode.startAnimation(shake);
-    }
+
 
     //////////////////////////////////
     private class AsyncSendToServer extends AsyncTask<String, String, String> {
@@ -155,7 +147,7 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
             }
 
             if(myServerRegisterResponse.getResponseCode() == 401) {
-                asyncToast(getString(R.string.wrong_sms_code));
+                FxUtils.asyncToast(getString(R.string.wrong_sms_code));
                 wrongSmsCode = true; //enable shaking
                 reloadCurrentActivity();
                 return null;
@@ -178,15 +170,7 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
         }
     }
 
-    private void asyncToast(final String message) {
-        //Let this be the code in your n'th level thread from main UI thread
-        Handler h = new Handler(Looper.getMainLooper());
-        h.post(new Runnable() {
-            public void run() {
-                Toast.makeText(MyApp.getContext(), message, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+
 
     private void gotoLastActivity() {
         System.out.println("skipping to last activity");

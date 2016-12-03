@@ -15,6 +15,7 @@ import org.teenguard.child.dbdao.DbMediaDAO;
 import org.teenguard.child.dbdao.DbMediaEventDAO;
 import org.teenguard.child.dbdatatype.DbMedia;
 import org.teenguard.child.dbdatatype.DbMediaEvent;
+import org.teenguard.child.utils.CalendarUtils;
 import org.teenguard.child.utils.Constant;
 import org.teenguard.child.utils.ImageUtils;
 import org.teenguard.child.utils.MyLog;
@@ -212,7 +213,7 @@ public class MediaStoreObserver extends ContentObserver {
         DbMediaEventDAO dbMediaEventDAO = new DbMediaEventDAO();
         ArrayList<DbMediaEvent> dbMediaEventAL = dbMediaEventDAO.getList();
         if(dbMediaEventAL.size() == 0 ) {
-            System.out.println(" no events to flush: return");
+            System.out.println(" no MEDIA events to flush " + CalendarUtils.currentDatetimeUTC());
             return;
         }
         StringBuilder addEventSB = new StringBuilder();
@@ -242,7 +243,6 @@ public class MediaStoreObserver extends ContentObserver {
                 }
             }
         }//fine for
-        //non invia una ceppa col flushing dipende da event type probabilmente
         System.out.println("addEventIdList = " + addEventIdList);
         System.out.println("deleteEventIdToRemoveList = " + deleteEventIdToRemoveList);
         System.out.println("compressedEventIdList = " + compressedEventIdList);

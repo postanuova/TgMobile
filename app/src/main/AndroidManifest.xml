@@ -21,7 +21,7 @@
         <activity android:name=".activity.MainActivity" />
 
         <service
-            android:name=".service.DeviceMonitoringService"
+            android:name=".service.ChildMonitoringService"
             android:enabled="true"
             android:exported="true" />
         <service android:name=".service.GeofenceTransitionsIntentService" />

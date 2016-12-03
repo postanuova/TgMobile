@@ -21,6 +21,7 @@
     <string name="str_used_by">This device will be used by</string>
     <string name="str_parent">Parent</string>
     <string name="str_child">Child</string>
+    <string name="str_not_available">Parent\'s role will be soon available</string>
     <!-- INSERT PHONE NUMBER ACTIVITY -->
     <string name="phone_number_title">Register Phone Number</string>
     <string name="country_code_hint">Parent\'s Country Code</string>

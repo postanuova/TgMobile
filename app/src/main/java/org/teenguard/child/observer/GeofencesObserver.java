@@ -328,6 +328,8 @@ public class GeofencesObserver implements GoogleApiClient.OnConnectionFailedList
                 idToDeleteListSTR = idToDeleteListSTR.substring(0, idToDeleteListSTR.length() - 1);
             GeofenceTransitionsIntentService.AsyncSendToServer asyncSendToServer = new GeofenceTransitionsIntentService().new AsyncSendToServer("[" + bulkGeofenceEventSTR + "]", idToDeleteListSTR);
             asyncSendToServer.execute();
+        } else {
+            System.out.println(" no GEOFENCE events to flush " + CalendarUtils.currentDatetimeUTC());
         }
     }
 

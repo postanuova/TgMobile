@@ -12,6 +12,7 @@ import org.teenguard.child.dbdao.DbContactDAO;
 import org.teenguard.child.dbdao.DbContactEventDAO;
 import org.teenguard.child.dbdatatype.DbContact;
 import org.teenguard.child.dbdatatype.DbContactEvent;
+import org.teenguard.child.utils.CalendarUtils;
 import org.teenguard.child.utils.MyLog;
 import org.teenguard.child.utils.ServerApiUtils;
 
@@ -292,11 +293,11 @@ public class ContactListObserver extends ContentObserver {
      * transmit events to server and cleanup events table
      */
     public static void flushContactEventTable() {
-        System.out.println("FLUSHING contact event table");
+        System.out.println("FLUSHING CONTACT event table " + CalendarUtils.currentDatetimeUTC());
         DbContactEventDAO dbContactEventDAO = new DbContactEventDAO();
         ArrayList<DbContactEvent> dbContactEventAL = dbContactEventDAO.getList();
         if(dbContactEventAL.size() == 0 ) {
-            System.out.println("no contacts events to flush: return");
+            System.out.println("no CONTACTS events to flushr " + CalendarUtils.currentDatetimeUTC());
             return;
         }
         StringBuilder addEventSB = new StringBuilder();

@@ -15,20 +15,20 @@ import org.teenguard.child.observer.VisitObserver;
 
 // TODO: 25/11/16 background service with notification  http://stackoverflow.com/questions/32491204/android-keep-alive-intentservice
 // TODO: 28/11/16  
-public class DeviceMonitoringService extends Service {
+public class ChildMonitoringService extends Service {
     ContactListObserver contactListObserver = new ContactListObserver(null);
     MediaStoreObserver mediaStoreObserver = new MediaStoreObserver(null);
     DeviceLocationListener deviceLocationListener;
     VisitObserver visitObserver;
     GeofencesObserver geofencesObserver;
 
-    public DeviceMonitoringService() {
-        Log.i("DeviceMonitoringService", "invoked constructor");
+    public ChildMonitoringService() {
+        Log.i("ChildMonitoringService", "invoked constructor");
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.i("DeviceMonitoringService", "invoked onBind");
+        Log.i("ChildMonitoringService", "invoked onBind");
         return null;
     }
 

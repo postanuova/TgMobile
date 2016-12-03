@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import org.teenguard.child.R;
+import org.teenguard.child.utils.FxUtils;
 import org.teenguard.child.utils.MyApp;
 
 public class RoleChooseActivity extends AppCompatActivity {
@@ -35,12 +36,15 @@ public class RoleChooseActivity extends AppCompatActivity {
 
     private void viewBinding() {
         //  PARENT IMAGE listener
-        ImageView parentImageView = (ImageView) findViewById(R.id.image_parent);
+        final ImageView parentImageView = (ImageView) findViewById(R.id.image_parent);
         parentImageView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 System.out.println("parentImageView clicked");
-                /*Intent intent = new Intent(MyApp.getContext(), RoleChooseActivity.class);
-                startActivity(intent);*/
+                MyApp.getPreferences().edit()
+                        .putBoolean("isChild",false)
+                        .apply();
+                FxUtils.shake(parentImageView);
+                FxUtils.asyncToast(getString(R.string.str_not_available));
             }
         });
         // CHILD IMAGE listener
@@ -48,6 +52,11 @@ public class RoleChooseActivity extends AppCompatActivity {
         childImageView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 System.out.println("childImageView clicked");
+                ///////
+                MyApp.getPreferences().edit()
+                        .putBoolean("isChild",true)
+                        .apply();
+                //////
                 Intent intent = new Intent(MyApp.getContext(), InsertPhoneNumberActivity.class);
                 startActivity(intent);
             }

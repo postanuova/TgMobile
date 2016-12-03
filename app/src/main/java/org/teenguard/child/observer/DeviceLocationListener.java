@@ -21,6 +21,7 @@ import com.google.android.gms.location.LocationServices;
 import org.teenguard.child.datatype.MyServerResponse;
 import org.teenguard.child.dbdao.DbLocationEventDAO;
 import org.teenguard.child.dbdatatype.DbLocationEvent;
+import org.teenguard.child.utils.CalendarUtils;
 import org.teenguard.child.utils.MyApp;
 import org.teenguard.child.utils.MyLog;
 import org.teenguard.child.utils.ServerApiUtils;
@@ -114,7 +115,7 @@ public class DeviceLocationListener implements GoogleApiClient.OnConnectionFaile
         double distanceBetweenLocation = TypeConverter.coordinatesToDistance(dbLocationEvent.getLatitude(),dbLocationEvent.getLongitude(),previousDbLocation.getLatitude(),previousDbLocation.getLongitude(),'m');
         System.out.println(" distance from previous (m) = " + TypeConverter.doubleTrunkTwoDigit(distanceBetweenLocation));
         long secondsBetweenLocation = (dbLocationEvent.getDate() - previousDbLocation.getDate())/1000;
-        System.out.println("seconds from previous location = " + secondsBetweenLocation);
+        System.out.println(" seconds from previous location = " + secondsBetweenLocation);
         previousDbLocation = dbLocationEvent;
     }
 
@@ -138,11 +139,15 @@ public class DeviceLocationListener implements GoogleApiClient.OnConnectionFaile
         /*AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + bulkLocationEventSTR + "]",idToDeleteListSTR);
         asyncSendToServer.execute();*/
         ///////not async///////
-        MyServerResponse myServerResponse = ServerApiUtils.addLocationToServer("[" + bulkLocationEventSTR + "]");
-        myServerResponse.dump();
-        if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-            System.out.println("FLUSHED NEW LOCATION TO SERVER, DELETING  "  + idToDeleteListSTR);
-            dbLocationEventDAO.delete(idToDeleteListSTR);
+        if(bulkLocationEventSTR.length() > 0) {
+            MyServerResponse myServerResponse = ServerApiUtils.addLocationToServer("[" + bulkLocationEventSTR + "]");
+            myServerResponse.dump();
+            if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+                System.out.println("FLUSHED NEW LOCATION TO SERVER, DELETING  " + idToDeleteListSTR);
+                dbLocationEventDAO.delete(idToDeleteListSTR);
+            }
+        } else {
+            System.out.println("no LOCATION to flush " + CalendarUtils.currentDatetimeUTC());
         }
         ////////////////////////
     }
