@@ -224,8 +224,8 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
                         dbVisitEvent.setId(id);
 
                         dbVisitEvent.dump();
-                AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbVisitEvent.buildSerializedDataString() + "]", "" + dbVisitEvent.getId());
-                asyncSendToServer.execute();
+                        AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbVisitEvent.buildSerializedDataString() + "]", "" + dbVisitEvent.getId());
+                        asyncSendToServer.execute();
                         /////////////////////
                         flushVisitTable();
                         //////////////////////
@@ -241,7 +241,7 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
     }
 
     // TODO: 02/12/16 make static 
-    public  void flushVisitTable() {
+    public static  void flushVisitTable() {
         System.out.println("FLUSHING VISIT EVENT TABLE " + new Date(CalendarUtils.nowUTCMillis()).toString());
         DbVisitEventDAO dbVisitEventDAO = new DbVisitEventDAO();
         ArrayList<DbVisitEvent> dbVisitEventAL = dbVisitEventDAO.getList();
@@ -261,12 +261,20 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
             String idToDeleteListSTR = idToDeleteListSB.toString();
             if (idToDeleteListSTR.endsWith(","))
                 idToDeleteListSTR = idToDeleteListSTR.substring(0, idToDeleteListSTR.length() - 1);
-            AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + bulkVisitEventSTR + "]", idToDeleteListSTR);
-            asyncSendToServer.execute();
+           /* AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + bulkVisitEventSTR + "]", idToDeleteListSTR);
+            asyncSendToServer.execute();*/
+            ///////////NOT ASYNC VERSION/////////
+            MyServerResponse myServerResponse = ServerApiUtils.addVisitToServer("[" + bulkVisitEventSTR + "]");
+            myServerResponse.dump();
+            if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
+                System.out.println("FLUSHING NEW VISIT TO SERVER, DELETING  "  + idToDeleteListSTR);
+                 dbVisitEventDAO = new DbVisitEventDAO();
+                dbVisitEventDAO.delete(idToDeleteListSTR);
+            }
+            ////////////////////////////////////
         }
     }
-//working on visit flushing: invia la prima visit a buffo con start ed end
-    //////////////////////////////////
+
     private class AsyncSendToServer extends AsyncTask<String, String, String> {
         //http://www.journaldev.com/9708/android-asynctask-example-tutorial
         String dataToSend;

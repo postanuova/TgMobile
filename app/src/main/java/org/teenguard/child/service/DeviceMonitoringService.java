@@ -35,7 +35,7 @@ public class DeviceMonitoringService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i(this.getClass().getName(), "invoked onCreate");
+        Log.i(this.getClass().getName(), " invoked onCreate");
         //monitoring contact list changes
         //startMonitoringContactsChanges();
         //monitoring media changes
@@ -45,7 +45,7 @@ public class DeviceMonitoringService extends Service {
         //visit tracking
         //startVisitTracking();
         //geofences observer;
-        startMonitoringGeofences();
+        //startMonitoringGeofences();
         //flushing
         FlushService.startTimedFlush();
 

@@ -1,6 +1,7 @@
 package org.teenguard.child.service;
 
 import org.teenguard.child.observer.ContactListObserver;
+import org.teenguard.child.observer.DeviceLocationListener;
 import org.teenguard.child.observer.GeofencesObserver;
 import org.teenguard.child.observer.MediaStoreObserver;
 import org.teenguard.child.utils.MyConnectionUtils;
@@ -29,7 +30,7 @@ public class FlushService {
                     GeofencesObserver.flushGeofenceEventTable();
                     MediaStoreObserver.flushMediaEventTable();
                     //flushVisitTable();
-                    //flushLocationTable();
+                    DeviceLocationListener.flushLocationTable();
                 } else {
                     System.out.println(" GeofenceObserver.SendBeatToServerThread: DEVICE IS IN AIRPLANE MODE");
                 }
