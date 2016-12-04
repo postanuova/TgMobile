@@ -52,7 +52,7 @@ import java.util.TimerTask;
 // TODO: 25/11/16 update geofences from server json parsing of incoming geofences
 
 public class GeofencesObserver implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener,ResultCallback<Status> {
-    public static int checkInterval=1000; //is the t-parameter of beat response
+    public static int checkInterval=10000; //is the t-parameter of beat response
     String oldShaFingerPrint ="dummyBeat"; //is the h-parameter of beat response
     String newShaFingerPrint ="dummyBeat";
     private DbGeofenceDAO dbGeofenceDAO = new DbGeofenceDAO();

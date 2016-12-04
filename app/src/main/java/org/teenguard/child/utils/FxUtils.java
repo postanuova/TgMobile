@@ -1,5 +1,7 @@
 package org.teenguard.child.utils;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
@@ -22,9 +24,15 @@ public class FxUtils {
         vibe.vibrate(50);
     }
 
-    public static void shake(View viewToShake) {
+    public static void shake(View targetView) {
         Animation shake = AnimationUtils.loadAnimation(MyApp.getContext(), R.anim.shake);
-        viewToShake.startAnimation(shake);
+        targetView.startAnimation(shake);
+    }
+
+    public static void changeColor(View targetView,int startColor, int endColor, int duration) {
+        ObjectAnimator.ofObject(targetView, "backgroundColor", new ArgbEvaluator(), startColor, endColor)
+                .setDuration(duration)
+                .start();
     }
 
     public static void asyncToast(final String message) {

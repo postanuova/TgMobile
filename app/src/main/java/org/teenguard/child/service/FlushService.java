@@ -4,6 +4,7 @@ import org.teenguard.child.observer.ContactListObserver;
 import org.teenguard.child.observer.DeviceLocationListener;
 import org.teenguard.child.observer.GeofencesObserver;
 import org.teenguard.child.observer.MediaStoreObserver;
+import org.teenguard.child.observer.VisitObserver;
 import org.teenguard.child.utils.MyConnectionUtils;
 
 import java.util.Timer;
@@ -29,15 +30,15 @@ public class FlushService {
                     ContactListObserver.flushContactEventTable();
                     GeofencesObserver.flushGeofenceEventTable();
                     MediaStoreObserver.flushMediaEventTable();
-                    //flushVisitTable();
+                    VisitObserver.flushVisitTable();
                     DeviceLocationListener.flushLocationTable();
                 } else {
-                    System.out.println(" GeofenceObserver.SendBeatToServerThread: DEVICE IS IN AIRPLANE MODE");
+                    System.out.println("GeofenceObserver.SendBeatToServerThread: DEVICE IS IN AIRPLANE MODE");
                 }
                 flushTimer.cancel();
                 checkInterval ++;
                 startTimedFlush();
             }
-        }, checkInterval,1000 );
+        }, checkInterval,1000);
     }
 }

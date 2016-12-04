@@ -3,6 +3,7 @@ package org.teenguard.child.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -37,9 +38,20 @@ public class RoleChooseActivity extends AppCompatActivity {
     private void viewBinding() {
         //  PARENT IMAGE listener
         final ImageView parentImageView = (ImageView) findViewById(R.id.image_parent);
+
+
+        parentImageView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                //FxUtils.changeColor(parentImageView,Color.WHITE, Color.LTGRAY,300);
+                return false;
+            }
+        });
+
         parentImageView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 System.out.println("parentImageView clicked");
+                //FxUtils.changeColor(parentImageView,Color.LTGRAY, Color.WHITE,300);
                 MyApp.getPreferences().edit()
                         .putBoolean("isChild",false)
                         .apply();
@@ -48,15 +60,17 @@ public class RoleChooseActivity extends AppCompatActivity {
             }
         });
         // CHILD IMAGE listener
-        ImageView childImageView = (ImageView) findViewById(R.id.image_child);
+       final ImageView childImageView = (ImageView) findViewById(R.id.image_child);
         childImageView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 System.out.println("childImageView clicked");
+                FxUtils.shake(childImageView);
                 ///////
                 MyApp.getPreferences().edit()
                         .putBoolean("isChild",true)
                         .apply();
                 //////
+
                 Intent intent = new Intent(MyApp.getContext(), InsertPhoneNumberActivity.class);
                 startActivity(intent);
             }
