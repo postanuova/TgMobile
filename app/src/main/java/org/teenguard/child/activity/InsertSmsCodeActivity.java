@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import org.teenguard.child.R;
 import org.teenguard.child.datatype.MyServerResponse;
+import org.teenguard.child.utils.CalendarUtils;
 import org.teenguard.child.utils.FxUtils;
 import org.teenguard.child.utils.JSon;
 import org.teenguard.child.utils.MyApp;
@@ -29,7 +30,7 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        boolean parentConfigured = MyApp.getPreferences().getBoolean("PARENT-CONFIGURED",false);
+        boolean parentConfigured = MyApp.getSharedPreferences().getBoolean("PARENT-CONFIGURED",false);
         System.out.println("InsertSmsCodeActivity parentConfigured = " + parentConfigured);
         if(parentConfigured) {//device already configured,skip all activities
             gotoLastActivity();
@@ -121,17 +122,20 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
                 //read header
                 //System.out.println("saving X-SESSID");
                 String xSessid = (String)myServerRegisterResponse.getHeaderEntryHM().get("X-SESSID");
-                MyApp.getPreferences().edit()
+                MyApp.getSharedPreferences().edit()
                         .putString("X-SESSID",xSessid)
                         .apply();
-                String xSessidShared = MyApp.getPreferences().getString("X-SESSID","");
+                String xSessidShared = MyApp.getSharedPreferences().getString("X-SESSID","");
                 System.out.println("saved X-SESSID = " + xSessidShared);
-                //send get beat
-                MyServerResponse myServerBeatResponse = ServerApiUtils.getBeatFromServer("");
-                myServerBeatResponse.dump();
-                // TODO: 02/12/16   // sostiture get con il post(del time_zone) a beat
+                //send post beat
+                JSon jSon = new JSon();
 
-                if(myServerRegisterResponse.getResponseCode() > 199 && myServerRegisterResponse.getResponseCode() < 300) {
+                jSon.add("time_zone", CalendarUtils.getDeviceTimezone());
+                System.out.println("jSon.toString() " + jSon.getJSonString());
+                MyServerResponse myServerBeatResponse = ServerApiUtils.postBeatToServer(jSon.getJSonString());
+                myServerBeatResponse.dump();
+
+                if(myServerBeatResponse.getResponseCode() > 199 && myServerBeatResponse.getResponseCode() < 300) {
                     //System.out.println("xSessid in async = " + xSessid);
                     gotoNextActivity();
                     return null;

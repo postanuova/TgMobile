@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import java.util.Map;
+
 
 /**
  * Created by chris on 13/10/16.
@@ -33,7 +35,16 @@ public class MyApp extends Application {
         return cookieManager;
     }*/
 
-    public static SharedPreferences getPreferences() {
+    public static SharedPreferences getSharedPreferences() {
         return PreferenceManager.getDefaultSharedPreferences(getContext());
+    }
+
+    public static void dumpSharedPreferences() {
+        Map<String, ?> allEntries = getSharedPreferences().getAll();
+        System.out.println("-------- SHARED PREFERENCES --------");
+        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue().toString());
+        }
+        System.out.println("------------------------------------");
     }
 }

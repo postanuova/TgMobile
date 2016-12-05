@@ -25,6 +25,7 @@ public class ProperlySettedActivity extends AppCompatActivity {
         //  TODO: 02/12/16 prima di dare  l'ok un post a beat con contenuto {time_zone: +0000}
         //  TODO: 02/12/16 implementare giro di richiesta permessi
         //  per i permessi cambiati post su beat {contact_permission:bool, location_permission:bool, photo_permission:bool}
+    MyApp.dumpSharedPreferences();
     }
 
 
@@ -45,14 +46,14 @@ public class ProperlySettedActivity extends AppCompatActivity {
         });
 
         TextView nowConfigureParentTextView = (TextView)findViewById(R.id.tv_now_configure_parent);
-        boolean parentConfigured = MyApp.getPreferences().getBoolean("PARENT-CONFIGURED",false);
+        boolean parentConfigured = MyApp.getSharedPreferences().getBoolean("PARENT-CONFIGURED",false);
         System.out.println("parentConfigured = " + parentConfigured);
         if(parentConfigured) {
             nowConfigureParentTextView.setText("-");
-            /*MyApp.getPreferences().edit()
+            /*MyApp.getSharedPreferences().edit()
                     .remove("PARENT-CONFIGURED")
                     .commit();
-            MyApp.getPreferences().edit()
+            MyApp.getSharedPreferences().edit()
                     .putBoolean("PARENT-CONFIGURED",false)
                     .commit();
             System.out.println("DEBUG RESET parentConfigured value= " + parentConfigured);*/
@@ -60,7 +61,7 @@ public class ProperlySettedActivity extends AppCompatActivity {
     }
 
     private void closeActivity() {
-        MyApp.getPreferences().edit()
+        MyApp.getSharedPreferences().edit()
                 .putBoolean("PARENT-CONFIGURED",false)// TODO: 22/11/16 rimettere true
                 .commit();
 

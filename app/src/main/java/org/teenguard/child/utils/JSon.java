@@ -73,6 +73,10 @@ public class JSon {
         return jSonString.substring(0, jSonString.length() - 1) + "}";
     }
 
+    public String toString() {
+        return getJSonString();
+    }
+
     /**
      * @return the ArrayJSonString      primo:uno,secondo:due
      *NOTA:questo formato e' utile per popolare dinamicamente le select

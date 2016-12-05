@@ -18,7 +18,7 @@ public class RoleChooseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_role_choose);
         getSupportActionBar().hide(); //nasconde la barra
-        boolean parentConfigured = MyApp.getPreferences().getBoolean("PARENT-CONFIGURED",false);
+        boolean parentConfigured = MyApp.getSharedPreferences().getBoolean("PARENT-CONFIGURED",false);
         System.out.println("RoleChooseActivity parentConfigured = " + parentConfigured);
         if(parentConfigured) {//device already configured,skip all activities
             gotoLastActivity();
@@ -52,8 +52,8 @@ public class RoleChooseActivity extends AppCompatActivity {
             public void onClick(View v) {
                 System.out.println("parentImageView clicked");
                 //FxUtils.changeColor(parentImageView,Color.LTGRAY, Color.WHITE,300);
-                MyApp.getPreferences().edit()
-                        .putBoolean("isChild",false)
+                MyApp.getSharedPreferences().edit()
+                        .putBoolean("IS-CHILD",false)
                         .apply();
                 FxUtils.shake(parentImageView);
                 FxUtils.asyncToast(getString(R.string.str_not_available));
@@ -66,8 +66,8 @@ public class RoleChooseActivity extends AppCompatActivity {
                 System.out.println("childImageView clicked");
                 FxUtils.shake(childImageView);
                 ///////
-                MyApp.getPreferences().edit()
-                        .putBoolean("isChild",true)
+                MyApp.getSharedPreferences().edit()
+                        .putBoolean("IS-CHILD",true)
                         .apply();
                 //////
 

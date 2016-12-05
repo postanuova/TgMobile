@@ -18,7 +18,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.MainActivity" />
+
+
 
         <service
             android:name=".service.ChildMonitoringService"
@@ -48,10 +49,10 @@
         <activity android:name=".activity.ChildMainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.MainActivity" />
         <activity android:name=".activity.WelcomeActivity" />
         <activity android:name=".activity.RoleChooseActivity" />
         <activity android:name=".activity.InsertPhoneNumberActivity" />

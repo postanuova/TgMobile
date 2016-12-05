@@ -29,6 +29,13 @@ public class ChildMainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MyLog.i(this,"invoked onCreate");
+        MyApp.dumpSharedPreferences();
+        boolean isChild = MyApp.getSharedPreferences().getBoolean("IS-CHILD", false);
+        if(isChild) {
+            System.out.println("child intents");
+        } else {
+            System.out.println("parent intents");
+        }
     }
 
     @Override
@@ -82,7 +89,7 @@ public class ChildMainActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, WelcomeActivity.class);
                 intent.putExtra("countryCode","34"); //quello con il +
                 intent.putExtra("phoneNumber","603000000");
-                String xSessidShared = MyApp.getPreferences().getString("X-SESSID","");
+                String xSessidShared = MyApp.getSharedPreferences().getString("X-SESSID","");
                 System.out.println("restarted: xSessidShared = " + xSessidShared);
                 startActivity(intent);
                 this.finish();//close current activity

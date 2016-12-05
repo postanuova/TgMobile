@@ -34,7 +34,7 @@ public class ServerApiUtils {
 
     public final static String APPLICATION_SERVER_REQUEST_ADD_GEOFENCE_EVENT = "/api2.php";
 
-    public final static String APPLICATION_SERVER_REQUEST_POST_BEAT = "/child/beat.php";
+    public final static String APPLICATION_SERVER_REQUEST_POST_BEAT_URL = "/child/beat.php";
     // TODO: 18/11/16 o post o get è inutilizzata??
     public final static String APPLICATION_SERVER_REQUEST_GET_BEAT = "/child/beat.php";
     //public final static String APPLICATION_SERVER_REQUEST_GET_BEAT = "http://www.google.com/search?q=mkyong";
@@ -169,7 +169,7 @@ public class ServerApiUtils {
 
     public static MyServerResponse deleteMediaFromServer(String serializedData) {
         MyServerResponse myServerResponse = new MyServerResponse();
-        MyLog.i("ServerUtils"," deleteMediaFromServer data:" + serializedData);
+        System.out.println("ServerApiUtils.deleteMediaFromServer data:" + serializedData);
         try{
             URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_REMOVE_MEDIA_URL);
             myServerResponse = MyConnectionUtils.doAndroidRequest("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,serializedData);
@@ -180,6 +180,19 @@ public class ServerApiUtils {
     }
 
 
+    public static MyServerResponse postBeatToServer(String serializedData) {
+        MyServerResponse myServerResponse = new MyServerResponse();
+        System.out.println("ServerApiUtils.postBeatToServer data " + serializedData);
+        try{
+            URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_POST_BEAT_URL);
+            myServerResponse = MyConnectionUtils.doAndroidRequest("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,serializedData);
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        }
+        return myServerResponse;
+    }
+
+/*    //not used
     public static MyServerResponse postBeatToServer(String shaFingerPrint) {
         MyServerResponse myServerResponse = new MyServerResponse();
         System.out.println("ServerApiUtils.postBeatToServer shaFingerPrint h=" + shaFingerPrint);
@@ -193,6 +206,7 @@ public class ServerApiUtils {
         return myServerResponse;
     }
 
+    */
     public static MyServerResponse getBeatFromServer(String shaFingerprint) {
         MyServerResponse myServerResponse = new MyServerResponse();
         System.out.println("ServerApiUtils.getBeatFromServer");

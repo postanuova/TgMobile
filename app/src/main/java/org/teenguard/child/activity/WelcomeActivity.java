@@ -17,7 +17,7 @@ public class WelcomeActivity extends AppCompatActivity {
         System.out.println("WelcomeActivity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-        boolean parentConfigured = MyApp.getPreferences().getBoolean("PARENT-CONFIGURED",false);
+        boolean parentConfigured = MyApp.getSharedPreferences().getBoolean("PARENT-CONFIGURED",false);
         System.out.println("WelcomeActivity parentConfigured = " + parentConfigured);
         if(parentConfigured) {//device already configured,skip all activities
             gotoLastActivity();

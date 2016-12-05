@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.util.Log;
 
 import org.teenguard.child.service.ChildMonitoringService;
+import org.teenguard.child.utils.MyApp;
 
+//BootReceiver rileva l'evento di boot/install e richiama ChildMonitoringService
 public class BootReceiver extends BroadcastReceiver {
     public BootReceiver() {
     }
@@ -19,9 +21,11 @@ public class BootReceiver extends BroadcastReceiver {
                 action.equalsIgnoreCase(Intent.ACTION_PACKAGE_REPLACED) ||
                 action.equalsIgnoreCase(Intent.ACTION_PACKAGE_ADDED) ||
                 action.equalsIgnoreCase(Intent.ACTION_PACKAGE_RESTARTED)) {
-            Log.i(this.getClass().getName(),"STARTING  deviceMonitoringServiceIntent");
+            Log.i(this.getClass().getName()," STARTING  deviceMonitoringServiceIntent");
+
             Intent deviceMonitoringServiceIntent = new Intent(context, ChildMonitoringService.class);
             context.startService(deviceMonitoringServiceIntent);
+            MyApp.dumpSharedPreferences();
 
            /* Intent childMainActivityIntent= new Intent(context,ChildMainActivity.class);
             childMainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -29,5 +33,5 @@ public class BootReceiver extends BroadcastReceiver {
         }
     }
 
-     //BootReceiver rileva l'evento di boot/install e richiama ChildMonitoringService
+
 }

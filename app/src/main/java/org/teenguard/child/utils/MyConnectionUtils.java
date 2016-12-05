@@ -43,7 +43,7 @@ public class MyConnectionUtils {
                 connection.setUseCaches(false);
                 connection.setDoInput(true);
                 ////SETTING X-SESSID////
-                String xSessid = MyApp.getPreferences().getString("X-SESSID","unknown x-sessid");
+                String xSessid = MyApp.getSharedPreferences().getString("X-SESSID","unknown x-sessid");
                 System.out.println("doAndroidRequest HEADER: xSessid = " + xSessid);
                 connection.setRequestProperty("X-SESSID",xSessid);
                 ////////////////////////
@@ -131,7 +131,7 @@ public class MyConnectionUtils {
                 connection.setUseCaches(false);
                 connection.setDoInput(true);
                 ////SETTING X-SESSID////
-                String xSessid = MyApp.getPreferences().getString("X-SESSID","unknown x-sessid");
+                String xSessid = MyApp.getSharedPreferences().getString("X-SESSID","unknown x-sessid");
                 System.out.println("doAndroidMediaRequestWithHeader HEADER: xSessid = " + xSessid);
                 connection.setRequestProperty("X-SESSID",xSessid);
                 ////////////////////////
