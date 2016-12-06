@@ -1,5 +1,6 @@
 package org.teenguard.child.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.teenguard.child.R;
+import org.teenguard.child.service.ChildMonitoringService;
 import org.teenguard.child.utils.MyApp;
 
 public class ProperlySettedActivity extends AppCompatActivity {
@@ -22,10 +24,19 @@ public class ProperlySettedActivity extends AppCompatActivity {
         //  TODO: 20/11/16 visualizza now configure parent solo se non è stato già fatto (posso salvarlo tra le properties)
         //  TODO: 20/11/16 close button
         //  TODO: 20/11/16 eliminare barra
-        //  TODO: 02/12/16 prima di dare  l'ok un post a beat con contenuto {time_zone: +0000}
         //  TODO: 02/12/16 implementare giro di richiesta permessi
         //  per i permessi cambiati post su beat {contact_permission:bool, location_permission:bool, photo_permission:bool}
-    MyApp.dumpSharedPreferences();
+        MyApp.dumpSharedPreferences();
+
+        /////////////
+        boolean isChildConfigured = MyApp.getSharedPreferences().getBoolean("IS-CHILD-CONFIGURED",false);
+        if (isChildConfigured) {
+            System.out.println("ProperlySettedActivity.onCreate: starting ChildMonitoringService");
+        Intent deviceMonitoringServiceIntent = new Intent(MyApp.getContext(), ChildMonitoringService.class);
+        MyApp.getContext().startService(deviceMonitoringServiceIntent);
+    }
+        /////////////////
+
     }
 
 
@@ -46,15 +57,14 @@ public class ProperlySettedActivity extends AppCompatActivity {
         });
 
         TextView nowConfigureParentTextView = (TextView)findViewById(R.id.tv_now_configure_parent);
-        boolean parentConfigured = MyApp.getSharedPreferences().getBoolean("PARENT-CONFIGURED",false);
-        System.out.println("parentConfigured = " + parentConfigured);
-        if(parentConfigured) {
+        boolean isChildConfigured = MyApp.getSharedPreferences().getBoolean("IS-CHILD-CONFIGURED",false);
+        if(isChildConfigured) {
             nowConfigureParentTextView.setText("-");
             /*MyApp.getSharedPreferences().edit()
-                    .remove("PARENT-CONFIGURED")
+                    .remove("CHILD-CONFIGURED")
                     .commit();
             MyApp.getSharedPreferences().edit()
-                    .putBoolean("PARENT-CONFIGURED",false)
+                    .putBoolean("CHILD-CONFIGURED",false)
                     .commit();
             System.out.println("DEBUG RESET parentConfigured value= " + parentConfigured);*/
         }
@@ -62,9 +72,11 @@ public class ProperlySettedActivity extends AppCompatActivity {
 
     private void closeActivity() {
         MyApp.getSharedPreferences().edit()
-                .putBoolean("PARENT-CONFIGURED",false)// TODO: 22/11/16 rimettere true
-                .commit();
-
+                .putBoolean("IS-CHILD",true)
+                .putBoolean("IS-CHILD-CONFIGURED",true)// TODO: 22/11/16 rimettere true
+                .apply();
+        System.out.println("ProperlySettedActivity.closeActivity");
+        MyApp.dumpSharedPreferences();
 
         this.finish();
     }

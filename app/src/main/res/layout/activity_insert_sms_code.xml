@@ -39,23 +39,6 @@
         android:id="@+id/tvStatusMessage"
         tools:text="tvStatusMessage" />
 
-    <EditText
-        android:id="@+id/editSmsCode"
-        android:hint=""
-        android:textColor="@android:color/transparent"
-        android:cursorVisible="false"
-        android:maxLength="6"
-        android:gravity="center"
-        android:background="@android:color/transparent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:ems="10"
-        tools:text="editSmsCode"
-        android:layout_below="@+id/tvEnterActivatationCode"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="19dp" />
-
     <TextView
         android:id="@+id/tvEnterActivatationCode"
         android:text="@string/enter_activation_code"
@@ -73,9 +56,26 @@
         android:text="_ _ _ _ _ _"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="27dp"
+        android:layout_marginTop="5dp"
         tools:text="tvSmsCode"
         android:layout_below="@+id/editSmsCode"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:id="@+id/editSmsCode"
+        android:hint=""
+        android:textColor="@android:color/transparent"
+        android:cursorVisible="false"
+        android:maxLength="6"
+        android:gravity="center"
+        android:background="@android:color/transparent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        tools:text="editSmsCode"
+        android:layout_marginTop="28dp"
+        android:layout_below="@+id/tvEnterActivatationCode"
         android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

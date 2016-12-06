@@ -30,7 +30,7 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        boolean parentConfigured = MyApp.getSharedPreferences().getBoolean("PARENT-CONFIGURED",false);
+        boolean parentConfigured = MyApp.getSharedPreferences().getBoolean("CHILD-CONFIGURED",false);
         System.out.println("InsertSmsCodeActivity parentConfigured = " + parentConfigured);
         if(parentConfigured) {//device already configured,skip all activities
             gotoLastActivity();
@@ -127,6 +127,7 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
                         .apply();
                 String xSessidShared = MyApp.getSharedPreferences().getString("X-SESSID","");
                 System.out.println("saved X-SESSID = " + xSessidShared);
+                MyApp.dumpSharedPreferences();
                 //send post beat
                 JSon jSon = new JSon();
 
@@ -136,8 +137,12 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
                 myServerBeatResponse.dump();
 
                 if(myServerBeatResponse.getResponseCode() > 199 && myServerBeatResponse.getResponseCode() < 300) {
-                    //System.out.println("xSessid in async = " + xSessid);
+                    System.out.println("InsertSmsCodeActivity setting IS-CHILD-CONFIGURED= TRUE ");
+                    MyApp.getSharedPreferences().edit()
+                            .putBoolean("IS-CHILD-CONFIGURED",true)
+                            .apply();
                     gotoNextActivity();
+                    MyApp.dumpSharedPreferences();
                     return null;
                 }
             }

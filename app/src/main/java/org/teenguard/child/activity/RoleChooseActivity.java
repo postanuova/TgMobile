@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import org.teenguard.child.R;
 import org.teenguard.child.utils.FxUtils;
 import org.teenguard.child.utils.MyApp;
+import org.teenguard.parent.activity.WebFrameActivity;
 
 public class RoleChooseActivity extends AppCompatActivity {
 
@@ -18,22 +19,8 @@ public class RoleChooseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_role_choose);
         getSupportActionBar().hide(); //nasconde la barra
-        boolean parentConfigured = MyApp.getSharedPreferences().getBoolean("PARENT-CONFIGURED",false);
-        System.out.println("RoleChooseActivity parentConfigured = " + parentConfigured);
-        if(parentConfigured) {//device already configured,skip all activities
-            gotoLastActivity();
-        }
-
         viewBinding();
-
     }
-    //activity lifecycle: add on resume in every activity  if parent is configured
-    /*public void onResume() {
-        super.onResume();
-        System.out.println("onresumeeeeeeee " + true);
-        //gotoLastActivity();
-        this.finish();
-    }*/
 
     private void viewBinding() {
         //  PARENT IMAGE listener
@@ -54,9 +41,17 @@ public class RoleChooseActivity extends AppCompatActivity {
                 //FxUtils.changeColor(parentImageView,Color.LTGRAY, Color.WHITE,300);
                 MyApp.getSharedPreferences().edit()
                         .putBoolean("IS-CHILD",false)
+                        .putBoolean("IS-CHILD-CONFIGURED",false)
+                        .putBoolean("IS-PARENT", true)
+                        .putBoolean("IS-PARENT-CONFIGURED",false)
                         .apply();
+                MyApp.dumpSharedPreferences();
                 FxUtils.shake(parentImageView);
                 FxUtils.asyncToast(getString(R.string.str_not_available));
+                // TODO: 06/12/16 going anyway to web frame: implement parent configuration
+                Intent webFrameIntent = new Intent(MyApp.getContext(), WebFrameActivity.class);
+                startActivity(webFrameIntent);
+                System.out.println("RoleChooseActivity.onClick going anyway to WebFrameActivity");
             }
         });
         // CHILD IMAGE listener
@@ -68,9 +63,13 @@ public class RoleChooseActivity extends AppCompatActivity {
                 ///////
                 MyApp.getSharedPreferences().edit()
                         .putBoolean("IS-CHILD",true)
+                        .putBoolean("IS-CHILD-CONFIGURED",false)
+                        .putBoolean("IS-PARENT", false)
+                        .putBoolean("IS-PARENT-CONFIGURED",false)
                         .apply();
+                MyApp.dumpSharedPreferences();
                 //////
-
+                System.out.println("RoleChooseActivity.onClick going to InsertPhoneNumberActivity");
                 Intent intent = new Intent(MyApp.getContext(), InsertPhoneNumberActivity.class);
                 startActivity(intent);
             }

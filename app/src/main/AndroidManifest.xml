@@ -46,13 +46,12 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".activity.ChildMainActivity">
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.MainActivity" />
         <activity android:name=".activity.WelcomeActivity" />
         <activity android:name=".activity.RoleChooseActivity" />
         <activity android:name=".activity.InsertPhoneNumberActivity" />

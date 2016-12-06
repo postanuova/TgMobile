@@ -47,4 +47,16 @@ public class MyApp extends Application {
         }
         System.out.println("------------------------------------");
     }
+
+
+    public static void resetSharedPreferences() {
+        System.out.println("MyApp.resetSharedPreferences");
+        MyApp.getSharedPreferences().edit()
+                .putString("X-SESSID","dummy")
+                .putBoolean("IS-CHILD", false)
+                .putBoolean("IS-PARENT", false)
+                .putBoolean("IS-CHILD-CONFIGURED", false)
+                .putBoolean("IS-PARENT-CONFIGURED", false)
+                .apply();
+    }
 }
