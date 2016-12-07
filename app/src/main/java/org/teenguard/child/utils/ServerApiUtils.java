@@ -19,6 +19,7 @@ import static org.teenguard.child.utils.TypeConverter.fileToByteAR;
 public class ServerApiUtils {
     public final static String APPLICATION_SERVER_PROTOCOL = "http://";
     public final static String APPLICATION_SERVER_IP_ADDRESS = "92.222.83.28";
+    //public final static String APPLICATION_SERVER_IP_ADDRESS = "httpbin.org";
     public final static String APPLICATION_SERVER_MIMETYPE_JSON = "application/json";
     public final static String APPLICATION_SERVER_MIMETYPE_TEXT_HTML = "text/html";
 

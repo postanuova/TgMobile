@@ -112,7 +112,7 @@ public class GeofencesObserver implements GoogleApiClient.OnConnectionFailedList
             @Override
             public void run() {
                 if(!MyConnectionUtils.isAirplaneModeOn()) {
-                    System.out.println("TIMER.run: sending beat checkInterval " + checkInterval);
+                    System.out.println("TIMER.run: sending beat checkInterval " + checkInterval + "seconds");
                     AsyncGetGeofencesFromServer asyncGetGeofencesFromServer = new AsyncGetGeofencesFromServer();
                     asyncGetGeofencesFromServer.execute();
                 } else {
@@ -122,7 +122,7 @@ public class GeofencesObserver implements GoogleApiClient.OnConnectionFailedList
                 checkInterval ++;
                 startBeatTimer();
             }
-        },checkInterval,1000 );
+        },checkInterval*1000,1000 );
         // TODO: 02/12/16 mettere  checkInterval al posto di 10000
     }
 
@@ -214,11 +214,12 @@ public class GeofencesObserver implements GoogleApiClient.OnConnectionFailedList
                     .setRequestId(dbGeofence.getGeofenceId())
                     .setCircularRegion(dbGeofence.getLatitude(),dbGeofence.getLongitude(),dbGeofence.getRadius())
                     .setExpirationDuration(10*1000*1000)
-                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER|Geofence.GEOFENCE_TRANSITION_EXIT)
+                    .setLoiteringDelay(10000)
+                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER|Geofence.GEOFENCE_TRANSITION_EXIT|Geofence.GEOFENCE_TRANSITION_DWELL)
                     .build();
             deviceGeofenceAL.add(geofence);
         }
-        System.out.println("populateGeofenceAL deviceGeofenceAL.size() = " + deviceGeofenceAL.size());
+        System.out.println(" populateGeofenceAL deviceGeofenceAL.size() = " + deviceGeofenceAL.size());
     }
 
 

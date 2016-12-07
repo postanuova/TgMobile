@@ -25,7 +25,7 @@ public class FlushService {
             @Override
             public void run() {
                 if(!MyConnectionUtils.isAirplaneModeOn()) {
-                    System.out.println("FLUSH SERVICE:  checkInterval " + checkInterval);
+                    System.out.println("FLUSH SERVICE:  checkInterval " + checkInterval  + "seconds");
                     /////////////////////////////////////////////
                     ContactListObserver.flushContactEventTable();
                     GeofencesObserver.flushGeofenceEventTable();
@@ -39,6 +39,6 @@ public class FlushService {
                 checkInterval ++;
                 startTimedFlush();
             }
-        }, checkInterval,1000);
+        }, checkInterval*1000,1000);
     }
 }
