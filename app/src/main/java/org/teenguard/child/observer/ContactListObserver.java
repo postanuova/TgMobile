@@ -39,10 +39,16 @@ public class ContactListObserver extends ContentObserver {
         dbContactHM = dbContactDAO.getDbContactHM();
         deviceContactHM = DeviceContactDAO.getDeviceContactHM();
         if(dbContactHM.size() == 0) {
-            MyLog.i(this,"dbHM =0 --> constructor empty DB: populate DB with user contact list: BULK INSERT!!!!!!!!!!");
+            MyLog.i(this," dbHM =0 --> constructor empty DB: populate DB with user contact list: BULK INSERT!!!!!!!!!!");
             //insertDeviceContactHMIntoDB();
             dbContactDAO.bulkInsert(deviceContactHM);
+           //////////////////////////////////////////////
+            dbContactHM = dbContactDAO.getDbContactHM();
+            dbContactEventDAO.bulkInsert(dbContactHM);
+
+            ///////////////////////////////////////////
         }
+        flushContactEventTable();
        /* MyLog.i(this,"invoking on change ContactObserver on startup");
         onChange(false);*/
 
@@ -117,7 +123,7 @@ public class ContactListObserver extends ContentObserver {
                 dbContact.setId(contactId);
                 DbContactEvent dbContactEvent = new DbContactEvent(0, dbContact.getId(), DbContactEvent.CONTACT_EVENT_ADD, dbContact.getJson().getJSonString());
                 MyLog.i(this, "inserting into contact_event json " + dbContact.getJson().getJSonString());
-                long contactEventId = dbContactEventDAO.upsert(dbContactEvent);
+                long contactEventId = dbContactEventDAO.upsert(dbContactEvent); //writing
                 dbContactEvent.setId(contactEventId);
                 MyLog.i(this, "inserted into contact_event._id  " + dbContactEvent.getId());
                 MyLog.i(this, "committing transaction");

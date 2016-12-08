@@ -3,10 +3,12 @@ package org.teenguard.child.dbdao;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import org.teenguard.child.dbdatatype.DbContact;
 import org.teenguard.child.dbdatatype.DbContactEvent;
 import org.teenguard.child.utils.MyLog;
 
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -71,6 +73,27 @@ public class DbContactEventDAO extends GenericDbDAO {
         db.execSQL("DELETE FROM " + CONTACT_EVENT_TABLE + " WHERE _id IN(" + idList + ");");
         return true;
     }
+
+    public boolean bulkInsert(ConcurrentHashMap<Integer,DbContact> dbContactHM) {
+        //beginTransaction();
+        try {
+            for (DbContact dbContact : dbContactHM.values()) {
+                DbContactEvent dbContactEvent = new DbContactEvent(0, dbContact.getId(), DbContactEvent.CONTACT_EVENT_ADD, dbContact.getJson().getJSonString());
+                MyLog.i(this, "inserting into contact_event json " + dbContact.getJson().getJSonString());
+                long contactEventId = this.upsert(dbContactEvent); //writing
+                dbContactEvent.setId(contactEventId);
+            }
+           // setTransactionSuccessful();
+        } catch (Exception e) {
+            System.out.println("ERROR: BULK INSERT FAILED");
+            e.printStackTrace();
+        }
+        finally {
+            //endTransaction();
+        }
+        return true;
+    }
+
 
 
     public ArrayList<DbContactEvent> getList() {
