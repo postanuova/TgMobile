@@ -5,13 +5,11 @@ package org.teenguard.child.observer;
  * http://www.coderzheaven.com/2016/06/20/geofencing-in-android-a-simple-example/
  */
 
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -84,43 +82,18 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
 
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        if (ActivityCompat.checkSelfPermission(MyApp.getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+        /*if (ActivityCompat.checkSelfPermission(MyApp.getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(MyApp.getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.i(this.getClass().getName(),"need to request the missing permissions: not yet implemented");
             // TODO: we must require permission https://developer.android.com/training/permissions/requesting.html
             return;
-        } else { //ha tutti i diritti
+        } else { //ha tutti i diritti*/
 
             visitInProgress = false;
             chronometer.start();//<<<<<<<<<<<<<<<<< avvio cronometro
             checkChronometerThread.start();
-           /* previousLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-            if (previousLocation != null) {
-
-
-                DbVisitEvent dbVisitEvent = new DbVisitEvent();
-                dbVisitEvent.setId(0);
-                dbVisitEvent.setArrivalDate(CalendarUtils.nowUTCMillis());
-                if(previousLocation.getTime() > 1480000000) {
-                    dbVisitEvent.setArrivalDate(previousLocation.getTime());
-                }
-                dbVisitEvent.setDepartureDate(-1);
-                dbVisitEvent.setLatitude(previousLocation.getLatitude());
-                dbVisitEvent.setLongitude(previousLocation.getLongitude());
-                dbVisitEvent.setAccuracy(previousLocation.getAccuracy());
-                long id = dbVisitEvent.writeMe();
-                System.out.println("-------last known location------");
-
-
-                dbVisitEvent.setId(id);
-                dbVisitEvent.dump();
-                AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbVisitEvent.buildSerializedDataString() + "]", "" + dbVisitEvent.getId());
-                asyncSendToServer.execute();
-
-            }
-            System.out.println("starting to request requestLocationUpdates");
-            */LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);
-        }
+           LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);
+       // }
 
         Log.i(this.getClass().getName(),">>> completed onConnected");
     }

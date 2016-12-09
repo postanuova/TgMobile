@@ -3,13 +3,11 @@ package org.teenguard.child.observer;
 
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -225,12 +223,12 @@ public class GeofencesObserver implements GoogleApiClient.OnConnectionFailedList
 
     private void registerGeofences() {
         Log.i(this.getClass().getName(),"<< registerGeofences >>");
-        if (ActivityCompat.checkSelfPermission(MyApp.getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+        /*if (ActivityCompat.checkSelfPermission(MyApp.getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(MyApp.getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.i(this.getClass().getName(),"registerGeofences :need to request the missing permissions: not yet implemented");
             // TODO: we must require permission https://developer.android.com/training/permissions/requesting.html
             return;
-        } else {
+        } else {*/
             //ha tutti i diritti
             System.out.println(" registerGeofences: all rights enabled: initializing geofencingRequest");
 
@@ -250,7 +248,7 @@ public class GeofencesObserver implements GoogleApiClient.OnConnectionFailedList
                     geofencingRequest,
                     pendingIntent).setResultCallback(this);//chiama onResult
 
-        }
+       // }
         if (deviceGeofenceAL == null) System.out.println("GeofenceObserverNew.registerGeofences deviceGeofenceAL is null");
         if(googleApiClient == null) System.out.println("registerGeofences.googleApiClient is null");
         if(mLocationRequest == null) System.out.println("registerGeofences.mLocationRequest is null");

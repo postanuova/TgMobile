@@ -100,6 +100,7 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
         btnValidate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // TODO: 09/12/16 FORMAT phone number http://stackoverflow.com/questions/21270686/android-how-do-i-format-number-as-phone-with-parentheses
                 tvIsValidPhone.setText("");
                 phoneNumberSTR = edtPhoneNumber.getText().toString().trim();
                 if (countryCodeSTR != null && countryCodeSTR.length() > 0 && phoneNumberSTR != null && phoneNumberSTR.length() > 0 && phoneNumberSTR.length() <15) {
