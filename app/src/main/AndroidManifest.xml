@@ -18,7 +18,6 @@
         android:theme="@style/AppTheme">
 
 
-
         <service
             android:name=".service.ChildMonitoringService"
             android:enabled="true"
