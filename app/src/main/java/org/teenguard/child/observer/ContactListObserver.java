@@ -2,6 +2,7 @@ package org.teenguard.child.observer;
 
 import android.database.ContentObserver;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
 
@@ -48,7 +49,8 @@ public class ContactListObserver extends ContentObserver {
 
             ///////////////////////////////////////////
         }
-        flushContactEventTable();
+        AsyncFlushContactEventTable asyncFlushContactEventTable = new AsyncFlushContactEventTable("");
+        asyncFlushContactEventTable.doInBackground();
        /* MyLog.i(this,"invoking on change ContactObserver on startup");
         onChange(false);*/
 
@@ -59,7 +61,7 @@ public class ContactListObserver extends ContentObserver {
 
     @Override
     public void onChange(boolean selfChange) {
-        Log.i("ContactListObserver", " onChange Old: API < 16");
+        Log.i(" ContactListObserver", " onChange Old: API < 16");
         this.onChange(selfChange, null);
     }
 
@@ -390,5 +392,26 @@ public class ContactListObserver extends ContentObserver {
             }
         }
 
+    }
+
+    public class AsyncFlushContactEventTable extends AsyncTask<String, String, String> {
+        //http://www.journaldev.com/9708/android-asynctask-example-tutorial
+        String dataToSend;
+
+        public AsyncFlushContactEventTable(String dataToSend) {
+            this.dataToSend = dataToSend;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            System.out.println("AsyncFlushContactEventTable.doInBackground");
+            flushContactEventTable();
+            return null;
+        }
+
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            System.out.println("AsyncFlushContactEventTable.onPostExecute : flushed");
+        }
     }
 }

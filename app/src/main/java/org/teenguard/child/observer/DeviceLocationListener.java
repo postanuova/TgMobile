@@ -35,8 +35,8 @@ import java.util.ArrayList;
 
 public class DeviceLocationListener implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, com.google.android.gms.location.LocationListener {
 
-    public static int LOCATION_DISTANCE_METERS_THRESHOLD = 10;
-    public static long LOCATION_TIME_MILLISECONDS_THRESHOLD = 100;
+    public static int LOCATION_DISTANCE_METERS_THRESHOLD = 100;
+    public static long LOCATION_TIME_MILLISECONDS_THRESHOLD = 100000;
     // TODO: 31/10/16 settare valori definitivi
     // public static int DISTANCE_METERS_TRIGGER = 1000; definitivi
     //   public static long TIME_MILLISECONDS_TRIGGER = 300000;

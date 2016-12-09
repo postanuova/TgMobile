@@ -62,8 +62,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
             //sending dbGeofenceEvent
             AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbGeofenceEvent.getSerializedData() + "]",String.valueOf(dbGeofenceEvent.getId()));
             asyncSendToServer.doInBackground();
-            System.out.println("REMEBER TO RE-ENABLE DB DELETION");
-            // TODO: 11/11/16 flush dbGeofence event
+            //System.out.println("REMEBER TO RE-ENABLE DB DELETION");
 
         }
 
