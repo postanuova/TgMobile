@@ -151,7 +151,7 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
 
         public AsyncSendToServer(String dataToSend) {
             this.dataToSend = dataToSend;
-            progressBar.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.INVISIBLE);
         }
         @Override
         protected String doInBackground(String... params) {
