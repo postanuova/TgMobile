@@ -64,19 +64,29 @@
     <EditText
         android:id="@+id/editSmsCode"
         android:hint=""
-        android:textColor="@android:color/transparent"
         android:cursorVisible="false"
         android:maxLength="6"
         android:gravity="center"
+        android:textColor="@android:color/transparent"
         android:background="@android:color/transparent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="number"
         android:ems="10"
         tools:text="editSmsCode"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="43dp"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
         android:layout_below="@+id/tvEnterActivatationCode"
-        android:layout_centerHorizontal="true"
-        android:text="insert code" />
+        android:layout_centerHorizontal="true" />
 
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:id="@+id/progressBar"
+        android:layout_marginBottom="69dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

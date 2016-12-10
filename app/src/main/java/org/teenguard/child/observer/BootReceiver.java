@@ -30,6 +30,12 @@ public class BootReceiver extends BroadcastReceiver {
             boolean isChildConfigured = getSharedPreferences().getBoolean("IS-CHILD-CONFIGURED",false);
             boolean isParent = getSharedPreferences().getBoolean("IS-PARENT",false);
             boolean isParentConfigured = getSharedPreferences().getBoolean("IS-PARENT-CONFIGURED",false);
+          /*  /////////////////////////////////////////////
+            System.out.println("BootReceiver.onReceive skipping");
+            Intent skipIntent = new Intent(MyApp.getContext(), InsertSmsCodeActivity.class);
+            skipIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            MyApp.getContext().startActivity(skipIntent);
+            ////////////////////////////////////////////////*/
             Class nextActivityClass = null;
             if((!isChild && !isParent)||
                     ((isChild&& !isChildConfigured)) ||

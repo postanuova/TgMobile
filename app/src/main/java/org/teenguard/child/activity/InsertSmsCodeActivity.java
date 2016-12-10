@@ -7,7 +7,9 @@ import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.teenguard.child.R;
@@ -21,6 +23,7 @@ import org.teenguard.child.utils.ServerApiUtils;
 import static org.teenguard.child.utils.FxUtils.asyncToast;
 
 public class InsertSmsCodeActivity extends AppCompatActivity {
+    ProgressBar progressBar;
     boolean wrongSmsCode = false;
     String countryCode;
     String phoneNumber;
@@ -50,6 +53,9 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
 
     private void viewBinding() {
         //binding
+
+         progressBar = (ProgressBar)findViewById(R.id.progressBar) ;
+
         tvPhoneNumber = (TextView)findViewById(R.id.tvPhoneNumber);
         editSmsCode = (EditText) findViewById(R.id.editSmsCode);
         tvSmsCode = (TextView) findViewById(R.id.tvSmsCode);
@@ -69,11 +75,23 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
             tvPhoneNumber.setText(countryCode + " " + phoneNumber);
         }
 
+        tvSmsCode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("InsertSmsCodeActivity.onClick tvSmsCode");/*
+                editSmsCode.requestFocus();
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);*/
+            }
+        });
+
+
+        ///////////////
+
         //editSmsCode listener
         editSmsCode.addTextChangedListener(new TextWatcher() {
 
             public void afterTextChanged(Editable s) {
-                //System.out.println("afterTextChanged");
+                System.out.println("afterTextChanged");
                 int placeHolderNumber = 6 - editSmsCode.getText().length();
                 String placeHolders = getPlaceholders(placeHolderNumber);
                 tvSmsCode.setText(addSpaces(editSmsCode.getText().toString()) + placeHolders);
@@ -103,7 +121,29 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
 
 
 
+    /*////////////
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        System.out.println("InsertSmsCodeActivity.dispatchTouchEvent");
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
+            View v = getCurrentFocus();
+            //////////////////////////
+            editSmsCode.requestFocus();
+            //////////////////////////
+            if ( v instanceof EditText) {
+                Rect outRect = new Rect();
+                v.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int)event.getRawX(), (int)event.getRawY())) {
+                    v.clearFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            }
+        }
+        return super.dispatchTouchEvent( event );
+    }
+*/
 
     //////////////////////////////////
     private class AsyncSendToServer extends AsyncTask<String, String, String> {
@@ -111,6 +151,7 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
 
         public AsyncSendToServer(String dataToSend) {
             this.dataToSend = dataToSend;
+            progressBar.setVisibility(View.VISIBLE);
         }
         @Override
         protected String doInBackground(String... params) {

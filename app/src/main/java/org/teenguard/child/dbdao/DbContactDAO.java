@@ -148,7 +148,7 @@ public class DbContactDAO extends GenericDbDAO{
             }
             setTransactionSuccessful();
         } catch (Exception e) {
-            System.out.println("ERROR: BULK INSERT FAILED");
+            System.out.println("DbContactDAO.bulkInsert  ERROR: BULK INSERT FAILED");
             e.printStackTrace();
         }
             finally {

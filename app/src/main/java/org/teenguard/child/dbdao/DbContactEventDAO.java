@@ -2,6 +2,7 @@ package org.teenguard.child.dbdao;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteStatement;
 
 import org.teenguard.child.dbdatatype.DbContact;
 import org.teenguard.child.dbdatatype.DbContactEvent;
@@ -75,24 +76,24 @@ public class DbContactEventDAO extends GenericDbDAO {
     }
 
     
-    /*
-    public boolean bulkInsert(ConcurrentHashMap<Integer,DeviceContact> deviceContactHM) {
-        String sql = "insert into contact values(?,?,?,?,?);";
+
+    public boolean bulkInsert(ConcurrentHashMap<Integer,DbContact> dbContactHM) {
+        String sql = "insert into contact_event values(?,?,?,?);";
         SQLiteStatement sqLiteStatement = db.compileStatement(sql);
         beginTransaction();
         try {
-            for (DeviceContact deviceContact : deviceContactHM.values()) {
+            for (DbContact dbContact : dbContactHM.values()) {
                 sqLiteStatement.clearBindings();
+                //0, dbContact.getId(), DbContactEvent.CONTACT_EVENT_ADD, dbContact.getJson().getJSonString()
                 sqLiteStatement.bindNull(1);
-                sqLiteStatement.bindLong(2,deviceContact.getPhoneId());
-                sqLiteStatement.bindString(3,deviceContact.getName());
-                sqLiteStatement.bindLong(4,deviceContact.getLastModified());
-                sqLiteStatement.bindString(5,deviceContact.getNumbersJSonAR());
+                sqLiteStatement.bindLong(2,dbContact.getId());
+                sqLiteStatement.bindLong(3,DbContactEvent.CONTACT_EVENT_ADD);
+                sqLiteStatement.bindString(4,dbContact.getJson().getJSonString());
                 sqLiteStatement.executeInsert();
             }
             setTransactionSuccessful();
         } catch (Exception e) {
-            System.out.println("ERROR: BULK INSERT FAILED");
+            System.out.println("DbContactEventDAO.bulkInsert ERROR: BULK INSERT FAILED");
             e.printStackTrace();
         }
             finally {
@@ -100,9 +101,9 @@ public class DbContactEventDAO extends GenericDbDAO {
             }
         return true;
     }
-     */
-    // TODO: 10/12/16 bulk insert 
-    public boolean bulkInsert(ConcurrentHashMap<Integer,DbContact> dbContactHM) {
+
+    // TODO: 10/12/16 bulk insert
+    public boolean mapInsert(ConcurrentHashMap<Integer,DbContact> dbContactHM) {
         //beginTransaction();
         try {
             for (DbContact dbContact : dbContactHM.values()) {

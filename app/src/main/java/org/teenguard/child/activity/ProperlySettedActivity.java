@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.teenguard.child.R;
@@ -15,8 +16,9 @@ import org.teenguard.child.utils.MyApp;
 public class ProperlySettedActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        System.out.println("ProperlySettedActivity started");
         super.onCreate(savedInstanceState);
+        System.out.println("ProperlySettedActivity started");
+
         setContentView(R.layout.activity_properly_setted);
         viewBinding();
         getSupportActionBar().hide(); //nasconde la barra
@@ -25,22 +27,30 @@ public class ProperlySettedActivity extends AppCompatActivity {
         //  TODO: 20/11/16 eliminare barra
         //  TODO: 02/12/16 implementare giro di richiesta permessi
         //  per i permessi cambiati post su beat {contact_permission:bool, location_permission:bool, photo_permission:bool}
+
+
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        System.out.println("ProperlySettedActivity.onStart");
         MyApp.dumpSharedPreferences();
 
         /////////////
         boolean isChild = MyApp.getSharedPreferences().getBoolean("IS-CHILD",false);
         boolean isChildConfigured = MyApp.getSharedPreferences().getBoolean("IS-CHILD-CONFIGURED",false);
         if (isChild && isChildConfigured) {
-            System.out.println("ProperlySettedActivity.onCreate: starting ChildMonitoringService");
-        Intent deviceMonitoringServiceIntent = new Intent(MyApp.getContext(), ChildMonitoringService.class);
-        MyApp.getContext().startService(deviceMonitoringServiceIntent);
-    }
+            System.out.println("ProperlySettedActivity.onStart: starting ChildMonitoringService");
+            Intent deviceMonitoringServiceIntent = new Intent(MyApp.getContext(), ChildMonitoringService.class);
+            MyApp.getContext().startService(deviceMonitoringServiceIntent);
+        }
         /////////////////
-
     }
 
 
     private void viewBinding() {
+
+
         Button closeButton = (Button)findViewById(R.id.btn_close);
         closeButton.setOnClickListener(new View.OnClickListener() {
         public void onClick(View v) {

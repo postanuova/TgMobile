@@ -38,7 +38,7 @@ public class ContactListObserver extends ContentObserver {
     public ContactListObserver(Handler handler) {
         super(handler);
         dbContactHM = dbContactDAO.getDbContactHM();
-        deviceContactHM = DeviceContactDAO.getDeviceContactHM();
+        deviceContactHM = DeviceContactDAO.getDeviceContactHM();//very long operation
         if(dbContactHM.size() == 0) {
             MyLog.i(this," dbHM =0 --> constructor empty DB: populate DB with user contact list: BULK INSERT!!!!!!!!!!");
             //insertDeviceContactHMIntoDB();

@@ -35,6 +35,12 @@ public class MainActivity extends AppCompatActivity {
         boolean isParent = MyApp.getSharedPreferences().getBoolean("IS-PARENT", false);
         boolean isParentConfigured = MyApp.getSharedPreferences().getBoolean("IS-PARENT-CONFIGURED", false);
 
+        /*/////////////////////////////////////////////
+        System.out.println("MainActivity.onCreate skipping");
+        Intent skipIntent = new Intent(MyApp.getContext(), InsertSmsCodeActivity.class);
+        startActivity(skipIntent);
+        ////////////////////////////////////////////////*/
+
         if   ((!isChild && !isChildConfigured && !isParent && !isParentConfigured)) {//primo avvio
             Intent welcomeActivityIntent = new Intent(MyApp.getContext(), WelcomeActivity.class);
             startActivity(welcomeActivityIntent);
@@ -58,6 +64,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         System.out.println("MainActivity.onResume");
+     /*   /////////////////////////////////////////////
+        System.out.println("MainActivity.onCreate skipping");
+        Intent skipIntent = new Intent(MyApp.getContext(), InsertSmsCodeActivity.class);
+        startActivity(skipIntent);
+        ////////////////////////////////////////////////*/
         boolean isChild = MyApp.getSharedPreferences().getBoolean("IS-CHILD", false);
         boolean isChildConfigured = MyApp.getSharedPreferences().getBoolean("IS-CHILD-CONFIGURED", false);
         if   ((isChild == true && isChildConfigured == true)) {

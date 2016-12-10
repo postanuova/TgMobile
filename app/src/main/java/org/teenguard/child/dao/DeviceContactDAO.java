@@ -3,6 +3,7 @@ package org.teenguard.child.dao;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.provider.ContactsContract;
 import android.util.Log;
 
@@ -77,6 +78,7 @@ public class DeviceContactDAO {
             int lookupKeyIdx = deviceContactCursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY);
             int lastUpdatedTimestampIdx = deviceContactCursor.getColumnIndex(ContactsContract.Contacts.CONTACT_LAST_UPDATED_TIMESTAMP);
             int deviceContactCounter = 0;
+            System.out.println("DeviceContactDAO.getDeviceContactHM iterating cursor for building HM");
             while (deviceContactCursor.moveToNext()) {
                 deviceContactCounter ++;
                 int phoneId = deviceContactCursor.getInt(_idIdx);
@@ -100,4 +102,23 @@ public class DeviceContactDAO {
         }
         return tempDeviceContactHM;
     }
+
+    public class MyAsyncTask extends AsyncTask<String, String, String> {
+        //http://www.journaldev.com/9708/android-asynctask-example-tutorial
+        String dataToSend;
+
+        public MyAsyncTask(String dataToSend) {
+            this.dataToSend = dataToSend;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            return null;
+        }
+
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+        }
+    }
+
 }
