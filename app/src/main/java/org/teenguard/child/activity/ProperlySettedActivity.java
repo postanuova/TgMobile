@@ -20,7 +20,6 @@ public class ProperlySettedActivity extends AppCompatActivity {
         setContentView(R.layout.activity_properly_setted);
         viewBinding();
         getSupportActionBar().hide(); //nasconde la barra
-        //  TODO: 20/11/16 binding immagine che chiude
         //  TODO: 20/11/16 visualizza now configure parent solo se non è stato già fatto (posso salvarlo tra le properties)
         //  TODO: 20/11/16 close button
         //  TODO: 20/11/16 eliminare barra
@@ -29,8 +28,9 @@ public class ProperlySettedActivity extends AppCompatActivity {
         MyApp.dumpSharedPreferences();
 
         /////////////
+        boolean isChild = MyApp.getSharedPreferences().getBoolean("IS-CHILD",false);
         boolean isChildConfigured = MyApp.getSharedPreferences().getBoolean("IS-CHILD-CONFIGURED",false);
-        if (isChildConfigured) {
+        if (isChild && isChildConfigured) {
             System.out.println("ProperlySettedActivity.onCreate: starting ChildMonitoringService");
         Intent deviceMonitoringServiceIntent = new Intent(MyApp.getContext(), ChildMonitoringService.class);
         MyApp.getContext().startService(deviceMonitoringServiceIntent);

@@ -32,12 +32,27 @@ public class MainActivity extends AppCompatActivity {
         MyApp.dumpSharedPreferences();
         boolean isChild = MyApp.getSharedPreferences().getBoolean("IS-CHILD", false);
         boolean isChildConfigured = MyApp.getSharedPreferences().getBoolean("IS-CHILD-CONFIGURED", false);
+        boolean isParent = MyApp.getSharedPreferences().getBoolean("IS-PARENT", false);
+        boolean isParentConfigured = MyApp.getSharedPreferences().getBoolean("IS-PARENT-CONFIGURED", false);
 
-        if   ((isChild == true && isChildConfigured == true)) {
+        if   ((!isChild && !isChildConfigured && !isParent && !isParentConfigured)) {//primo avvio
+            Intent welcomeActivityIntent = new Intent(MyApp.getContext(), WelcomeActivity.class);
+            startActivity(welcomeActivityIntent);
+            System.out.println("MainActivity.onCreate starting ProperlySettedActivity");
+        }
+
+        if   ((isChild&& isChildConfigured)) {
             Intent properlySettedIntent = new Intent(MyApp.getContext(), ProperlySettedActivity.class);
             startActivity(properlySettedIntent);
             System.out.println("MainActivity.onCreate starting ProperlySettedActivity");
         }
+
+        if((isParent && isParentConfigured)) {
+            Intent webFrameIntent = new Intent(MyApp.getContext(), WebFrameActivity.class);
+            startActivity(webFrameIntent);
+            System.out.println("MainActivity.onCreate starting WebFrameActivity");
+        }
+
     }
     @Override
     protected void onResume() {

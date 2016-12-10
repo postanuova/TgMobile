@@ -128,6 +128,10 @@ public class DbContactDAO extends GenericDbDAO{
     this.name = name;
     this.lastModified = lastModified;
     this.setSerializedData(serializedData);*/
+
+    /*
+
+     */
     public boolean bulkInsert(ConcurrentHashMap<Integer,DeviceContact> deviceContactHM) {
         String sql = "insert into contact values(?,?,?,?,?);";
         SQLiteStatement sqLiteStatement = db.compileStatement(sql);

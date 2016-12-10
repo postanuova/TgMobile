@@ -74,6 +74,34 @@ public class DbContactEventDAO extends GenericDbDAO {
         return true;
     }
 
+    
+    /*
+    public boolean bulkInsert(ConcurrentHashMap<Integer,DeviceContact> deviceContactHM) {
+        String sql = "insert into contact values(?,?,?,?,?);";
+        SQLiteStatement sqLiteStatement = db.compileStatement(sql);
+        beginTransaction();
+        try {
+            for (DeviceContact deviceContact : deviceContactHM.values()) {
+                sqLiteStatement.clearBindings();
+                sqLiteStatement.bindNull(1);
+                sqLiteStatement.bindLong(2,deviceContact.getPhoneId());
+                sqLiteStatement.bindString(3,deviceContact.getName());
+                sqLiteStatement.bindLong(4,deviceContact.getLastModified());
+                sqLiteStatement.bindString(5,deviceContact.getNumbersJSonAR());
+                sqLiteStatement.executeInsert();
+            }
+            setTransactionSuccessful();
+        } catch (Exception e) {
+            System.out.println("ERROR: BULK INSERT FAILED");
+            e.printStackTrace();
+        }
+            finally {
+                endTransaction();
+            }
+        return true;
+    }
+     */
+    // TODO: 10/12/16 bulk insert 
     public boolean bulkInsert(ConcurrentHashMap<Integer,DbContact> dbContactHM) {
         //beginTransaction();
         try {

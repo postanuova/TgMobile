@@ -31,9 +31,9 @@ public class BootReceiver extends BroadcastReceiver {
             boolean isParent = getSharedPreferences().getBoolean("IS-PARENT",false);
             boolean isParentConfigured = getSharedPreferences().getBoolean("IS-PARENT-CONFIGURED",false);
             Class nextActivityClass = null;
-            if((isChild == false && isParent == false) ||
-                    ((isChild == true && isChildConfigured == false)) ||
-                    (isParent == true && isParentConfigured == false )) {
+            if((!isChild && !isParent)||
+                    ((isChild&& !isChildConfigured)) ||
+                    (isParent&& !isParentConfigured)) {
                 System.out.println("BootReceiver.onReceive: setting default shared preference");
                 MyApp.resetSharedPreferences();
                 MyApp.dumpSharedPreferences();
@@ -43,14 +43,14 @@ public class BootReceiver extends BroadcastReceiver {
                 MyApp.getContext().startActivity(welcomeIntent);
             }
 
-            if   ((isChild == true && isChildConfigured == true)) {
+            if  ((isChild&& isChildConfigured)) {
                 Intent properlySettedIntent = new Intent(MyApp.getContext(), ProperlySettedActivity.class);
                 properlySettedIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 MyApp.getContext().startActivity(properlySettedIntent);
                 System.out.println("BootReceiver.onReceive starting ProperlySettedActivity");
             }
 
-            if((isParent == true && isParentConfigured == true)) {
+            if((isParent&& isParentConfigured)) {
                 Intent webFrameIntent = new Intent(MyApp.getContext(), WebFrameActivity.class);
                 webFrameIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 MyApp.getContext().startActivity(webFrameIntent);
