@@ -151,7 +151,7 @@ public class MediaStoreObserver extends ContentObserver {
      */
     private static void sendMetadataAndMedia(DbMediaEvent dbMediaEvent)  {
         DbMediaEventDAO dbMediaEventDAO = new DbMediaEventDAO();
-        System.out.println("sendMetadataAndMedia dbMediaEvent = " + dbMediaEvent.getEventTypeSTR());
+        System.out.println("sendMetadataAndMedia getEventTypeSTR = " + dbMediaEvent.getEventTypeSTR());
         File resizedImageFile = null;
         if(dbMediaEvent.getEventType() == DbMediaEvent.MEDIA_EVENT_ADD || dbMediaEvent.getEventType() == DEBUG_MEDIA_EVENT_SENT_METADATA_ONLY) {
             /////////resizeCompressAndSetMediaEventPath//////////////
@@ -176,6 +176,7 @@ public class MediaStoreObserver extends ContentObserver {
         //invio header e bitmap
         JSONObject jsonRequestHeader = null; //prima prendevo header direttamente da deviceMedia, ora lo leggo dal db: da testare
         try {
+            System.out.println("MediaStoreObserver.sendMetadataAndMedia building header with serializedData"+ dbMediaEvent.getSerializedData());
             jsonRequestHeader = new JSONObject(dbMediaEvent.getSerializedData());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -189,7 +190,6 @@ public class MediaStoreObserver extends ContentObserver {
             System.out.println("SENT NEW USER MEDIA(METADATA + MEDIA) TO SERVER");
             dbMediaEvent.setEventType(DbMediaEvent.DEBUG_MEDIA_EVENT_SENT_METADATA_AND_MEDIA_TO_DELETE);
             dbMediaEventDAO.upsert(dbMediaEvent);
-            // TODO: 27/10/16 cancellare file compresso
             dbMediaEvent.deleteMe();
             File compressedFile = new File(dbMediaEvent.getCompressedMediaPath());
             if (compressedFile != null && compressedFile.exists()) {
@@ -237,7 +237,7 @@ public class MediaStoreObserver extends ContentObserver {
                     break;
                 }
                 case DbMediaEvent.MEDIA_EVENT_COMPRESSED: {
-                    compressedEventSB.append("\"" + dbMediaEvent.getCsId() + "\"" + ",");
+                    compressedEventSB.append("\"" + dbMediaEvent.getSerializedData() + "\"" + ",");//sostituito getCsId con getSerializedData
                     compressedEventIdList += dbMediaEvent.getId() + ",";
                     break;
                 }

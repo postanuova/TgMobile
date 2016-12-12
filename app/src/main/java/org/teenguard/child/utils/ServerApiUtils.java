@@ -130,7 +130,7 @@ public class ServerApiUtils {
 
     public static MyServerResponse addMediaMetadataToServer(String serializedData) {
         MyServerResponse myServerResponse = new MyServerResponse();
-        MyLog.i("ServerUtils.addMediaToServer","addMediaToServer data:" + serializedData);
+        System.out.println("ServerApiUtils.addMediaMetadataToServer serializedData"  + serializedData);
         try{
             URL url = new URL(APPLICATION_SERVER_PROTOCOL + APPLICATION_SERVER_IP_ADDRESS + APPLICATION_SERVER_REQUEST_ADD_MEDIA_METADATA_URL);
             myServerResponse = MyConnectionUtils.doAndroidRequest("POST",url,APPLICATION_SERVER_MIMETYPE_JSON,serializedData);

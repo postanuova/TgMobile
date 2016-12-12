@@ -38,11 +38,11 @@ import java.util.Date;
 public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
 
 
-    public static int VISIT_DISTANCE_METERS_THRESHOLD = 30;
-    public static int VISIT_TIME_MILLISECONDS_THRESHOLD = 30*1000;
+   /* public static int VISIT_DISTANCE_METERS_THRESHOLD = 30;
+    public static int VISIT_TIME_MILLISECONDS_THRESHOLD = 30*1000;*/
     // TODO: 31/10/16 settare valori definitivi
-    /*public static int VISIT_DISTANCE_METERS_THRESHOLD = 300;
-    public static int VISIT_TIME_MILLISECONDS_THRESHOLD = 5*60*1000;*/
+    public static int VISIT_DISTANCE_METERS_THRESHOLD = 300;
+    public static int VISIT_TIME_MILLISECONDS_THRESHOLD = 5*60*1000;
     //visits: meno di 300mt di spostamento nei 5 minuti
 
     protected Chronometer chronometer;
@@ -205,7 +205,7 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
                     }
                 }
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(30000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -234,6 +234,7 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
             String idToDeleteListSTR = idToDeleteListSB.toString();
             if (idToDeleteListSTR.endsWith(","))
                 idToDeleteListSTR = idToDeleteListSTR.substring(0, idToDeleteListSTR.length() - 1);
+            // TODO: 12/12/16 testare il flushing: NetworkOnMainThreadException 
            /* AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + bulkVisitEventSTR + "]", idToDeleteListSTR);
             asyncSendToServer.execute();*/
             ///////////NOT ASYNC VERSION/////////

@@ -146,17 +146,15 @@ public class MyConnectionUtils {
                 connection.setRequestProperty("x-id",String.valueOf(jsonObjectHeader.get("id")));
                 connection.setRequestProperty("x-date",String.valueOf(jsonObjectHeader.get("date")));
                 connection.setRequestProperty("x-media_type",String.valueOf(jsonObjectHeader.get("media_type")));
-                connection.setRequestProperty("x-media_duration",String.valueOf(jsonObjectHeader.get("media_duration")));
-                connection.setRequestProperty("x-latitude",String.valueOf(jsonObjectHeader.get("latitude")));
-                connection.setRequestProperty("x-longitude",String.valueOf(jsonObjectHeader.get("longitude")));
-                connection.setRequestProperty("x-accuracy",String.valueOf(jsonObjectHeader.get("accuracy")));
+                if(jsonObjectHeader.has("media_duration")) {
+                    connection.setRequestProperty("x-media_duration", String.valueOf(jsonObjectHeader.get("media_duration")));
+                }
+                if(jsonObjectHeader.has("latitude") && jsonObjectHeader.has("longitude") && jsonObjectHeader.has("accuracy")) {
+                    connection.setRequestProperty("x-latitude", String.valueOf(jsonObjectHeader.get("latitude")));
+                    connection.setRequestProperty("x-longitude",String.valueOf(jsonObjectHeader.get("longitude")));
+                    connection.setRequestProperty("x-accuracy",String.valueOf(jsonObjectHeader.get("accuracy")));
+                }
 
-///
-                /*byte[] buffer = new byte[4096];
-                int bytesRead;
-                while ((bytesRead = is.read(buffer)) != -1) {
-                    bytes.write(buffer, 0, bytesRead);
-                }*/
                 //Send request
                 if(requestMethod.equalsIgnoreCase("POST")) {
                     connection.setRequestProperty("charset","UTF-8");

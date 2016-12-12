@@ -4,8 +4,6 @@ package org.teenguard.child.datatype;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.teenguard.child.utils.CalendarUtils;
 import org.teenguard.child.utils.JSon;
 
@@ -61,10 +59,16 @@ public DeviceMedia(String serializedData) {
         jSon.add("id", getPhoneId());
         jSon.add("date", CalendarUtils.serverTimeFormat(getDateTaken()));
         jSon.add("media_type", getMediaType());
-        jSon.add("media_duration", getMediaDuration());
+        if(mediaType != DeviceMedia.MEDIA_TYPE_PHOTO) {
+            jSon.add("media_duration", getMediaDuration());
+        }
+        if(latitude != 0.0 || longitude != 0.0) {
         jSon.add("latitude", getLatitude());
         jSon.add("longitude", getLongitude());
         jSon.add("accuracy", getAccuracy());
+        } else {
+            System.out.println("DeviceMedia.getJSonRequestHeader id " + id  + " not localized");
+        }
         return jSon.getJSonString();
     }
 
@@ -72,21 +76,28 @@ public DeviceMedia(String serializedData) {
      *DEPRECATED ???
      * @return a JSon object used to populate header of a request which sends matadata end raw image to server
      */
-    public JSONObject getJSonRequestHeader() {
+    /*public JSONObject getJSonRequestHeader() {
         JSONObject json = new JSONObject();
         try {
             json.put("id", getPhoneId());
             json.put("date", CalendarUtils.serverTimeFormat(getDateTaken()));
             json.put("media_type", getMediaType());
-            json.put("media_duration", getMediaDuration());
-            json.put("latitude", getLatitude());
-            json.put("longitude", getLongitude());
-            json.put("accuracy", getAccuracy());
+            if(mediaType != DeviceMedia.MEDIA_TYPE_PHOTO) {
+                json.put("media_duration", getMediaDuration());
+            }
+
+            if(latitude != 0.0 || longitude != 0.0) {
+                json.put("latitude", getLatitude());
+                json.put("longitude", getLongitude());
+                json.put("accuracy", getAccuracy());
+            } else {
+                System.out.println("DeviceMedia.getJSonRequestHeader id " + id  + " not localized");
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return json;
-    }
+    }*/
 
 
 

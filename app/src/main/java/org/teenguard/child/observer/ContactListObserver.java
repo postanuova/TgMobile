@@ -50,7 +50,7 @@ public class ContactListObserver extends ContentObserver {
             ///////////////////////////////////////////
         }
         AsyncFlushContactEventTable asyncFlushContactEventTable = new AsyncFlushContactEventTable("");
-        asyncFlushContactEventTable.doInBackground();
+        asyncFlushContactEventTable.execute("");
        /* MyLog.i(this,"invoking on change ContactObserver on startup");
         onChange(false);*/
 
@@ -316,7 +316,7 @@ public class ContactListObserver extends ContentObserver {
         String deleteEventIdToRemoveList = "";      //lista degli eventi DELETE da rimuovere dal db dopo l'ok del server
 
         for (DbContactEvent dbContactEvent : dbContactEventAL) {
-            dbContactEvent.dump();
+            //dbContactEvent.dump();
             switch (dbContactEvent.getEventType()) {
                 case DbContactEvent.CONTACT_EVENT_ADD: {
                     addEventSB.append(dbContactEvent.getSerializedData() + ",");

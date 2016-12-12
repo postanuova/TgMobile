@@ -46,4 +46,5 @@
     <string name="str_now_configure_parent">Now follow instructions on parent\'s device</string>
     <string name="str_service_is_running">Service is running</string>
     <string name="str_service_is_not_running">Network issue: service is not running</string>
+    <string name="str_release">V 0.2</string>
 </resources>

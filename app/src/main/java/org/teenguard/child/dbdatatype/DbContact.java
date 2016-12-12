@@ -38,7 +38,7 @@ public class DbContact {
             jSon.add("date", CalendarUtils.serverTimeFormat(this.getLastModified()));
             jSon.add("first_name", this.getName());
             jSon.add("last_name", "");
-            jSon.addArray("phone_numbers", "[" + this.getSerializedData() + "]");
+            jSon.addArray("phone_numbers", this.getSerializedData());
         return  jSon;
     }
 

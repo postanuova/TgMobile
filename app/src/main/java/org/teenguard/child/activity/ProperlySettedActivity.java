@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.teenguard.child.R;
@@ -69,7 +68,7 @@ public class ProperlySettedActivity extends AppCompatActivity {
         TextView nowConfigureParentTextView = (TextView)findViewById(R.id.tv_now_configure_parent);
         boolean isChildConfigured = MyApp.getSharedPreferences().getBoolean("IS-CHILD-CONFIGURED",false);
         if(isChildConfigured) {
-            nowConfigureParentTextView.setText("-");
+            nowConfigureParentTextView.setText(R.string.str_release);
             /*MyApp.getSharedPreferences().edit()
                     .remove("CHILD-CONFIGURED")
                     .commit();

@@ -113,5 +113,13 @@ public class DeviceContact {
     public void setNumberAL(ArrayList<String> numberAL) {
         this.numberAL = numberAL;
     }
+
+    public static String purifyNumber(String number) {
+        //System.out.println("DeviceContact.purifyNumber " + number);
+        return number.replaceAll("[^0-9]","");
+        /*number = number.replaceAll("\\+","");
+        number = number.trim();*/
+        //System.out.println("DeviceContact.purifyNumber purified " + number);
+    }
 }
 

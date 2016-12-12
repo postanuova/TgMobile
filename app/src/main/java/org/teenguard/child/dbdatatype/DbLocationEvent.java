@@ -56,7 +56,7 @@ public class DbLocationEvent implements InterfaceDbDatatype {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("{");
         stringBuilder.append("\"id\":" + this.getId() + ",");
-        stringBuilder.append("\"date\":" + CalendarUtils.serverTimeFormat(this.getDate())+ ",");
+        stringBuilder.append("\"date\":\"" + CalendarUtils.serverTimeFormat(this.getDate())+  "\"" + ",");
         stringBuilder.append("\"latitude\":" + this.getLatitude()+ ",");
         stringBuilder.append("\"longitude\":" + this.getLongitude()+ ",");
         stringBuilder.append("\"accuracy\":" + this.getAccuracy()+ ",");

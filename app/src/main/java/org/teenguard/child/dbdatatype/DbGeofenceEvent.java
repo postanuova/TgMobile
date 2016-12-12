@@ -31,7 +31,7 @@ public class DbGeofenceEvent implements InterfaceDbDatatype {
         JSon json = new JSon();
         json.add("id",id);
         json.add("geofence_id",geofenceId);
-        json.add("date", CalendarUtils.serverTimeFormat(date));
+        json.add("date", "\"" + CalendarUtils.serverTimeFormat(date) + "\"");
         json.add("event",event);
         return json.getJSonString();
     }
@@ -41,7 +41,7 @@ public class DbGeofenceEvent implements InterfaceDbDatatype {
         System.out.println("---------- DB GEOFENCE EVENT DUMP ----------");
         System.out.println("id = " + id);
         System.out.println("geofenceId = " + geofenceId);
-        System.out.println("date = " + date);
+        System.out.println("date = " + date + "\"" + CalendarUtils.serverTimeFormat(date) + "\"");
         System.out.println("event = " + event);
     }
 

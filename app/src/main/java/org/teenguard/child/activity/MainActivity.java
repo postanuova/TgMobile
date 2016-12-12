@@ -162,3 +162,20 @@ public class MainActivity extends AppCompatActivity {
 
 
 }
+// TODO: 12/12/16 Alessandro Iannicelli TG, [11.12.16 01:47]
+/*Alessandro Iannicelli TG, [11.12.16 01:35]
+"date":20161211242559+0100
+*la data non è tra apici
+
+* i numeri di telefono andrebber "puliti", cioè niente + e niente spazi. Togliere tutto ciò che c'è nella string che non sia un carattere numerico
+
+
+* i numeri sono in doppio array [["numero"]]
+
+* quando i media non hanno la localizzazione, non mandare del tutto i campo "latitude", "longitude" e "accuracy"
+
+*
+E quando si tratta di foto ("media_type" = 0) non c'è bisogno di mandare "media_duration"
+
+
+*/
