@@ -26,7 +26,6 @@ import org.teenguard.child.utils.Chronometer;
 import org.teenguard.child.utils.MyApp;
 import org.teenguard.child.utils.MyLog;
 import org.teenguard.child.utils.ServerApiUtils;
-import org.teenguard.child.utils.TypeConverter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,11 +37,11 @@ import java.util.Date;
 public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
 
 
-   /* public static int VISIT_DISTANCE_METERS_THRESHOLD = 30;
-    public static int VISIT_TIME_MILLISECONDS_THRESHOLD = 30*1000;*/
+    public static int VISIT_DISTANCE_METERS_THRESHOLD = 30;
+    public static int VISIT_TIME_MILLISECONDS_THRESHOLD = 20*1000;
     // TODO: 31/10/16 settare valori definitivi
-    public static int VISIT_DISTANCE_METERS_THRESHOLD = 300;
-    public static int VISIT_TIME_MILLISECONDS_THRESHOLD = 5*60*1000;
+    /*public static int VISIT_DISTANCE_METERS_THRESHOLD = 300;
+    public static int VISIT_TIME_MILLISECONDS_THRESHOLD = 5*60*1000;*/
     //visits: meno di 300mt di spostamento nei 5 minuti
 
     protected Chronometer chronometer;
@@ -117,30 +116,31 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
         System.out.println("------------------------------------------");
         System.out.println("VisitObserver.onLocationChanged()");
         newLocation = location;
-        if(previousLocation == null) previousLocation = location;
-
-        double distanceBetweenLocation = TypeConverter.coordinatesToDistance(newLocation.getLatitude(),newLocation.getLongitude(),previousLocation.getLatitude(),previousLocation.getLongitude(),'m');
-        System.out.println(" distance from previous (m) = " + TypeConverter.doubleTrunkTwoDigit(distanceBetweenLocation));
-        long secondsBetweenLocation = (newLocation.getTime() - previousLocation.getTime())/1000;
+        if(previousLocation == null) {
+            previousLocation = location;
+            System.out.println("VisitObserver.onLocationChanged previousLocation == null: set previousLocation = location");
+        }
+        double distanceBetweenLocation = newLocation.distanceTo(previousLocation);
+        System.out.println("VisitObserver.onLocationChanged distanceBetweenLocation " + distanceBetweenLocation);
+        System.out.println("newLocation:      lat " + newLocation.getLatitude() + " lon " + newLocation.getLongitude());
+        System.out.println("previousLocation: lat " + previousLocation.getLatitude() + " lon " + previousLocation.getLongitude());
+        long secondsBetweenLocation = (newLocation.getTime() - previousLocation.getTime()) / 1000;
         System.out.println("seconds from previous location = " + secondsBetweenLocation);
         System.out.println("visitInProgress = " + visitInProgress);
-          
+        if ((distanceBetweenLocation > 1.0)) {//la location è cambiata effettivamente
             if ((visitInProgress) && (distanceBetweenLocation > VISIT_DISTANCE_METERS_THRESHOLD)) {
                 System.out.println("<<<<<<<<< VISIT ENDED >>>>>>>>>");
-
-
                 DbVisitEvent dbVisitEvent = new DbVisitEvent();
                 dbVisitEvent.setId(0);
-
                 dbVisitEvent.setArrivalDate(CalendarUtils.nowUTCMillis());
-                if(previousLocation.getTime() > 1480000000) {
+                if (previousLocation.getTime() > 1480000000) {
                     dbVisitEvent.setArrivalDate(previousLocation.getTime());
                 }
 
                 /*dbVisitEvent.setDepartureDate(CalendarUtils.nowUTCMillis());
                 if(newLocation.getTime() >  1480000000) {*/
-                    dbVisitEvent.setDepartureDate(newLocation.getTime());
-               // }
+                dbVisitEvent.setDepartureDate(newLocation.getTime());
+                // }
 
                 dbVisitEvent.setLatitude(previousLocation.getLatitude());
                 dbVisitEvent.setLongitude(previousLocation.getLongitude());
@@ -148,19 +148,20 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
                 long id = dbVisitEvent.writeMe();
                 dbVisitEvent.setId(id);
                 dbVisitEvent.dump();
-                System.out.println(" Visit duration :" + dbVisitEvent.getDurationMilliseconds()/1000 + "s");
+                System.out.println(" Visit duration :" + dbVisitEvent.getDurationMilliseconds() / 1000 + "s");
                 System.out.println("sending visit ended");
                 AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbVisitEvent.buildSerializedDataString() + "]", "" + dbVisitEvent.getId());
                 asyncSendToServer.execute();
                 previousLocation = newLocation;
                 visitInProgress = false;
                 /////////////////////
-                flushVisitTable();
+                //flushVisitTable();
                 //////////////////////
-            }/* else {
-                System.out.println("<<<<<<<<< visit continuing >>>>>>>>>");
-            }*/
+            }
 
+        } else {
+            System.out.println("VisitObserver.onLocationChanged same location values, not sending to server");
+        }
         System.out.println("endo of locationUpdate: visitInProgress = " + visitInProgress);
         }
 
@@ -177,8 +178,7 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
                 }
                 if(previousLocation == null) System.out.println("previous location is null");
                 if((newLocation != null) && (previousLocation != null)) {
-                    /*long secondsBetweenLocation = (newLocation.getTime() - previousLocation.getTime()) / 1000;
-                    System.out.println("seconds from previous location = " + secondsBetweenLocation);*/
+                   // if (newLocation.distanceTo(previousLocation) < 0.1) {
                     if ((!visitInProgress) && (chronometer.getElapsedMilliseconds() > VISIT_TIME_MILLISECONDS_THRESHOLD)) {
                         System.out.println("VISIT STARTED at (previousLocation.getTime()) " + new Date(previousLocation.getTime()));
                         visitInProgress = true;
@@ -199,8 +199,11 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
                         dbVisitEvent.dump();
                         AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbVisitEvent.buildSerializedDataString() + "]", "" + dbVisitEvent.getId());
                         asyncSendToServer.execute();
+                  /*  } else {
+                        System.out.println("CheckChronometerThread.run same location values, not sending to server");
+                    }*/
                         /////////////////////
-                        flushVisitTable();
+                        //flushVisitTable();
                         //////////////////////
                     }
                 }
@@ -213,9 +216,8 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
         }
     }
 
-    // TODO: 02/12/16 make static 
     public static  void flushVisitTable() {
-        System.out.println("FLUSHING VISIT EVENT TABLE " + new Date(CalendarUtils.nowUTCMillis()).toString());
+        System.out.println(" FLUSHING VISIT EVENT TABLE " + new Date(CalendarUtils.nowUTCMillis()).toString());
         DbVisitEventDAO dbVisitEventDAO = new DbVisitEventDAO();
         ArrayList<DbVisitEvent> dbVisitEventAL = dbVisitEventDAO.getList();
         System.out.println(" FLUSHING dbVisitEventAL.size() = " + dbVisitEventAL.size());
@@ -266,7 +268,7 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
             if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
                 MyLog.i(this, "SENT NEW VISIT TO SERVER, DELETING  "  + idToDeleteListSTR);
                 DbVisitEventDAO dbVisitEventDAO = new DbVisitEventDAO();
-                System.out.println(" AsyncSendToServer VISITS: riattivare cancellazione per idToDeleteListSTR" + idToDeleteListSTR);
+                //System.out.println(" AsyncSendToServer VISITS: riattivare cancellazione per idToDeleteListSTR " + idToDeleteListSTR);
                 dbVisitEventDAO.delete(idToDeleteListSTR);
             }
             return null;

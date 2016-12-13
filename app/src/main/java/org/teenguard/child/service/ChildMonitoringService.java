@@ -41,9 +41,9 @@ public class ChildMonitoringService extends Service {
         //monitoring media changes
        // startMonitoringMediaStoreChanges();
         //location tracking
-        startLocationTracking();
+        //startLocationTracking();
         //visit tracking
-        //startVisitTracking();
+        startVisitTracking();
         //geofences observer;
         //startMonitoringGeofences();
         //flushing

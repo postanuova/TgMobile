@@ -2,6 +2,7 @@ package org.teenguard.child.dbdatatype;
 
 import org.teenguard.child.dbdao.DbVisitEventDAO;
 import org.teenguard.child.utils.CalendarUtils;
+import org.teenguard.child.utils.TypeConverter;
 
 import java.util.Date;
 
@@ -56,11 +57,11 @@ public class DbVisitEvent {
         if(this.getDepartureDate() > -1) {
             stringBuilder.append("\"departure_date\":" + "\"" + CalendarUtils.serverTimeFormat(this.getDepartureDate()) + "\"" + ",");
         } else {
-            System.out.println(">>>>>> sending visit started but not yet ended");
+            System.out.println("DbVisitEvent.buildSerializedDataString:building visit started but not yet ended");
         }
         stringBuilder.append("\"latitude\":" + this.getLatitude()+ ",");
         stringBuilder.append("\"longitude\":" + this.getLongitude()+ ",");
-        stringBuilder.append("\"accuracy\":" + this.getAccuracy());
+        stringBuilder.append("\"accuracy\":" + TypeConverter.doubleTrunkTwoDigit(this.getAccuracy()));
         stringBuilder.append("}");
         return stringBuilder.toString();
     }

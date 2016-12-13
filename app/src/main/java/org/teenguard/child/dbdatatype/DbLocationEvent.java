@@ -4,6 +4,7 @@ import android.location.Location;
 
 import org.teenguard.child.dbdao.DbLocationEventDAO;
 import org.teenguard.child.utils.CalendarUtils;
+import org.teenguard.child.utils.TypeConverter;
 
 import static org.teenguard.child.utils.TypeConverter.doubleTrunkTwoDigit;
 
@@ -66,7 +67,7 @@ public class DbLocationEvent implements InterfaceDbDatatype {
         stringBuilder.append("\"date\":\"" + CalendarUtils.serverTimeFormat(this.getDate())+  "\"" + ",");
         stringBuilder.append("\"latitude\":" + this.getLatitude()+ ",");
         stringBuilder.append("\"longitude\":" + this.getLongitude()+ ",");
-        stringBuilder.append("\"accuracy\":" + this.getAccuracy()+ ",");
+        stringBuilder.append("\"accuracy\":" + TypeConverter.doubleTrunkTwoDigit(this.getAccuracy())+ ",");
         stringBuilder.append("\"trigger\":" + this.getTrigger());
         stringBuilder.append("}");
         return stringBuilder.toString();
