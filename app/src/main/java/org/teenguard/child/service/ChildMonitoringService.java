@@ -37,15 +37,15 @@ public class ChildMonitoringService extends Service {
         super.onCreate();
         Log.i(this.getClass().getName(), " invoked onCreate");
         //monitoring contact list changes
-        startMonitoringContactsChanges();
+       // startMonitoringContactsChanges();
         //monitoring media changes
-        startMonitoringMediaStoreChanges();
+       // startMonitoringMediaStoreChanges();
         //location tracking
         startLocationTracking();
         //visit tracking
-        startVisitTracking();
+        //startVisitTracking();
         //geofences observer;
-        startMonitoringGeofences();
+        //startMonitoringGeofences();
         //flushing
         FlushService.startTimedFlush();
 

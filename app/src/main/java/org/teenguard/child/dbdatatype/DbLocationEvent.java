@@ -29,6 +29,13 @@ public class DbLocationEvent implements InterfaceDbDatatype {
     }
 
 
+    public boolean isSameLocation(DbLocationEvent otherDbLocation) {
+        if(this.latitude == otherDbLocation.getLatitude() && this.longitude == otherDbLocation.longitude) return true;
+        return false;
+    }
+
+
+
     public void dump() {
         System.out.println("-------------DB LOCATION EVENT DUMP-------------");
         System.out.println("id = " + id);

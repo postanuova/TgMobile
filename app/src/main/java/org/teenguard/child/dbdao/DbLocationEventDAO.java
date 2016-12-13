@@ -31,6 +31,7 @@ private long id;
     private int trigger;
  */
 
+
     private long upsert(long id, long date, double latitude, double longitude, double accuracy, int trigger){
         ContentValues values = new ContentValues();
 

@@ -33,11 +33,11 @@ import java.util.ArrayList;
 
 public class DeviceLocationListener implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, com.google.android.gms.location.LocationListener {
 
-    /*public static int LOCATION_DISTANCE_METERS_THRESHOLD = 100;
-    public static long LOCATION_TIME_MILLISECONDS_THRESHOLD = 100000;*/
+    public static int LOCATION_DISTANCE_METERS_THRESHOLD = 100;
+    public static long LOCATION_TIME_MILLISECONDS_THRESHOLD = 100000;
     // TODO: 31/10/16 settare valori definitivi
-    public static int LOCATION_DISTANCE_METERS_THRESHOLD = 1000;
-     public static long LOCATION_TIME_MILLISECONDS_THRESHOLD = 300000;
+   /* public static int LOCATION_DISTANCE_METERS_THRESHOLD = 1000;
+     public static long LOCATION_TIME_MILLISECONDS_THRESHOLD = 300000;*/
 
 
     protected DbLocationEvent previousDbLocation;
@@ -103,18 +103,22 @@ public class DeviceLocationListener implements GoogleApiClient.OnConnectionFaile
     public void onLocationChanged(Location location) {
         System.out.println("GpsObserver.onLocationChanged()");
         DbLocationEvent dbLocationEvent = new DbLocationEvent(location);
-        dbLocationEvent.dump();
-        DbLocationEventDAO  dbLocationEventDAO = new DbLocationEventDAO();
-        long id = dbLocationEventDAO.upsert(dbLocationEvent);
-        System.out.println("<<<<<<<<< event id = " + id);
-        dbLocationEvent.setId(id);
-        AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbLocationEvent.buildSerializedDataString() + "]","" + dbLocationEvent.getId());
-        asyncSendToServer.execute();
-        double distanceBetweenLocation = TypeConverter.coordinatesToDistance(dbLocationEvent.getLatitude(),dbLocationEvent.getLongitude(),previousDbLocation.getLatitude(),previousDbLocation.getLongitude(),'m');
-        System.out.println(" distance from previous (m) = " + TypeConverter.doubleTrunkTwoDigit(distanceBetweenLocation));
-        long secondsBetweenLocation = (dbLocationEvent.getDate() - previousDbLocation.getDate())/1000;
-        System.out.println(" seconds from previous location = " + secondsBetweenLocation);
-        previousDbLocation = dbLocationEvent;
+        if(!dbLocationEvent.isSameLocation(previousDbLocation)) {
+            dbLocationEvent.dump();
+            DbLocationEventDAO dbLocationEventDAO = new DbLocationEventDAO();
+            long id = dbLocationEventDAO.upsert(dbLocationEvent);
+            System.out.println("<<<<<<<<< event id = " + id);
+            dbLocationEvent.setId(id);
+            AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + dbLocationEvent.buildSerializedDataString() + "]", "" + dbLocationEvent.getId());
+            asyncSendToServer.execute();
+            double distanceBetweenLocation = TypeConverter.coordinatesToDistance(dbLocationEvent.getLatitude(), dbLocationEvent.getLongitude(), previousDbLocation.getLatitude(), previousDbLocation.getLongitude(), 'm');
+            System.out.println(" distance from previous (m) = " + TypeConverter.doubleTrunkTwoDigit(distanceBetweenLocation));
+            long secondsBetweenLocation = (dbLocationEvent.getDate() - previousDbLocation.getDate()) / 1000;
+            System.out.println(" seconds from previous location = " + secondsBetweenLocation);
+            previousDbLocation = dbLocationEvent;
+        } else {
+            System.out.println("DeviceLocationListener.onLocationChanged: same dbLocation values, not sending to server");
+        }
     }
 
 
