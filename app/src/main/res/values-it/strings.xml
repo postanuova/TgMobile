@@ -1,0 +1,50 @@
+<resources>
+    <string name="app_name">TeenGuard</string>
+    <string name="home">Home</string>
+    <string name="localization">Localization</string>
+    <string name="contact_list">Contacts</string>
+    <string name="title_activity_contacts_loader">ContactsLoaderActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="str_back">Indietro</string>
+    <string name="str_next">Prossimo</string>
+    <string name="str_continue">Continua</string>
+    <string name="str_close">Chiudi</string>
+    <!-- WELCOME ACTIVITY -->
+    <string name="str_welcome">Welcome to TeenGuard</string>
+    <string name="str_hardest_job">We are glad to help you in one of the human&#180;s hardest job</string>
+    <string name="str_accept_terms">Going forward, you accept our Terms of Service, our Privacy Policy and our Acceptable Use Policy.</string>
+    <string name="str_accept_and_continue">Accept &amp; Continue</string>
+    <!-- ROLE CHOOSE ACTIVITY -->
+    <string name="str_used_by">Questo dispositivo verrà utilizzato da</string>
+    <string name="str_parent">Genitore</string>
+    <string name="str_child">Figlio</string>
+    <string name="str_not_available">Ci dispiace. 'Genitore' non è ancora disponibile su piattaforma Android</string>
+    <!-- INSERT PHONE NUMBER ACTIVITY -->
+    <string name="phone_number_title">Registrazione numero telefonico</string>
+    <string name="country_code_hint">Parent\'s Prefisso internazionale</string>
+    <string name="phone_number_hint">Parent\'s Numero telefonico</string>
+
+    <string name="phone_number_valid">Il formato del Numero telefonico è corretto</string>
+    <string name="phone_number_invalid">Il formato del Numero telefonico non è corretto</string>
+    <string name="phone_number_required">E' necessario inserire Prefisso internazionale e Numero telefonico</string>
+    <string name="country_code_required">E' necessario inserire il Prefisso internazionale</string>
+    <string name="country_code_select"> > Prefisso internazionale</string>
+    <string name="too_many_request">Troppe richieste: riprovare più tardi</string>
+
+    <!-- INSERT SMS CODE ACTIVITY -->
+    <string name="have_sent_sms">We have sent an SMS with a code to the number</string>
+    <string name="enter_activation_code">To complete your phone number verification, please enter the 6-digit activation code</string>
+    <string name="wrong_sms_code">Inserted wrong sms code, please enter the 6-digit activation code</string>
+    <string name="resend_sms_code">Sms not received? Click to resend SMS</string>
+    <string name="error_occurred">An error occurred: try later</string>
+
+    <!-- PROPERLY SETTED ACTIVITY -->
+    <string name="str_properly_setted">TeenGuard è correttamente configurato</string>
+    <string name="str_now_configure_parent">Now follow instructions on parent\'s device</string>
+    <string name="str_service_is_running">Service is running</string>
+    <string name="str_service_is_not_running">Network issue: service is not running</string>
+    <string name="str_release">V 0.2.3</string>
+</resources>
