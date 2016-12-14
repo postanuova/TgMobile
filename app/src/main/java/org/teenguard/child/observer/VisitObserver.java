@@ -37,11 +37,11 @@ import java.util.Date;
 public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
 
 
-    public static int VISIT_DISTANCE_METERS_THRESHOLD = 30;
-    public static int VISIT_TIME_MILLISECONDS_THRESHOLD = 20*1000;
+    /*public static int VISIT_DISTANCE_METERS_THRESHOLD = 30;
+    public static int VISIT_TIME_MILLISECONDS_THRESHOLD = 20*1000;*/
     // TODO: 31/10/16 settare valori definitivi
-    /*public static int VISIT_DISTANCE_METERS_THRESHOLD = 300;
-    public static int VISIT_TIME_MILLISECONDS_THRESHOLD = 5*60*1000;*/
+    public static int VISIT_DISTANCE_METERS_THRESHOLD = 300;
+    public static int VISIT_TIME_MILLISECONDS_THRESHOLD = 5*60*1000;
     //visits: meno di 300mt di spostamento nei 5 minuti
 
     protected Chronometer chronometer;

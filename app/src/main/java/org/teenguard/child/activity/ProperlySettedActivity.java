@@ -21,12 +21,9 @@ public class ProperlySettedActivity extends AppCompatActivity {
         setContentView(R.layout.activity_properly_setted);
         viewBinding();
         getSupportActionBar().hide(); //nasconde la barra
-        //  TODO: 20/11/16 visualizza now configure parent solo se non è stato già fatto (posso salvarlo tra le properties)
-        //  TODO: 20/11/16 close button
-        //  TODO: 20/11/16 eliminare barra
         //  TODO: 02/12/16 implementare giro di richiesta permessi
         //  per i permessi cambiati post su beat {contact_permission:bool, location_permission:bool, photo_permission:bool}
-
+// TODO: 14/12/16 autorelaunch activity http://chintanrathod.com/auto-restart-application-after-crash-forceclose-in-android/
 
     }
     @Override
@@ -78,6 +75,10 @@ public class ProperlySettedActivity extends AppCompatActivity {
             System.out.println("DEBUG RESET parentConfigured value= " + parentConfigured);*/
         }
     }
+    @Override
+    public void onBackPressed() {
+       closeActivity();
+    }
 
     private void closeActivity() {
         MyApp.getSharedPreferences().edit()
@@ -86,8 +87,8 @@ public class ProperlySettedActivity extends AppCompatActivity {
                 .apply();
         System.out.println("ProperlySettedActivity.closeActivity");
         MyApp.dumpSharedPreferences();
-
-        this.finish();
+        moveTaskToBack(true); //torna alla home
+        finish();
     }
 
     // TODO: 21/11/16 si potrebbe aggiungere un beat per la diagnostica
