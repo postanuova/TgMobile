@@ -15,7 +15,7 @@ import org.teenguard.child.dbdao.DbMediaDAO;
 import org.teenguard.child.dbdao.DbMediaEventDAO;
 import org.teenguard.child.dbdatatype.DbMedia;
 import org.teenguard.child.dbdatatype.DbMediaEvent;
-import org.teenguard.child.utils.CalendarUtils;
+import org.teenguard.child.service.FlushService;
 import org.teenguard.child.utils.Constant;
 import org.teenguard.child.utils.ImageUtils;
 import org.teenguard.child.utils.MyLog;
@@ -88,8 +88,8 @@ public class MediaStoreObserver extends ContentObserver {
             dbMediaHM = dbMediaDAO.getDbMediaHM();//ripopolo dbMediaHM con i dati appena inseriti nel db
         }
 
-
-        flushMediaEventTable();
+        System.out.println("MediaStoreObserver.onChange calling flushing");
+        FlushService.flushMediaEventTable();
     }
 
     private void manageMediaAdded() {
@@ -149,7 +149,7 @@ public class MediaStoreObserver extends ContentObserver {
      * @param dbMediaEvent
      * @throws JSONException
      */
-    private static void sendMetadataAndMedia(DbMediaEvent dbMediaEvent)  {
+    public static void sendMetadataAndMedia(DbMediaEvent dbMediaEvent)  {
         DbMediaEventDAO dbMediaEventDAO = new DbMediaEventDAO();
         System.out.println("sendMetadataAndMedia getEventTypeSTR = " + dbMediaEvent.getEventTypeSTR());
         File resizedImageFile = null;
@@ -205,117 +205,6 @@ public class MediaStoreObserver extends ContentObserver {
 
 
 //                     /storage/emulated/0/Download.nebula.jpg
-    /**
-     * transmit events to server and cleanup events table
-     */
-    public static void flushMediaEventTable() {
-        System.out.println("FLUSHING MEDIA event table");
-        DbMediaEventDAO dbMediaEventDAO = new DbMediaEventDAO();
-        ArrayList<DbMediaEvent> dbMediaEventAL = dbMediaEventDAO.getList();
-        if(dbMediaEventAL.size() == 0 ) {
-            System.out.println(" no MEDIA events to flush " + CalendarUtils.currentDatetimeUTC());
-            return;
-        }
-        StringBuilder addEventSB = new StringBuilder();
-        StringBuilder deleteEventSB = new StringBuilder();
-        StringBuilder compressedEventSB = new StringBuilder();
-        String addEventIdList = "";         //lista degli eventi ADD da rimuovere dal db dopo l'ok del server
-        String deleteEventIdToRemoveList = "";      //lista degli eventi DELETE da rimuovere dal db dopo l'ok del server
-        String compressedEventIdList = "";
-        for (DbMediaEvent dbMediaEvent : dbMediaEventAL) {
-            //dbMediaEvent.dump();
-            switch (dbMediaEvent.getEventType()) {
-                case DbMediaEvent.MEDIA_EVENT_ADD:
-                case DEBUG_MEDIA_EVENT_SENT_METADATA_ONLY:{
-                    addEventSB.append(dbMediaEvent.getSerializedData() + ",");
-                    addEventIdList += dbMediaEvent.getId() + ",";
-                    break;
-                }
-                case DbMediaEvent.MEDIA_EVENT_DELETE: {
-                    deleteEventSB.append("\"" + dbMediaEvent.getCsId() + "\"" + ",");
-                    deleteEventIdToRemoveList += dbMediaEvent.getId() + ",";
-                    break;
-                }
-                case DbMediaEvent.MEDIA_EVENT_COMPRESSED: {
-                    compressedEventSB.append("\"" + dbMediaEvent.getSerializedData() + "\"" + ",");//sostituito getCsId con getSerializedData
-                    compressedEventIdList += dbMediaEvent.getId() + ",";
-                    break;
-                }
-            }
-        }//fine for
-        System.out.println("addEventIdList = " + addEventIdList);
-        System.out.println("deleteEventIdToRemoveList = " + deleteEventIdToRemoveList);
-        System.out.println("compressedEventIdList = " + compressedEventIdList);
-        /////add
-        String addDataBulkSTR = addEventSB.toString();
-        if (addDataBulkSTR.length() > 0) {//ci sono eventi add
-            if (addDataBulkSTR.endsWith(",")) {
-                addDataBulkSTR = addDataBulkSTR.substring(0, addDataBulkSTR.length() - 1);
-            }
-            if (addEventIdList.endsWith(",")) {
-                addEventIdList = addEventIdList.substring(0, addEventIdList.length() - 1);
-            }
-            System.out.println("addDataBulkSTR = " + addDataBulkSTR);
-            //send metadata to server
-            MyServerResponse myServerResponse = ServerApiUtils.addMediaMetadataToServer("[" + addDataBulkSTR + "]");
-            myServerResponse.dump();
-            if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {//succesfully sent metadata
-                System.out.println(" ADD BULK MEDIA METADATA SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
-                ArrayList<DbMediaEvent> dbMediaEventAddAL = dbMediaEventDAO.getList("WHERE _id IN(" + addEventIdList + ")");
-                for (DbMediaEvent dbMediaEvent : dbMediaEventAddAL) {
-                    dbMediaEvent.setEventType(DEBUG_MEDIA_EVENT_SENT_METADATA_ONLY);
-                    dbMediaEventDAO.upsert(dbMediaEvent);
-                }
-                //now try to compress and send individually
-                for (DbMediaEvent dbMediaEvent : dbMediaEventAddAL) {
-                    sendMetadataAndMedia(dbMediaEvent);
-                }
-            }
-        }
-
-        /////compress
-        String compressedDataBulkSTR = compressedEventSB.toString();
-        if (compressedDataBulkSTR.length() > 0) {//ci sono eventi compressed, da spedire uno per uno
-            if (compressedDataBulkSTR.endsWith(",")) {
-                compressedDataBulkSTR = compressedDataBulkSTR.substring(0, compressedDataBulkSTR.length() - 1);
-            }
-            if (compressedEventIdList.endsWith(",")) {
-                compressedEventIdList = compressedEventIdList.substring(0, compressedEventIdList.length() - 1);
-            }
-            System.out.println("compressedDataBulkSTR = " + compressedDataBulkSTR);
-            compressedDataBulkSTR = "[" + compressedDataBulkSTR + "]";
-            MyServerResponse myServerResponse = ServerApiUtils.addMediaMetadataToServer(compressedDataBulkSTR);
-            myServerResponse.dump();
-            if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                System.out.println("ADD BULK MEDIA METADATA SENT SUCCESFULLY TO SERVER: NOW TRY TO SEND MEDIA");
-                ArrayList<DbMediaEvent> dbMediaEventCompressedAL = dbMediaEventDAO.getList("WHERE _id IN(" + compressedEventIdList + ")");
-                //now try to send individually
-                for (DbMediaEvent dbMediaEvent : dbMediaEventCompressedAL) {
-                    sendMetadataAndMedia(dbMediaEvent);
-                }
-            }
-        }
-
-        /////delete
-        String deleteDataBulkSTR = deleteEventSB.toString();
-        if (deleteDataBulkSTR.length() > 0) { //ci sono eventi delete
-            if (deleteDataBulkSTR.endsWith(",")) {
-                deleteDataBulkSTR = deleteDataBulkSTR.substring(0, deleteDataBulkSTR.length() - 1);
-            }
-            if (deleteEventIdToRemoveList.endsWith(",")) {
-                deleteEventIdToRemoveList = deleteEventIdToRemoveList.substring(0, deleteEventIdToRemoveList.length() - 1);
-            }
-            System.out.println("deleteDataBulkSTR = " + deleteDataBulkSTR);
-            deleteDataBulkSTR = "[" + deleteDataBulkSTR + "]";
-            MyServerResponse myServerResponse = ServerApiUtils.deleteMediaFromServer(deleteDataBulkSTR);
-            myServerResponse.dump();
-            if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                System.out.println("DELETE BULK MEDIA SENT SUCCESFULLY TO SERVER: DELETING FROM DB");
-                dbMediaEventDAO.delete(deleteEventIdToRemoveList);
-                System.out.println("deleted from events list " + deleteEventIdToRemoveList);
-            }
-        }
-    }
 
     /*//*
     scenario: ho nel db una lista di eventi add:

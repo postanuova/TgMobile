@@ -122,37 +122,7 @@ public class DeviceLocationListener implements GoogleApiClient.OnConnectionFaile
     }
 
 
-    // TODO: 02/12/16 make static 
-    public static void flushLocationTable() {
-        // TODO: 02/11/16 to be used and tested and launched in flusher
-        DbLocationEventDAO dbLocationEventDAO = new DbLocationEventDAO();
-        ArrayList <DbLocationEvent> dbLocationEventAL = dbLocationEventDAO.getList();
-        StringBuilder stringBuilder = new StringBuilder();
-        StringBuilder idToDeleteListSB = new StringBuilder(); //la usero' per cancellare gli eventi una volta inviati
-        for (DbLocationEvent dbLocationEvent:dbLocationEventAL) {
-            stringBuilder.append(dbLocationEvent.buildSerializedDataString());
-            stringBuilder.append(",");
-            idToDeleteListSB.append(dbLocationEvent.getId());
-        }
-        String bulkLocationEventSTR = stringBuilder.toString();
-        if(bulkLocationEventSTR.endsWith(",")) bulkLocationEventSTR = bulkLocationEventSTR.substring(0,bulkLocationEventSTR.length()-1);
-        String idToDeleteListSTR = stringBuilder.toString();
-        if(idToDeleteListSTR.endsWith(",")) idToDeleteListSTR = idToDeleteListSTR.substring(0,idToDeleteListSTR.length()-1);
-        /*AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + bulkLocationEventSTR + "]",idToDeleteListSTR);
-        asyncSendToServer.execute();*/
-        ///////not async///////
-        if(bulkLocationEventSTR.length() > 0) {
-            MyServerResponse myServerResponse = ServerApiUtils.addLocationToServer("[" + bulkLocationEventSTR + "]");
-            myServerResponse.dump();
-            if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                System.out.println("FLUSHED NEW LOCATION TO SERVER, DELETING  " + idToDeleteListSTR);
-                dbLocationEventDAO.delete(idToDeleteListSTR);
-            }
-        } else {
-            System.out.println("no LOCATION to flush " + CalendarUtils.currentDatetimeUTC());
-        }
-        ////////////////////////
-    }
+
 
     //////////////////////////////////
     private class AsyncSendToServer extends AsyncTask<String, String, String> {

@@ -27,7 +27,6 @@ import org.teenguard.child.utils.MyApp;
 import org.teenguard.child.utils.MyLog;
 import org.teenguard.child.utils.ServerApiUtils;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -65,7 +64,8 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
         chronometer = new Chronometer();
        checkChronometerThread = new CheckChronometerThread();
         //////////////////
-       flushVisitTable();
+        // TODO: 20/12/16 eliminato quando ho messo tutti i flush in flush service 
+       //FlushService.flushVisitTable();
         //////////////////
     }
 
@@ -216,40 +216,7 @@ public class VisitObserver implements GoogleApiClient.OnConnectionFailedListener
         }
     }
 
-    public static  void flushVisitTable() {
-        System.out.println(" FLUSHING VISIT EVENT TABLE " + new Date(CalendarUtils.nowUTCMillis()).toString());
-        DbVisitEventDAO dbVisitEventDAO = new DbVisitEventDAO();
-        ArrayList<DbVisitEvent> dbVisitEventAL = dbVisitEventDAO.getList();
-        System.out.println(" FLUSHING dbVisitEventAL.size() = " + dbVisitEventAL.size());
-        if(dbVisitEventAL.size() > 0) {
-            StringBuilder bulkVisitEventSB = new StringBuilder();
-            StringBuilder idToDeleteListSB = new StringBuilder(); //la usero' per cancellare gli eventi una volta inviati
-            for (DbVisitEvent dbVisitEvent : dbVisitEventAL) {
-                bulkVisitEventSB.append(dbVisitEvent.buildSerializedDataString());
-                bulkVisitEventSB.append(",");
-                idToDeleteListSB.append(dbVisitEvent.getId());
-                idToDeleteListSB.append(",");
-            }
-            String bulkVisitEventSTR = bulkVisitEventSB.toString();
-            if (bulkVisitEventSTR.endsWith(","))
-                bulkVisitEventSTR = bulkVisitEventSTR.substring(0, bulkVisitEventSTR.length() - 1);
-            String idToDeleteListSTR = idToDeleteListSB.toString();
-            if (idToDeleteListSTR.endsWith(","))
-                idToDeleteListSTR = idToDeleteListSTR.substring(0, idToDeleteListSTR.length() - 1);
-            // TODO: 12/12/16 testare il flushing: NetworkOnMainThreadException 
-           /* AsyncSendToServer asyncSendToServer = new AsyncSendToServer("[" + bulkVisitEventSTR + "]", idToDeleteListSTR);
-            asyncSendToServer.execute();*/
-            ///////////NOT ASYNC VERSION/////////
-            MyServerResponse myServerResponse = ServerApiUtils.addVisitToServer("[" + bulkVisitEventSTR + "]");
-            myServerResponse.dump();
-            if (myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                System.out.println("FLUSHING NEW VISIT TO SERVER, DELETING  "  + idToDeleteListSTR);
-                 dbVisitEventDAO = new DbVisitEventDAO();
-                dbVisitEventDAO.delete(idToDeleteListSTR);
-            }
-            ////////////////////////////////////
-        }
-    }
+    
 
     private class AsyncSendToServer extends AsyncTask<String, String, String> {
         //http://www.journaldev.com/9708/android-asynctask-example-tutorial

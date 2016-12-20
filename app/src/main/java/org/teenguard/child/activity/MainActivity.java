@@ -41,22 +41,41 @@ public class MainActivity extends AppCompatActivity {
         startActivity(skipIntent);
         ////////////////////////////////////////////////*/
 
+        boolean caseIdentified = false;
+
         if   ((!isChild && !isChildConfigured && !isParent && !isParentConfigured)) {//primo avvio
             Intent welcomeActivityIntent = new Intent(MyApp.getContext(), WelcomeActivity.class);
             startActivity(welcomeActivityIntent);
-            System.out.println("MainActivity.onCreate starting ProperlySettedActivity");
+            System.out.println("MainActivity.onCreate starting WelcomeActivity");
+            caseIdentified = true;
         }
+
+        if   ((isChild && !isChildConfigured)) {//someihing went wrong
+            Intent welcomeActivityIntent = new Intent(MyApp.getContext(), WelcomeActivity.class);
+            startActivity(welcomeActivityIntent);
+            System.out.println("MainActivity.onCreate starting WelcomeActivity");
+            caseIdentified = true;
+        }
+
 
         if   ((isChild&& isChildConfigured)) {
             Intent properlySettedIntent = new Intent(MyApp.getContext(), ProperlySettedActivity.class);
             startActivity(properlySettedIntent);
             System.out.println("MainActivity.onCreate starting ProperlySettedActivity");
+            caseIdentified = true;
         }
 
         if((isParent && isParentConfigured)) {
             Intent webFrameIntent = new Intent(MyApp.getContext(), WebFrameActivity.class);
             startActivity(webFrameIntent);
             System.out.println("MainActivity.onCreate starting WebFrameActivity");
+            caseIdentified = true;
+        }
+
+        if(!caseIdentified) {  //all unidentified cases
+            Intent welcomeActivityIntent = new Intent(MyApp.getContext(), WelcomeActivity.class);
+            startActivity(welcomeActivityIntent);
+            System.out.println("MainActivity.onCreate starting WelcomeActivity");
         }
 
     }

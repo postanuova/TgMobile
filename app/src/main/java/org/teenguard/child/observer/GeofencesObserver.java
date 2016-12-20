@@ -24,9 +24,7 @@ import com.google.gson.Gson;
 import org.teenguard.child.datatype.BeatResponseJsonWrapper;
 import org.teenguard.child.datatype.MyServerResponse;
 import org.teenguard.child.dbdao.DbGeofenceDAO;
-import org.teenguard.child.dbdao.DbGeofenceEventDAO;
 import org.teenguard.child.dbdatatype.DbGeofence;
-import org.teenguard.child.dbdatatype.DbGeofenceEvent;
 import org.teenguard.child.service.GeofenceTransitionsIntentService;
 import org.teenguard.child.utils.CalendarUtils;
 import org.teenguard.child.utils.MyApp;
@@ -35,7 +33,6 @@ import org.teenguard.child.utils.ServerApiUtils;
 import org.teenguard.child.utils.TypeConverter;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -303,34 +300,7 @@ public class GeofencesObserver implements GoogleApiClient.OnConnectionFailedList
     }
 
 
-    public static void flushGeofenceEventTable() {
-        // TODO: 25/11/16 to be used and tested
-        System.out.println("FLUSHING GEOFENCE EVENT TABLE " + new Date(CalendarUtils.nowUTCMillis()).toString());
-        DbGeofenceEventDAO dbGeofenceEventDAO = new DbGeofenceEventDAO();
-        ArrayList<DbGeofenceEvent> dbGeofenceEventAL = dbGeofenceEventDAO.getList();
-        System.out.println(" FLUSHING dbGeofenceEventAL.size() = " + dbGeofenceEventAL.size());
-        if(dbGeofenceEventAL.size() > 0) {
-            StringBuilder bulkGeofenceEventSB = new StringBuilder();//contiene gli eventi geofence da inviare
-            StringBuilder idToDeleteListSB = new StringBuilder(); //la usero' per cancellare gli eventi una volta inviati
-            for (DbGeofenceEvent dbGeofenceEvent : dbGeofenceEventAL) {
-                System.out.println("dbGeofenceEvent id= " + dbGeofenceEvent.getGeofenceId() + " event" + dbGeofenceEvent.getEvent());
-                bulkGeofenceEventSB.append(dbGeofenceEvent.getSerializedData());
-                bulkGeofenceEventSB.append(",");
-                idToDeleteListSB.append(dbGeofenceEvent.getId());
-                idToDeleteListSB.append(",");
-            }
-            String bulkGeofenceEventSTR = bulkGeofenceEventSB.toString();
-            if (bulkGeofenceEventSTR.endsWith(","))
-                bulkGeofenceEventSTR = bulkGeofenceEventSTR.substring(0, bulkGeofenceEventSTR.length() - 1);
-            String idToDeleteListSTR = idToDeleteListSB.toString();
-            if (idToDeleteListSTR.endsWith(","))
-                idToDeleteListSTR = idToDeleteListSTR.substring(0, idToDeleteListSTR.length() - 1);
-            GeofenceTransitionsIntentService.AsyncSendToServer asyncSendToServer = new GeofenceTransitionsIntentService().new AsyncSendToServer("[" + bulkGeofenceEventSTR + "]", idToDeleteListSTR);
-            asyncSendToServer.execute();
-        } else {
-            System.out.println(" no GEOFENCE events to flush " + CalendarUtils.currentDatetimeUTC());
-        }
-    }
+
 
 }
 
