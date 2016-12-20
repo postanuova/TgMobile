@@ -60,7 +60,7 @@ public class GeofencesObserver implements GoogleApiClient.OnConnectionFailedList
 
     public GeofencesObserver() {
         System.out.println("<GeofenceObserver started>");
-        googleApiClient = new GoogleApiClient.Builder(MyApp.getContext())
+        googleApiClient = new GoogleApiClient.Builder(MyApp.getInstance().getApplicationContext())
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -220,8 +220,8 @@ public class GeofencesObserver implements GoogleApiClient.OnConnectionFailedList
 
     private void registerGeofences() {
         Log.i(this.getClass().getName(),"<< registerGeofences >>");
-        /*if (ActivityCompat.checkSelfPermission(MyApp.getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(MyApp.getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        /*if (ActivityCompat.checkSelfPermission(MyApp.getInstance().getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(MyApp.getInstance().getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.i(this.getClass().getName(),"registerGeofences :need to request the missing permissions: not yet implemented");
             // TODO: we must require permission https://developer.android.com/training/permissions/requesting.html
             return;
@@ -229,7 +229,7 @@ public class GeofencesObserver implements GoogleApiClient.OnConnectionFailedList
             //ha tutti i diritti
             System.out.println(" registerGeofences: all rights enabled: initializing geofencingRequest");
 
-            //costruisco l'oggetto geofencingRequest che conterrà la lista delle geofences
+            //costruisco l'ogetto geofencingRequest che conterrà la lista delle geofences
 
             GeofencingRequest.Builder geofencingRequestBuilder = new GeofencingRequest.Builder();
             geofencingRequestBuilder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
@@ -237,8 +237,8 @@ public class GeofencesObserver implements GoogleApiClient.OnConnectionFailedList
             GeofencingRequest geofencingRequest = geofencingRequestBuilder.build();
             System.out.println("registerGeofences geofencingRequest.getGeofences().size() = " + geofencingRequest.getGeofences().size());
             //costruisco il pending Intent
-            Intent intent = new Intent(MyApp.getContext(), GeofenceTransitionsIntentService.class);
-            PendingIntent pendingIntent = PendingIntent.getService(MyApp.getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);// We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling addgeoFences()
+            Intent intent = new Intent(MyApp.getInstance().getApplicationContext(), GeofenceTransitionsIntentService.class);
+            PendingIntent pendingIntent = PendingIntent.getService(MyApp.getInstance().getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);// We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling addgeoFences()
 
             LocationServices.GeofencingApi.addGeofences(
                     googleApiClient,
@@ -291,7 +291,7 @@ public class GeofencesObserver implements GoogleApiClient.OnConnectionFailedList
         //////////////////////////
         //flushGeofenceEventTable(); riattivare
         //////////////////////////
-        System.out.println("GEOFENCE OBSERVER location CHANGED = " + location.getTime());
+        System.out.println("GEOFENCE OBSERVER location CHANGED = " + CalendarUtils.serverTimeFormat(location.getTime()));
         System.out.println("server time format = " + CalendarUtils.serverTimeFormat(location.getTime()) + " latitude = " + location.getLatitude() + " longitude = " + location.getLongitude() + " accuracy = " + location.getAccuracy());
 
         System.out.println("DEBUG: distance from L'incontro = " + TypeConverter.coordinatesToDistance(location.getLatitude(),location.getLongitude(),28.1205434,-16.7750331,'m'));

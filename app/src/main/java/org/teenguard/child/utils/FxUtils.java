@@ -20,12 +20,12 @@ import org.teenguard.child.R;
 public class FxUtils {
 
     public static void vibe() {
-        Vibrator vibe = (Vibrator) MyApp.getContext().getSystemService(Context.VIBRATOR_SERVICE);
+        Vibrator vibe = (Vibrator) MyApp.getInstance().getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
         vibe.vibrate(50);
     }
 
     public static void shake(View targetView) {
-        Animation shake = AnimationUtils.loadAnimation(MyApp.getContext(), R.anim.shake);
+        Animation shake = AnimationUtils.loadAnimation(MyApp.getInstance().getApplicationContext(), R.anim.shake);
         targetView.startAnimation(shake);
     }
 
@@ -40,7 +40,7 @@ public class FxUtils {
         Handler h = new Handler(Looper.getMainLooper());
         h.post(new Runnable() {
             public void run() {
-                Toast.makeText(MyApp.getContext(), message, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MyApp.getInstance().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
             }
         });
     }

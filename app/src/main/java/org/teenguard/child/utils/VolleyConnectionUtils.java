@@ -57,7 +57,7 @@ public class VolleyConnectionUtils {
 
     public static void doRequest(int method, String url, final String httpPostBody) {
         final MyServerResponse myServerResponse = new MyServerResponse();
-        RequestQueue queue = Volley.newRequestQueue(MyApp.getContext());
+        RequestQueue queue = Volley.newRequestQueue(MyApp.getInstance().getApplicationContext());
         StringRequest stringRequest = new StringRequest(method, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {

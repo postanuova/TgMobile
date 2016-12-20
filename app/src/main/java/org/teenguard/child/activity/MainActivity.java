@@ -37,21 +37,21 @@ public class MainActivity extends AppCompatActivity {
 
         /*/////////////////////////////////////////////
         System.out.println("MainActivity.onCreate skipping");
-        Intent skipIntent = new Intent(MyApp.getContext(), InsertSmsCodeActivity.class);
+        Intent skipIntent = new Intent(MyApp.getInstance().getApplicationContext(), InsertSmsCodeActivity.class);
         startActivity(skipIntent);
         ////////////////////////////////////////////////*/
 
         boolean caseIdentified = false;
 
         if   ((!isChild && !isChildConfigured && !isParent && !isParentConfigured)) {//primo avvio
-            Intent welcomeActivityIntent = new Intent(MyApp.getContext(), WelcomeActivity.class);
+            Intent welcomeActivityIntent = new Intent(MyApp.getInstance().getApplicationContext(), WelcomeActivity.class);
             startActivity(welcomeActivityIntent);
             System.out.println("MainActivity.onCreate starting WelcomeActivity");
             caseIdentified = true;
         }
 
         if   ((isChild && !isChildConfigured)) {//someihing went wrong
-            Intent welcomeActivityIntent = new Intent(MyApp.getContext(), WelcomeActivity.class);
+            Intent welcomeActivityIntent = new Intent(MyApp.getInstance().getApplicationContext(), WelcomeActivity.class);
             startActivity(welcomeActivityIntent);
             System.out.println("MainActivity.onCreate starting WelcomeActivity");
             caseIdentified = true;
@@ -59,21 +59,21 @@ public class MainActivity extends AppCompatActivity {
 
 
         if   ((isChild&& isChildConfigured)) {
-            Intent properlySettedIntent = new Intent(MyApp.getContext(), ProperlySettedActivity.class);
+            Intent properlySettedIntent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlySettedActivity.class);
             startActivity(properlySettedIntent);
             System.out.println("MainActivity.onCreate starting ProperlySettedActivity");
             caseIdentified = true;
         }
 
         if((isParent && isParentConfigured)) {
-            Intent webFrameIntent = new Intent(MyApp.getContext(), WebFrameActivity.class);
+            Intent webFrameIntent = new Intent(MyApp.getInstance().getApplicationContext(), WebFrameActivity.class);
             startActivity(webFrameIntent);
             System.out.println("MainActivity.onCreate starting WebFrameActivity");
             caseIdentified = true;
         }
 
         if(!caseIdentified) {  //all unidentified cases
-            Intent welcomeActivityIntent = new Intent(MyApp.getContext(), WelcomeActivity.class);
+            Intent welcomeActivityIntent = new Intent(MyApp.getInstance().getApplicationContext(), WelcomeActivity.class);
             startActivity(welcomeActivityIntent);
             System.out.println("MainActivity.onCreate starting WelcomeActivity");
         }
@@ -85,13 +85,13 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("MainActivity.onResume");
      /*   /////////////////////////////////////////////
         System.out.println("MainActivity.onCreate skipping");
-        Intent skipIntent = new Intent(MyApp.getContext(), InsertSmsCodeActivity.class);
+        Intent skipIntent = new Intent(MyApp.getInstance().getApplicationContext(), InsertSmsCodeActivity.class);
         startActivity(skipIntent);
         ////////////////////////////////////////////////*/
         boolean isChild = MyApp.getSharedPreferences().getBoolean("IS-CHILD", false);
         boolean isChildConfigured = MyApp.getSharedPreferences().getBoolean("IS-CHILD-CONFIGURED", false);
         if   ((isChild == true && isChildConfigured == true)) {
-            Intent properlySettedIntent = new Intent(MyApp.getContext(), ProperlySettedActivity.class);
+            Intent properlySettedIntent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlySettedActivity.class);
             startActivity(properlySettedIntent);
             System.out.println("MainActivity.onCreate starting ProperlySettedActivity");
         }

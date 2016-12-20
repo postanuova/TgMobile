@@ -145,13 +145,13 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
             MyServerResponse myServerResponse = ServerApiUtils.announceChildToServer(dataToSend);
             myServerResponse.dump();
             if(myServerResponse.getResponseCode() > 199 && myServerResponse.getResponseCode() < 300) {
-                //Toast.makeText(MyApp.getContext(),"going to sms", Toast.LENGTH_LONG).show();
+                //Toast.makeText(MyApp.getInstance().getApplicationContext(),"going to sms", Toast.LENGTH_LONG).show();
                 gotoNextActivity();
                 return null;
             }
             if(myServerResponse.getResponseCode() == 429) {
                 asyncToast(getString(R.string.too_many_request));
-                //Toast.makeText(MyApp.getContext(),getString(R.string.too_many_request), Toast.LENGTH_LONG).show();
+                //Toast.makeText(MyApp.getInstance().getApplicationContext(),getString(R.string.too_many_request), Toast.LENGTH_LONG).show();
                 //tvIsValidPhone.setText(getString(R.string.too_many_request));
                 gotoHomeActivity();
                 return null;
@@ -178,14 +178,14 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
         Handler h = new Handler(Looper.getMainLooper());
         h.post(new Runnable() {
             public void run() {
-                Toast.makeText(MyApp.getContext(), message, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MyApp.getInstance().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
 
     private void gotoNextActivity() {
-        Intent intent = new Intent(MyApp.getContext(), InsertSmsCodeActivity.class);
+        Intent intent = new Intent(MyApp.getInstance().getApplicationContext(), InsertSmsCodeActivity.class);
         intent.putExtra("countryCode",tvCountryCode.getText()); //quello con il +
         intent.putExtra("phoneNumber",phoneNumberSTR);
         startActivity(intent);
@@ -193,13 +193,13 @@ public class InsertPhoneNumberActivity extends AppCompatActivity {
     }
 
     private void gotoHomeActivity() {
-        Intent intent = new Intent(MyApp.getContext(), WelcomeActivity.class);
+        Intent intent = new Intent(MyApp.getInstance().getApplicationContext(), WelcomeActivity.class);
         startActivity(intent);
     }
 
     private void gotoLastActivity() {
         System.out.println("skipping to last activity");
-        Intent intent = new Intent(MyApp.getContext(), ProperlySettedActivity.class);
+        Intent intent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlySettedActivity.class);
         startActivity(intent);
         this.finish();
     }

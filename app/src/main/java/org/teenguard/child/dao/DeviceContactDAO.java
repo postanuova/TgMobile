@@ -34,7 +34,7 @@ public class DeviceContactDAO {
 
         String[] selectionArgs = {lookupKey};
         String sortOrder = ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY;
-        ContentResolver contentResolver = MyApp.getContext().getContentResolver();
+        ContentResolver contentResolver = MyApp.getInstance().getApplicationContext().getContentResolver();
         Cursor cursor = contentResolver.query(DeviceContact.CONTACTS_CONTENT_URI, projection, selection, selectionArgs, sortOrder);
         //Log.i("test","Phone cursor rows count " + cursor.getCount());
         ArrayList numberAL = new ArrayList();
@@ -62,7 +62,7 @@ public class DeviceContactDAO {
                 ContactsContract.Contacts.CONTACT_LAST_UPDATED_TIMESTAMP
         };
         //String sortOrder = ContactsContract.Contacts.DISPLAY_NAME + " ASC";
-        ContentResolver contentResolver = MyApp.getContext().getContentResolver();
+        ContentResolver contentResolver = MyApp.getInstance().getApplicationContext().getContentResolver();
         Cursor deviceContactCursor = contentResolver.query(uri, projection, selection, null, null);
 
         Log.i("DeviceContactDAO", "getDeviceContactHM : deviceContactCursor columns " + deviceContactCursor.getColumnCount() + " rows " + deviceContactCursor.getCount());

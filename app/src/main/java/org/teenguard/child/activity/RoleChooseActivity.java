@@ -49,7 +49,7 @@ public class RoleChooseActivity extends AppCompatActivity {
                 FxUtils.shake(parentImageView);
                 FxUtils.asyncToast(getString(R.string.str_not_available));
                 // TODO: 06/12/16 going anyway to web frame: implement parent configuration
-                Intent webFrameIntent = new Intent(MyApp.getContext(), WebFrameActivity.class);
+                Intent webFrameIntent = new Intent(MyApp.getInstance().getApplicationContext(), WebFrameActivity.class);
                 startActivity(webFrameIntent);
                 System.out.println("RoleChooseActivity.onClick going anyway to WebFrameActivity");
             }
@@ -70,7 +70,7 @@ public class RoleChooseActivity extends AppCompatActivity {
                 MyApp.dumpSharedPreferences();
                 //////
                 System.out.println("RoleChooseActivity.onClick going to InsertPhoneNumberActivity");
-                Intent intent = new Intent(MyApp.getContext(), InsertPhoneNumberActivity.class);
+                Intent intent = new Intent(MyApp.getInstance().getApplicationContext(), InsertPhoneNumberActivity.class);
                 startActivity(intent);
             }
         });
@@ -78,7 +78,7 @@ public class RoleChooseActivity extends AppCompatActivity {
 
     private void gotoLastActivity() {
         System.out.println("skipping to last activity");
-        Intent intent = new Intent(MyApp.getContext(), ProperlySettedActivity.class);
+        Intent intent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlySettedActivity.class);
         startActivity(intent);
         this.finish();
     }

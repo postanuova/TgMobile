@@ -15,7 +15,7 @@ import java.util.List;
 public class AvailablePermission {
     public void listPermissions() {
         System.out.println("not tested");
-        Context context = MyApp.getContext();
+        Context context = MyApp.getInstance().getApplicationContext();
         PackageManager pm = context.getPackageManager();
         CharSequence csPermissionGroupLabel;
         CharSequence csPermissionLabel;

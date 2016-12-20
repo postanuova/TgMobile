@@ -1,5 +1,14 @@
 package org.teenguard.child.utils;
 
+/**
+ * Created by chris on 21/12/16.
+ */
+
+public class MyAppNotSingleton {
+}
+/*
+package org.teenguard.child.utils;
+
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -19,30 +28,27 @@ import java.util.Map;
 Useful for having app-context everywhere
  */
 //added to manifest
-public class MyApp extends Application {
-
-    private static Context mContext;
-
-    public static MyApp instance;
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        mContext = getApplicationContext();
+/*public class MyApp extends Application {
+    private static MyApp instance;
+    //private static CookieManager cookieManager = CookieManager.getInstance();
+    private static SharedPreferences preferences;
+    public MyApp() {
         instance = this;
     }
 
-    @Override
-    public Context getApplicationContext() {
-        return super.getApplicationContext();
-    }
-
-    public static MyApp getInstance() {
+    public static Context getContext() {
         return instance;
     }
 
-    public static SharedPreferences getSharedPreferences() {
-        return PreferenceManager.getDefaultSharedPreferences(MyApp.getInstance().getApplicationContext());
+
+
+
+   /* public static CookieManager getCookieManager() {
+        return cookieManager;
+    }*/
+
+  /*  public static SharedPreferences getSharedPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(getContext());
     }
 
     public static void dumpSharedPreferences() {
@@ -66,3 +72,5 @@ public class MyApp extends Application {
                 .apply();
     }
 }
+
+ */

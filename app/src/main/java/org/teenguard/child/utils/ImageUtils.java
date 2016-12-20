@@ -40,8 +40,8 @@ public class ImageUtils {
     public static Bitmap getImageBitmapFromURI(Uri uri) {
         Bitmap bitmap = null;
         try {
-            //bitmap = MediaStore.Images.Media.getBitmap(MyApp.getContext().getContentResolver(),uri);
-            Bitmap bm = BitmapFactory.decodeStream(MyApp.getContext().getContentResolver().openInputStream(uri));
+            //bitmap = MediaStore.Images.Media.getBitmap(MyApp.getInstance().getApplicationContext().getContentResolver(),uri);
+            Bitmap bm = BitmapFactory.decodeStream(MyApp.getInstance().getApplicationContext().getContentResolver().openInputStream(uri));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -60,7 +60,7 @@ public class ImageUtils {
         return Uri.parse(path);
     }*/
    public static Uri getUriFromPhoneId(int phoneId) {
-        final Resources resources = MyApp.getContext().getResources();
+        final Resources resources = MyApp.getInstance().getApplicationContext().getResources();
         final Uri uri = new Uri.Builder()
                 .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
                 .authority(resources.getResourcePackageName(phoneId))
@@ -113,7 +113,7 @@ public class ImageUtils {
         // using Environment.getExternalStorageState() before doing this.
         File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
                 + "/Android/data/"
-                + MyApp.getContext().getPackageName()
+                + MyApp.getInstance().getApplicationContext().getPackageName()
                 + "/Files");
 
         // This location works best if you want the created images to be shared

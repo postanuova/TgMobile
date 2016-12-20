@@ -52,13 +52,13 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private void gotoLastActivity() {
         System.out.println("skipping to last activity");
-        Intent intent = new Intent(MyApp.getContext(), ProperlySettedActivity.class);
+        Intent intent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlySettedActivity.class);
         startActivity(intent);
         this.finish();
     }
 
     private void gotoNextActivity() {
-        Intent intent = new Intent(MyApp.getContext(), RoleChooseActivity.class);
+        Intent intent = new Intent(MyApp.getInstance().getApplicationContext(), RoleChooseActivity.class);
         startActivity(intent);
         this.finish();//close current activity
     }

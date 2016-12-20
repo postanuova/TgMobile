@@ -11,44 +11,44 @@ public class JSon {
     public JSon() {
     }
 
-    /** aggiunge un elemento stringa all'oggetto JSON */
+    /** aggiunge un elemento stringa all'ogetto JSON */
     public void add(String param, String value) {
         jSonString += composePair(param, value) + ",";
     }
 
-    /** aggiunge un elemento int all'oggetto JSON */
+    /** aggiunge un elemento int all'ogetto JSON */
     public void add(String param, int value) {
         jSonString += composeNumericPair(param, Integer.toString(value)) + ",";
     }
 
-    /** aggiunge un elemento double all'oggetto JSON */
+    /** aggiunge un elemento double all'ogetto JSON */
     public void add(String param, double value) {
         jSonString += composeNumericPair(param, Double.toString(value)) + ",";
     }
 
-    /** aggiunge un elemento long all'oggetto JSON */
+    /** aggiunge un elemento long all'ogetto JSON */
     public void add(String param, long value) {
         jSonString += composeNumericPair(param, Long.toString(value)) + ",";
     }
 
-    /** aggiunge un elemento float all'oggetto JSON */
+    /** aggiunge un elemento float all'ogetto JSON */
     public void add(String param, float value) {
         jSonString += composeNumericPair(param, Float.toString(value)) + ",";
     }
 
-   /* *//** aggiunge un elemento Calendar yyyy/mm/dd all'oggetto JSON *//*
+   /* *//** aggiunge un elemento Calendar yyyy/mm/dd all'ogetto JSON *//*
     public void add(String param, Calendar value) {
         jSonString += composePair(param, TypeConverter.calendarToStringWithoutTime(value)) + ",";
     }*/
 
-    /** aggiunge un elemento booleano all'oggetto JSON */
+    /** aggiunge un elemento booleano all'ogetto JSON */
     public void add(String param, boolean value) {
         jSonString += composePair(param, Boolean.toString(value)) + ",";
     }
 
    /**
     *
-     * aggiunge un array(nome_array,lista di elementi tra parentesi quadre separati da una virgola) all'oggetto JSON :
+     * aggiunge un array(nome_array,lista di elementi tra parentesi quadre separati da una virgola) all'ogetto JSON :
      * */
     public void addArray(String arrayName, String arrayValues) {
         jSonString += "\"" + arrayName + "\":" + arrayValues + ",";

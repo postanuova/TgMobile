@@ -32,9 +32,9 @@ public class BootReceiver extends BroadcastReceiver {
             boolean isParentConfigured = getSharedPreferences().getBoolean("IS-PARENT-CONFIGURED",false);
           /*  /////////////////////////////////////////////
             System.out.println("BootReceiver.onReceive skipping");
-            Intent skipIntent = new Intent(MyApp.getContext(), InsertSmsCodeActivity.class);
+            Intent skipIntent = new Intent(MyApp.getInstance().getApplicationContext(), InsertSmsCodeActivity.class);
             skipIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            MyApp.getContext().startActivity(skipIntent);
+            MyApp.getInstance().getApplicationContext().startActivity(skipIntent);
             ////////////////////////////////////////////////*/
             Class nextActivityClass = null;
             if((!isChild && !isParent)||
@@ -44,22 +44,22 @@ public class BootReceiver extends BroadcastReceiver {
                 MyApp.resetSharedPreferences();
                 MyApp.dumpSharedPreferences();
                 System.out.println(" BootReceiver.onReceive starting WelcomeActivity");
-                Intent welcomeIntent = new Intent(MyApp.getContext(), WelcomeActivity.class);
+                Intent welcomeIntent = new Intent(MyApp.getInstance().getApplicationContext(), WelcomeActivity.class);
                 welcomeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                MyApp.getContext().startActivity(welcomeIntent);
+                MyApp.getInstance().getApplicationContext().startActivity(welcomeIntent);
             }
 
             if  ((isChild&& isChildConfigured)) {
-                Intent properlySettedIntent = new Intent(MyApp.getContext(), ProperlySettedActivity.class);
+                Intent properlySettedIntent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlySettedActivity.class);
                 properlySettedIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                MyApp.getContext().startActivity(properlySettedIntent);
+                MyApp.getInstance().getApplicationContext().startActivity(properlySettedIntent);
                 System.out.println("BootReceiver.onReceive starting ProperlySettedActivity");
             }
 
             if((isParent&& isParentConfigured)) {
-                Intent webFrameIntent = new Intent(MyApp.getContext(), WebFrameActivity.class);
+                Intent webFrameIntent = new Intent(MyApp.getInstance().getApplicationContext(), WebFrameActivity.class);
                 webFrameIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                MyApp.getContext().startActivity(webFrameIntent);
+                MyApp.getInstance().getApplicationContext().startActivity(webFrameIntent);
                 System.out.println("BootReceiver.onReceive starting WebFrameActivity");
             }
 

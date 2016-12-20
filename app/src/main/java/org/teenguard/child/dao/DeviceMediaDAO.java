@@ -37,7 +37,7 @@ public class DeviceMediaDAO {
         ////////
 
         //String sortOrder = ContactsContract.Contacts.DISPLAY_NAME + " ASC";
-        ContentResolver contentResolver = MyApp.getContext().getContentResolver();
+        ContentResolver contentResolver = MyApp.getInstance().getApplicationContext().getContentResolver();
         Cursor deviceMediaCursor = contentResolver.query(DeviceMedia.PHOTO_EXTERNAL_CONTENT_URI, projection, selection, null, null);
 
        // Log.i("DeviceMediaDAO", "getDeviceMediaHM : deviceMediaCursor columns " + deviceMediaCursor.getColumnCount() + " rows " + deviceMediaCursor.getCount());
@@ -81,7 +81,7 @@ public class DeviceMediaDAO {
                     bitmap = ImageUtils.scaleBitmap(bitmap,960);
                     ImageUtils.dump(bitmap);
                     *//*System.out.println("---compressed---");
-                    bitmap = ImageUtils.compress(MyApp.getContext(),bitmap);
+                    bitmap = ImageUtils.compress(MyApp.getInstance().getApplicationContext(),bitmap);
                     ImageUtils.dump(bitmap);*//*
                     System.out.println("---saving---");
                     ImageUtils.storeImage(bitmap);

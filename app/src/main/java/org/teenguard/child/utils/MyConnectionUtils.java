@@ -25,7 +25,7 @@ public class MyConnectionUtils {
 
 
     public static boolean isAirplaneModeOn(){
-        return Settings.Global.getInt(MyApp.getContext().getContentResolver(),
+        return Settings.Global.getInt(MyApp.getInstance().getApplicationContext().getContentResolver(),
                 Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
     }
 

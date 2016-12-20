@@ -159,7 +159,7 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
             myServerRegisterResponse.dump();
 
             if(myServerRegisterResponse.getResponseCode() > 199 && myServerRegisterResponse.getResponseCode() < 300) {
-                //Toast.makeText(MyApp.getContext(),"going to sms", Toast.LENGTH_LONG).show();
+                //Toast.makeText(MyApp.getInstance().getApplicationContext(),"going to sms", Toast.LENGTH_LONG).show();
                 //read header
                 //System.out.println("saving X-SESSID");
                 String xSessid = (String)myServerRegisterResponse.getHeaderEntryHM().get("X-SESSID");
@@ -190,7 +190,7 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
 
             if(myServerRegisterResponse.getResponseCode() == 429) {
                 asyncToast(getString(R.string.too_many_request));
-                //Toast.makeText(MyApp.getContext(),getString(R.string.too_many_request), Toast.LENGTH_LONG).show();
+                //Toast.makeText(MyApp.getInstance().getApplicationContext(),getString(R.string.too_many_request), Toast.LENGTH_LONG).show();
                 //tvIsValidPhone.setText(getString(R.string.too_many_request));
                 gotoHomeActivity();
                 return null;
@@ -224,13 +224,13 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
 
     private void gotoLastActivity() {
         System.out.println("skipping to last activity");
-        Intent intent = new Intent(MyApp.getContext(), ProperlySettedActivity.class);
+        Intent intent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlySettedActivity.class);
         startActivity(intent);
         this.finish();
     }
 
     private void gotoNextActivity() {
-        Intent intent = new Intent(MyApp.getContext(), ProperlySettedActivity.class);
+        Intent intent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlySettedActivity.class);
         System.out.println("closing all activities");
         //closing all previous activities
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -242,14 +242,14 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
     }
 
     private void gotoHomeActivity() {
-        Intent intent = new Intent(MyApp.getContext(), WelcomeActivity.class);
+        Intent intent = new Intent(MyApp.getInstance().getApplicationContext(), WelcomeActivity.class);
         startActivity(intent);
         this.finish();
     }
 
     private void reloadCurrentActivity() {
         System.out.println("reload current activity");
-        Intent intent = new Intent(MyApp.getContext(), InsertSmsCodeActivity.class);
+        Intent intent = new Intent(MyApp.getInstance().getApplicationContext(), InsertSmsCodeActivity.class);
         intent.putExtra("countryCode",countryCode); //quello con il +
         intent.putExtra("phoneNumber",phoneNumber);
         intent.putExtra("wrongSmsCode",true);

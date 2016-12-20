@@ -36,9 +36,9 @@ public class ProperlySettedActivity extends AppCompatActivity {
         boolean isChild = MyApp.getSharedPreferences().getBoolean("IS-CHILD",false);
         boolean isChildConfigured = MyApp.getSharedPreferences().getBoolean("IS-CHILD-CONFIGURED",false);
         if (isChild && isChildConfigured) {
-            System.out.println("ProperlySettedActivity.onStart: starting ChildMonitoringService");
-            Intent deviceMonitoringServiceIntent = new Intent(MyApp.getContext(), ChildMonitoringService.class);
-            MyApp.getContext().startService(deviceMonitoringServiceIntent);
+            System.out.println(" ProperlySettedActivity.onStart: starting ChildMonitoringService");
+            Intent deviceMonitoringServiceIntent = new Intent(MyApp.getInstance().getApplicationContext(), ChildMonitoringService.class);
+            MyApp.getInstance().getApplicationContext().startService(deviceMonitoringServiceIntent);
         }
         /////////////////
     }
