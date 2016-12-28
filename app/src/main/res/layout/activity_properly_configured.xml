@@ -9,7 +9,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="org.teenguard.child.activity.ProperlySettedActivity">
+    tools:context="org.teenguard.child.activity.ProperlyConfiguredActivity">
 
     <Button
         android:id="@+id/btn_close"
@@ -24,7 +24,7 @@
         android:layout_centerHorizontal="true" />
 
     <ImageView
-        android:id="@+id/img_properly_setted"
+        android:id="@+id/img_properly_configured"
         android:layout_width="150dp"
         android:layout_height="150dp"
         app:srcCompat="@mipmap/ic_properly_setted_icon"
@@ -32,14 +32,14 @@
         android:layout_centerHorizontal="true" />
 
     <TextView
-        android:id="@+id/tv_properly_setted"
-        android:text="@string/str_properly_setted"
+        android:id="@+id/tv_properly_configured"
+        android:text="@string/str_properly_configured"
         android:textSize="25sp"
         android:gravity="center"
         android:textColor="@color/light_blue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="@string/str_properly_setted"
+        tools:text="@string/str_properly_configured"
         android:layout_above="@+id/tv_now_configure_parent"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="19dp" />

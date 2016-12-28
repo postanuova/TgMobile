@@ -42,7 +42,7 @@
     <string name="error_occurred">An error occurred: try later</string>
 
     <!-- PROPERLY SETTED ACTIVITY -->
-    <string name="str_properly_setted">TeenGuard is properly setted</string>
+    <string name="str_properly_configured">TeenGuard is properly configured</string>
     <string name="str_now_configure_parent">Now follow instructions on parent\'s device</string>
     <string name="str_service_is_running">Service is running</string>
     <string name="str_service_is_not_running">Network issue: service is not running</string>

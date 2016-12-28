@@ -12,13 +12,13 @@ import org.teenguard.child.R;
 import org.teenguard.child.service.ChildMonitoringService;
 import org.teenguard.child.utils.MyApp;
 
-public class ProperlySettedActivity extends AppCompatActivity {
+public class ProperlyConfiguredActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        System.out.println("ProperlySettedActivity started");
+        System.out.println("ProperlyConfiguredActivity started");
 
-        setContentView(R.layout.activity_properly_setted);
+        setContentView(R.layout.activity_properly_configured);
         viewBinding();
         getSupportActionBar().hide(); //nasconde la barra
         //  TODO: 02/12/16 implementare giro di richiesta permessi
@@ -29,14 +29,14 @@ public class ProperlySettedActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        System.out.println("ProperlySettedActivity.onStart");
+        System.out.println("ProperlyConfiguredActivity.onStart");
         MyApp.dumpSharedPreferences();
 
         /////////////
         boolean isChild = MyApp.getSharedPreferences().getBoolean("IS-CHILD",false);
         boolean isChildConfigured = MyApp.getSharedPreferences().getBoolean("IS-CHILD-CONFIGURED",false);
         if (isChild && isChildConfigured) {
-            System.out.println(" ProperlySettedActivity.onStart: starting ChildMonitoringService");
+            System.out.println(" ProperlyConfiguredActivity.onStart: starting ChildMonitoringService");
             Intent deviceMonitoringServiceIntent = new Intent(MyApp.getInstance().getApplicationContext(), ChildMonitoringService.class);
             MyApp.getInstance().getApplicationContext().startService(deviceMonitoringServiceIntent);
         }
@@ -54,7 +54,7 @@ public class ProperlySettedActivity extends AppCompatActivity {
             closeActivity();
         }
     });
-        ImageView properlySettedImage = (ImageView)findViewById(R.id.img_properly_setted);
+        ImageView properlySettedImage = (ImageView)findViewById(R.id.img_properly_configured);
         properlySettedImage.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
                 System.out.println("close button  clicked");
@@ -85,7 +85,7 @@ public class ProperlySettedActivity extends AppCompatActivity {
                 .putBoolean("IS-CHILD",true)
                 .putBoolean("IS-CHILD-CONFIGURED",true)// TODO: 22/11/16 rimettere true
                 .apply();
-        System.out.println("ProperlySettedActivity.closeActivity");
+        System.out.println("ProperlyConfiguredActivity.closeActivity");
         MyApp.dumpSharedPreferences();
         moveTaskToBack(true); //torna alla home
         finish();

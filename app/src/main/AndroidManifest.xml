@@ -54,7 +54,7 @@ r
         <activity android:name=".activity.RoleChooseActivity" android:screenOrientation="portrait"/>
         <activity android:name=".activity.InsertPhoneNumberActivity" android:screenOrientation="portrait"/>
         <activity android:name=".activity.InsertSmsCodeActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".activity.ProperlySettedActivity"
+        <activity android:name=".activity.ProperlyConfiguredActivity"
             android:noHistory="true" android:screenOrientation="portrait"/>
         <activity android:name="org.teenguard.parent.activity.WebFrameActivity" android:screenOrientation="portrait"/>
     </application>

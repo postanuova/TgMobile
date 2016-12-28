@@ -43,7 +43,7 @@
     <string name="error_occurred">Si è verificato un errore: riprovare più tardi</string>
 
     <!-- PROPERLY SETTED ACTIVITY -->
-    <string name="str_properly_setted">TeenGuard è correttamente configurato</string>
+    <string name="str_properly_configured">TeenGuard è correttamente configurato</string>
     <string name="str_now_configure_parent">Ora seguire le istruzioni sul dispositivo del Genitore</string>
     <string name="str_service_is_running">Il servizio è attivo</string>
     <string name="str_service_is_not_running">Il servizio non è attivo</string>

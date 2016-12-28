@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import org.teenguard.child.activity.ProperlySettedActivity;
+import org.teenguard.child.activity.ProperlyConfiguredActivity;
 import org.teenguard.child.activity.WelcomeActivity;
 import org.teenguard.child.utils.MyApp;
 import org.teenguard.parent.activity.WebFrameActivity;
@@ -50,10 +50,10 @@ public class BootReceiver extends BroadcastReceiver {
             }
 
             if  ((isChild&& isChildConfigured)) {
-                Intent properlySettedIntent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlySettedActivity.class);
+                Intent properlySettedIntent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlyConfiguredActivity.class);
                 properlySettedIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 MyApp.getInstance().getApplicationContext().startActivity(properlySettedIntent);
-                System.out.println("BootReceiver.onReceive starting ProperlySettedActivity");
+                System.out.println("BootReceiver.onReceive starting ProperlyConfiguredActivity");
             }
 
             if((isParent&& isParentConfigured)) {

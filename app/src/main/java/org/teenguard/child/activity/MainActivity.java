@@ -59,9 +59,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         if   ((isChild&& isChildConfigured)) {
-            Intent properlySettedIntent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlySettedActivity.class);
+            Intent properlySettedIntent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlyConfiguredActivity.class);
             startActivity(properlySettedIntent);
-            System.out.println("MainActivity.onCreate starting ProperlySettedActivity");
+            System.out.println("MainActivity.onCreate starting ProperlyConfiguredActivity");
             caseIdentified = true;
         }
 
@@ -91,9 +91,9 @@ public class MainActivity extends AppCompatActivity {
         boolean isChild = MyApp.getSharedPreferences().getBoolean("IS-CHILD", false);
         boolean isChildConfigured = MyApp.getSharedPreferences().getBoolean("IS-CHILD-CONFIGURED", false);
         if   ((isChild == true && isChildConfigured == true)) {
-            Intent properlySettedIntent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlySettedActivity.class);
+            Intent properlySettedIntent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlyConfiguredActivity.class);
             startActivity(properlySettedIntent);
-            System.out.println("MainActivity.onCreate starting ProperlySettedActivity");
+            System.out.println("MainActivity.onCreate starting ProperlyConfiguredActivity");
         }
     }
 

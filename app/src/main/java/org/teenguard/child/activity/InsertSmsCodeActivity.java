@@ -224,13 +224,13 @@ public class InsertSmsCodeActivity extends AppCompatActivity {
 
     private void gotoLastActivity() {
         System.out.println("skipping to last activity");
-        Intent intent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlySettedActivity.class);
+        Intent intent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlyConfiguredActivity.class);
         startActivity(intent);
         this.finish();
     }
 
     private void gotoNextActivity() {
-        Intent intent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlySettedActivity.class);
+        Intent intent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlyConfiguredActivity.class);
         System.out.println("closing all activities");
         //closing all previous activities
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

@@ -77,7 +77,7 @@ public class RoleChooseActivity extends AppCompatActivity {
 
     private void gotoLastActivity() {
         System.out.println("skipping to last activity");
-        Intent intent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlySettedActivity.class);
+        Intent intent = new Intent(MyApp.getInstance().getApplicationContext(), ProperlyConfiguredActivity.class);
         startActivity(intent);
         this.finish();
     }
