@@ -54,8 +54,6 @@ public class ContactListObserver extends ContentObserver {
         asyncFlushContactEventTable.execute("");
        /* MyLog.i(this,"invoking on change ContactObserver on startup");
         onChange(false);*/
-
-
     }
 
 

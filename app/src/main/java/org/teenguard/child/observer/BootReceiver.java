@@ -22,9 +22,9 @@ public class BootReceiver extends BroadcastReceiver {
         Log.i(this.getClass().getName(),"started BootReceiver intent.getAction() " + intent.getAction());
         String action = intent.getAction();
         if (action.equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED) ||
-                action.equalsIgnoreCase(Intent.ACTION_PACKAGE_REPLACED) ||
+                action.equalsIgnoreCase(Intent.ACTION_PACKAGE_REPLACED) /*||
                 action.equalsIgnoreCase(Intent.ACTION_PACKAGE_ADDED) ||
-                action.equalsIgnoreCase(Intent.ACTION_PACKAGE_RESTARTED)) {
+                action.equalsIgnoreCase(Intent.ACTION_PACKAGE_RESTARTED)*/) {
             MyApp.dumpSharedPreferences();
             boolean isChild = MyApp.getSharedPreferences().getBoolean("IS-CHILD",false);
             boolean isChildConfigured = getSharedPreferences().getBoolean("IS-CHILD-CONFIGURED",false);

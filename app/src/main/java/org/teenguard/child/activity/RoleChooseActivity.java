@@ -26,7 +26,6 @@ public class RoleChooseActivity extends AppCompatActivity {
         //  PARENT IMAGE listener
         final ImageView parentImageView = (ImageView) findViewById(R.id.image_parent);
 
-
         parentImageView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -47,7 +46,7 @@ public class RoleChooseActivity extends AppCompatActivity {
                         .apply();
                 MyApp.dumpSharedPreferences();
                 FxUtils.shake(parentImageView);
-                FxUtils.asyncToast(getString(R.string.str_not_available));
+                FxUtils.asyncToast(MyApp.getInstance().getResources().getString(R.string.str_parent_role_not_available));
                 // TODO: 06/12/16 going anyway to web frame: implement parent configuration
                 Intent webFrameIntent = new Intent(MyApp.getInstance().getApplicationContext(), WebFrameActivity.class);
                 startActivity(webFrameIntent);

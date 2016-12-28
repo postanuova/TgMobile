@@ -51,6 +51,11 @@ public class ChildMonitoringService extends Service {
 
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
+    }
+
     private void startMonitoringGeofences() {
          geofencesObserver = new GeofencesObserver();
     }

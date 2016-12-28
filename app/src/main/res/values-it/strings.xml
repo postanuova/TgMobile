@@ -22,7 +22,7 @@
     <string name="str_used_by">Questo dispositivo verrà utilizzato da</string>
     <string name="str_parent">Genitore</string>
     <string name="str_child">Figlio</string>
-    <string name="str_not_available">Ci dispiace. La funzione \'Genitore\' sarà presto disponibile su piattaforma Android</string>
+    <string name="str_parent_role_not_available">Ci dispiace. La funzione \'Genitore\' sarà presto disponibile su piattaforma Android</string>
     <!-- INSERT PHONE NUMBER ACTIVITY -->
     <string name="phone_number_title">Registrazione numero telefonico</string>
     <string name="country_code_hint">Prefisso internazionale</string>
@@ -47,5 +47,6 @@
     <string name="str_now_configure_parent">Ora seguire le istruzioni sul dispositivo del Genitore</string>
     <string name="str_service_is_running">Il servizio è attivo</string>
     <string name="str_service_is_not_running">Il servizio non è attivo</string>
+
 
 </resources>
