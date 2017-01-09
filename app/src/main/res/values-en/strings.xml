@@ -14,35 +14,35 @@
     <string name="str_close">Close</string>
     <!-- WELCOME ACTIVITY -->
     <string name="str_welcome">Welcome to TeenGuard</string>
-    <string name="str_hardest_job">We are glad to help you in one of the human&#180;s hardest job</string>
-    <string name="str_accept_terms">Going forward, you accept our Terms of Service, our Privacy Policy and our Acceptable Use Policy.</string>
+    <string name="str_hardest_job">We are glad to help you in one of the world&#180;s hardest job</string>
+    <string name="str_accept_terms">By cliking on the button below you accept our Terms of Service, our Privacy Policy and our Acceptable Use Policy.</string>
     <string name="str_accept_and_continue">Accept &amp; Continue</string>
     <!-- ROLE CHOOSE ACTIVITY -->
     <string name="str_used_by">This device will be used by</string>
     <string name="str_parent">Parent</string>
     <string name="str_child">Child</string>
-    <string name="str_parent_role_not_available">Parent\'s role will be soon available</string>
+    <string name="str_parent_role_not_available">Parent\'s role will be available soon</string>
     <!-- INSERT PHONE NUMBER ACTIVITY -->
     <string name="phone_number_title">Register Phone Number</string>
     <string name="country_code_hint">Parent\'s Country Code</string>
     <string name="phone_number_hint">Parent\'s Phone Number</string>
 
     <string name="phone_number_valid">Valid Phone Number</string>
-    <string name="phone_number_invalid">Not Valid Phone Number</string>
+    <string name="phone_number_invalid">Incorrect Phone Number</string>
     <string name="phone_number_required">Country Code and Phone Number are required</string>
     <string name="country_code_required">Country Code is required</string>
     <string name="country_code_select"> > Country Code</string>
-    <string name="too_many_request">Too many request: try later</string>
+    <string name="too_many_request">Too many requests: try again later</string>
 
     <!-- INSERT SMS CODE ACTIVITY -->
     <string name="have_sent_sms">We have sent an SMS with a code to the number</string>
     <string name="enter_activation_code">To complete your phone number verification, please enter the 6-digit activation code</string>
-    <string name="wrong_sms_code">Inserted wrong sms code, please enter the 6-digit activation code</string>
+    <string name="wrong_sms_code">Wrong sms code. Please enter the 6-digit activation code again</string>
     <string name="resend_sms_code">Sms not received? Click to resend SMS</string>
-    <string name="error_occurred">An error occurred: try later</string>
+    <string name="error_occurred">An error occurred: try again later</string>
 
     <!-- PROPERLY SETTED ACTIVITY -->
-    <string name="str_properly_configured">TeenGuard is properly configured</string>
+    <string name="str_properly_configured">TeenGuard is configured correctly</string>
     <string name="str_now_configure_parent">Now follow instructions on parent\'s device</string>
     <string name="str_service_is_running">Service is running</string>
     <string name="str_service_is_not_running">Network issue: service is not running</string>
