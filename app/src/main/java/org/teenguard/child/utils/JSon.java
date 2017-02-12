@@ -97,13 +97,13 @@ public class JSon {
         stringToPurify = stringToPurify.replace("}", "");
         stringToPurify = stringToPurify.replace("/\n|\r/g"," ");
         int i =10;
-        char aCapo= (char)i;
-        String aCapoString = String.valueOf(aCapo);
-        stringToPurify = stringToPurify.replace(aCapoString," ");
+        char nextLine= (char)i;
+        String nextLineString = String.valueOf(nextLine);
+        stringToPurify = stringToPurify.replace(nextLineString," ");
         i =13;
-        aCapo= (char)i;
-        aCapoString = String.valueOf(aCapo);
-        stringToPurify = stringToPurify.replace(aCapoString," ");
+        nextLine= (char)i;
+        nextLineString = String.valueOf(nextLine);
+        stringToPurify = stringToPurify.replace(nextLineString," ");
         return stringToPurify;
     }
 
