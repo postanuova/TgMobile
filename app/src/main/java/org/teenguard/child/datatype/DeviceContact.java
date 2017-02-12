@@ -82,11 +82,11 @@ public class DeviceContact {
     }
 
     public String getName() {
-        return name;
+        return JSon.purifyFromQuoteWithSubstitution(name);
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = JSon.purifyFromQuoteWithSubstitution(name);
     }
 
     public long getLastModified() {

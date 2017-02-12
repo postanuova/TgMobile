@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteStatement;
 
 import org.teenguard.child.datatype.DeviceContact;
 import org.teenguard.child.dbdatatype.DbContact;
+import org.teenguard.child.utils.JSon;
 import org.teenguard.child.utils.MyLog;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,7 +64,7 @@ public class DbContactDAO extends GenericDbDAO{
     public long upsert(DbContact dbContact) {
         long id = dbContact.getId();
         long phoneId = dbContact.getPhoneId();
-        String name = dbContact.getName();
+        String name = JSon.purifyFromQuoteWithSubstitution(dbContact.getName());
         long lastModified = dbContact.getLastModified();
         String serializedData = dbContact.getSerializedData();
         return upsert(id,phoneId,name,lastModified,serializedData);
@@ -100,7 +101,7 @@ public class DbContactDAO extends GenericDbDAO{
                     String name = cursor.getString(cursor.getColumnIndex(CONTACT_NAME));
                     long lastModified = cursor.getLong(cursor.getColumnIndex(CONTACT_LAST_MODIFIED));
                     String serializedData = cursor.getString(cursor.getColumnIndex(CONTACT_SERIALIZED_DATA));
-                    dbContact = new DbContact(id, phoneId, name, lastModified, serializedData);
+                    dbContact = new DbContact(id, phoneId, JSon.purifyFromQuoteWithSubstitution(name), lastModified, JSon.purifyFromQuoteWithSubstitution(serializedData));
                     dbContactHM.put(dbContact.getPhoneId(), dbContact);
                 }
                 MyLog.i(this, "Added " + putCounter + " contacts to dbContactHM");

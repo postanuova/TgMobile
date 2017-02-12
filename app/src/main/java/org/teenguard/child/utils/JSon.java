@@ -91,7 +91,7 @@ public class JSon {
 
     //serve per gli export
     public static String purifyFromQuoteWithSubstitution(String stringToPurify) {
-        stringToPurify = stringToPurify.replace("\"", "``");
+        stringToPurify = stringToPurify.replace("\"", "`");
         stringToPurify = stringToPurify.replace("'", "`");
         stringToPurify = stringToPurify.replace("{", "");
         stringToPurify = stringToPurify.replace("}", "");

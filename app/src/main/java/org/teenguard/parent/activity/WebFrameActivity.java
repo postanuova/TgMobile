@@ -16,7 +16,7 @@ public class WebFrameActivity extends AppCompatActivity {
         WebView myWebView = (WebView) findViewById(R.id.webview_id);
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        myWebView.loadUrl("http://192.168.1.105:8383/ParentWeb/index.html");
+        myWebView.loadUrl("http://192.168.1.101:8383/ParentWeb/index.html");
         //myWebView.loadUrl("http://www.html.it");
     }
 }

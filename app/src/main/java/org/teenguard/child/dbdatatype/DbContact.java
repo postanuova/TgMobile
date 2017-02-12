@@ -17,9 +17,9 @@ public class DbContact {
     public DbContact(int id, int phoneId, String name, long lastModified,String serializedData) {
         this.id = id;
         this.phoneId = phoneId;
-        this.name = name;
+        this.name = JSon.purifyFromQuoteWithSubstitution(name);
         this.lastModified = lastModified;
-        this.setSerializedData(serializedData);
+        this.setSerializedData(JSon.purifyFromQuoteWithSubstitution(serializedData));
     }
 
     /*public DbContact (Cursor cursor) {
@@ -69,11 +69,11 @@ public class DbContact {
     }
 
     public String getName() {
-        return name;
+        return JSon.purifyFromQuoteWithSubstitution(name);
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = JSon.purifyFromQuoteWithSubstitution(name);
     }
 
     public long getLastModified() {
